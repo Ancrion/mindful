@@ -228,37 +228,81 @@
     <!-- ═══════════════════════════════════════════════ -->
     <!-- CODE-SNIPPETS (via DOM, kein JS-Escaping nötig)  -->
     <!-- ═══════════════════════════════════════════════ -->
-<script type="text/plain" id="ilhan-1">// Am Ende von backend/database/db.js:
+<script type="text/plain" id="ilhan-1">// backend/database/db.js — migrations-Array (nach db.exec()):
+
+// Schema-Migrationen für bestehende Datenbanken
+const migrations = [
+  // ALTER TABLE … Spalten nachträglich hinzufügen
+  "ALTER TABLE notizen ADD COLUMN ordner_id INTEGER REFERENCES ordner(id)",
+  "ALTER TABLE notizen ADD COLUMN aktualisiert TEXT",
+  "ALTER TABLE events ADD COLUMN ort TEXT",
+  "ALTER TABLE events ADD COLUMN dauer INTEGER DEFAULT 60",
+  "ALTER TABLE events ADD COLUMN wiederholung TEXT DEFAULT 'none'",
+  "ALTER TABLE events ADD COLUMN ganztag INTEGER DEFAULT 0",
+  "ALTER TABLE events ADD COLUMN erinnerung TEXT DEFAULT 'keine'",
+  "ALTER TABLE ordner ADD COLUMN farbe TEXT DEFAULT 'color-sand'",
+  "ALTER TABLE todos ADD COLUMN prioritaet TEXT DEFAULT 'mittel'",
+  "ALTER TABLE users ADD COLUMN wallpaper TEXT DEFAULT NULL",
+  "ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT NULL",
+  "ALTER TABLE todos ADD COLUMN schritte TEXT DEFAULT '[]'",
+  "ALTER TABLE events ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
+  "ALTER TABLE notizen ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
+  // Neue Tabellen
+  "CREATE TABLE IF NOT EXISTS dashboard_widgets (...)",
+  "CREATE TABLE IF NOT EXISTS time_entries (...)",
+  "CREATE TABLE IF NOT EXISTS messages (...)",        // ← hier eingefügt
+];
+
+for (const sql of migrations) {
+  try { db.exec(sql); } catch (_) { /* Spalte existiert bereits */ }
+}
+
+console.log("✅ Datenbank bereit (mindful.db) ohne E-Mail-Pflicht");
+
+// Die messages-Tabelle im migrations-Array (Zeile ~167):
+// CREATE TABLE IF NOT EXISTS messages (
+//   id            INTEGER PRIMARY KEY AUTOINCREMENT,
+//   from_user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//   to_user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//   subject       TEXT NOT NULL,
+//   body          TEXT,
+//   read          INTEGER DEFAULT 0,
+//   created_at    TEXT DEFAULT (datetime('now', 'localtime'))
+// )
+
+// Wichtig: Neue Tabellen NICHT in db.exec() oben einfügen,
+// sondern als Migration unten — so bleiben alte DBs kompatibel.</script>
+<script type="text/plain" id="ilhan-2">// backend/database/db.js — db.exec() Block (Zeilen 9-147):
 
 db.exec(`
-  CREATE TABLE IF NOT EXISTS messages (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    from_user_id INTEGER NOT NULL,
-    to_user_id   INTEGER NOT NULL,
-    subject      TEXT NOT NULL,
-    body         TEXT DEFAULT '',
-    read         INTEGER DEFAULT 0,
-    created_at   TEXT DEFAULT (datetime('now')),
-    FOREIGN KEY (from_user_id) REFERENCES users(id),
-    FOREIGN KEY (to_user_id)   REFERENCES users(id)
-  )
+  -- 1. BENUTZER
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    passwort_hash TEXT NOT NULL,
+    wallpaper TEXT DEFAULT NULL,
+    avatar TEXT DEFAULT NULL,
+    created_at TEXT DEFAULT (datetime('now', 'localtime'))
+  );
+
+  -- 2. SESSIONS
+  CREATE TABLE IF NOT EXISTS sessions (
+    token    TEXT PRIMARY KEY,
+    user_id  INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    erstellt TEXT DEFAULT (datetime('now', 'localtime'))
+  );
+
+  -- 3. WORKSPACES … 4. TODOS … 5. KALENDER_KATEGORIEN … 6. EVENTS …
+  -- 7. NOTIZEN … 8. ORDNER … 9. DOKUMENTE … 10. POMODORO_SESSIONS … 11. TIME_ENTRIES
 `);
-console.log("✓ messages table ready");</script>
-<script type="text/plain" id="ilhan-2">// Nach allen CREATE TABLEs in db.js:
 
-const TABLES = ['users','notes','todos','events','pomodoro_sessions',
-                'time_entries','workspaces','ordner','dokumente','messages'];
+// Vollständige Liste aller Tabellen (werden beim ersten Start automatisch angelegt):
+// users, sessions, workspaces, todos, kalender_kategorien, events,
+// notizen, ordner, dokumente, pomodoro_sessions, time_entries
+// → Später via migrations-Array hinzugefügt: dashboard_widgets, messages
 
-const existing = db.prepare(
-  "SELECT name FROM sqlite_master WHERE type='table'"
-).all().map(r => r.name);
-
-TABLES.forEach(t => {
-  if (!existing.includes(t)) {
-    console.warn('Fehlende Tabelle:' + t);
-  }
-});
-console.log('Table check complete.');</script>
+// Alle CREATE TABLE … IF NOT EXISTS — kein manueller Check nötig.
+// SQLite legt fehlende Tabellen beim Start automatisch an.</script>
 <script type="text/plain" id="sascha-1">// In backend/routes/index.js:
 
 router.get("/leaderboard", auth, (req, res) =>
@@ -1205,11 +1249,11 @@ git push --tags</script>
         label: "Ilhan", role: "Dateninfrastruktur", color: "#ef4444", initial: "IL",
         items: [
           { id:"ilhan-1", file:"backend/database/db.js",
-            desc:"messages-Tabelle anlegen: id, from_user_id, to_user_id, subject, body, read, created_at. Migration am Ende der Datei.",
+            desc:"messages-Tabelle via migrations-Array: CREATE TABLE IF NOT EXISTS mit from_user_id, to_user_id, subject, body, read, created_at + Foreign Keys. Migration-Pattern beachten.",
             commit:"git commit -m \"add messages table schema with read flag and timestamps\"" },
           { id:"ilhan-2", file:"backend/database/db.js",
-            desc:"Auto-Create für alle Tabellen: notes, todos, pomodoro_sessions, tracked_time, messages. Prüfen ob vorhanden, ggf. erstellen.",
-            commit:"git commit -m \"ensure all tables auto-create on startup\"" }
+            desc:"db.exec()-Block mit 11 CREATE TABLE IF NOT EXISTS — SQLite legt fehlende Tabellen beim Start automatisch an. Vollständige Schema-Referenz.",
+            commit:"git commit -m \"initialize all base tables via db.exec on startup\"" }
         ]
       },
       sascha: {
