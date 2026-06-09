@@ -257,10 +257,10 @@ let _searchItems = [];
 let _searchActiveIndex = -1;
 
 const _searchIconMap = {
-  todo: '<i class="tasks fas fa-check-circle"></i>',
-  notiz: '<i class="notes fas fa-sticky-note"></i>',
-  event: '<i class="events fas fa-calendar-alt"></i>',
-  dokument: '<i class="docs fas fa-file"></i>',
+  todo: '<span class="si-icon si-todo"><i class="fas fa-check"></i></span>',
+  notiz: '<span class="si-icon si-notiz"><i class="fas fa-sticky-note"></i></span>',
+  event: '<span class="si-icon si-event"><i class="fas fa-calendar-alt"></i></span>',
+  dokument: '<span class="si-icon si-dokument"><i class="fas fa-file"></i></span>',
 };
 
 window.openSearch = function () {

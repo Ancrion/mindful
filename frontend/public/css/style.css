@@ -800,9 +800,9 @@ body.dark .stats-card { background: var(--surface-2); }
 
 .search-item {
   display: grid;
-  grid-template-columns: 22px 1fr auto;
+  grid-template-columns: 28px 1fr auto;
   gap: 2px 12px;
-  padding: 7px 12px;
+  padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.08s ease;
@@ -811,21 +811,26 @@ body.dark .stats-card { background: var(--surface-2); }
 .search-item:hover {
   background: var(--surface-2);
 }
-.search-item i {
-  width: 22px;
-  height: 22px;
+
+.si-icon {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  font-size: 14px;
+  border-radius: 7px;
   grid-row: 1;
-  border-radius: 5px;
+  flex-shrink: 0;
 }
-.search-item i.tasks { color: var(--accent); }
-.search-item i.notes { color: #8B5CF6; }
-.search-item i.events { color: #3B82F6; }
-.search-item i.docs { color: #F59E0B; }
+.si-icon i {
+  font-size: 13px;
+  color: #fff;
+}
+.si-todo   { background: var(--accent); }
+.si-notiz  { background: #8B5CF6; }
+.si-event  { background: #3B82F6; }
+.si-dokument { background: #F59E0B; }
+
 .search-item .si-title {
   font-size: 14px;
   font-weight: 500;
@@ -855,8 +860,8 @@ body.dark .stats-card { background: var(--surface-2); }
   overflow: hidden;
   text-overflow: ellipsis;
   margin-top: 0;
-  grid-column: 1 / -1;
-  padding-left: 2px;
+  grid-column: 2 / -1;
+  padding-left: 0;
   opacity: 0.5;
 }
 
@@ -864,18 +869,23 @@ body.dark .stats-card { background: var(--surface-2); }
   background: var(--accent) !important;
   border-radius: 8px;
 }
+.search-item.active .si-icon {
+  background: rgba(255,255,255,0.2) !important;
+}
+.search-item.active .si-icon i {
+  color: #fff;
+}
 .search-item.active .si-title {
   color: #fff;
   font-weight: 500;
 }
 .search-item.active .si-meta,
-.search-item.active .si-snippet,
-.search-item.active i {
+.search-item.active .si-snippet {
   color: #fff;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 .search-item.active .si-snippet {
-  opacity: 0.65;
+  opacity: 0.6;
 }
 .search-highlight {
   background: rgba(255, 213, 0, 0.35);
