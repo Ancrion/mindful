@@ -382,10 +382,35 @@ router.post("/forgot-password", async (req, res) => {
       from: process.env.MAIL_FROM || "noreply@mindful.app",
       to: email,
       subject: "Passwort zurücksetzen – Mindful",
-      html: `<p>Hallo ${user.name},</p>
-<p>klicke auf den folgenden Link, um dein Passwort zurückzusetzen (gültig 1 Stunde):</p>
-<p><a href="${resetUrl}">${resetUrl}</a></p>
-<p>Wenn du das nicht angefordert hast, ignoriere diese E-Mail.</p>`,
+      html: `<!doctype html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:40px 20px">
+<table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06)">
+<tr><td style="padding:40px 36px 32px">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr><td style="padding-bottom:32px;border-bottom:1px solid #e8e8ed">
+<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f24b3d;vertical-align:middle;margin-right:8px"></span>
+<span style="font-size:12px;font-weight:700;letter-spacing:2.5px;color:#86868b">MINDFUL</span>
+</td></tr>
+<tr><td style="padding:32px 0 0">
+<h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1d1d1f;letter-spacing:-0.3px">Passwort zurücksetzen</h1>
+<p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#6e6e73">Hallo ${user.name},</p>
+<p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#6e6e73">wir haben eine Anfrage zum Zurücksetzen deines Passworts erhalten. Klicke auf den Button, um ein neues Passwort zu wählen:</p>
+<table cellpadding="0" cellspacing="0"><tr><td style="background:#f24b3d;border-radius:10px;padding:0">
+<a href="${resetUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;background:#f24b3d;border-radius:10px;text-decoration:none">Passwort zurücksetzen</a>
+</td></tr></table>
+<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:#86868b">Dieser Link ist <strong style="color:#1d1d1f">1 Stunde</strong> gültig. Wenn du diese Anfrage nicht gestellt hast, kannst du diese E-Mail ignorieren.</p>
+</td></tr>
+<tr><td style="padding:24px 0 0;border-top:1px solid #e8e8ed;text-align:center">
+<p style="margin:0;font-size:12px;color:#aeaeb2">Mindful – Deine persönliche Produktivitäts-App</p>
+</td></tr>
+</table>
+</td></tr></table>
+</td></tr></table>
+</body>
+</html>`,
     });
 
     res.json({ message: "Wenn die E-Mail existiert, wurde ein Reset-Link gesendet." });
