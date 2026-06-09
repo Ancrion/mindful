@@ -250,59 +250,145 @@ window.quickCreateWsSidebar = async function () {
   });
 })();
 
-// ─── Globale Suche ───
-let searchTimeout = null;
+// ─── Globale Suche (Spotlight-ähnlich) ───
+let _searchTimeout = null;
+let _searchAbortController = null;
+let _searchItems = [];
+let _searchActiveIndex = -1;
 
 window.openSearch = function () {
   const overlay = document.getElementById("searchOverlay");
   overlay.classList.add("open");
   const input = document.getElementById("searchInput");
   input.value = "";
+  _searchItems = [];
+  _searchActiveIndex = -1;
   document.getElementById("searchResults").innerHTML = '<div class="search-empty">Suchbegriff eingeben…</div>';
   setTimeout(() => input.focus(), 50);
   loadSuggestions();
 };
 
+window.closeSearch = function (e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById("searchOverlay").classList.remove("open");
+  clearTimeout(_searchTimeout);
+  if (_searchAbortController) {
+    _searchAbortController.abort();
+    _searchAbortController = null;
+  }
+  _searchItems = [];
+  _searchActiveIndex = -1;
+};
+
+function _highlightText(text, query) {
+  if (!query || !text) return escHtml(text);
+  const escaped = escHtml(text);
+  const q = escHtml(query).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${q})`, "gi");
+  return escaped.replace(regex, '<mark class="search-highlight">$1</mark>');
+}
+
+function _buildItemHtml(item, q) {
+  const iconMap = {
+    todo: '<i class="tasks fas fa-check-circle"></i>',
+    notiz: '<i class="notes fas fa-sticky-note"></i>',
+    event: '<i class="events fas fa-calendar-alt"></i>',
+    dokument: '<i class="docs fas fa-file"></i>',
+  };
+  const icon = iconMap[item.typ] || '<i class="fas fa-file"></i>';
+  const title = q ? _highlightText(item.titel, q) : escHtml(item.titel);
+
+  let meta = "";
+  if (item.typ === "todo" && item.status) {
+    meta = escHtml(item.status);
+  } else if (item.typ === "event" && item.start_datum) {
+    const d = new Date(item.start_datum);
+    meta = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
+  } else if (item.typ === "dokument") {
+    meta = item.dateiname ? escHtml(item.dateiname) : (item.dateityp || "Datei");
+  }
+
+  let snippet = "";
+  if (item.snippet && item.snippet !== item.titel) {
+    snippet = `<span class="si-snippet">${q ? _highlightText(item.snippet, q) : escHtml(item.snippet)}</span>`;
+  }
+
+  return { html: `<div class="search-item" data-index="${_searchItems.length}" onclick="navigateToResult(${_searchItems.length})">
+    ${icon}
+    <span class="si-title">${title}</span>
+    ${meta ? `<span class="si-meta">${meta}</span>` : ""}
+    ${snippet}
+  </div>`, item };
+}
+
+function _renderResults(data, q) {
+  const resultsEl = document.getElementById("searchResults");
+  _searchItems = [];
+  _searchActiveIndex = -1;
+
+  const groups = [
+    { key: "todos", label: "Aufgaben", icon: "fa-check-circle" },
+    { key: "notizen", label: "Notizen", icon: "fa-sticky-note" },
+    { key: "events", label: "Termine", icon: "fa-calendar-alt" },
+    { key: "dokumente", label: "Dokumente", icon: "fa-file" },
+  ];
+
+  let html = "";
+  let total = 0;
+
+  groups.forEach(group => {
+    const items = data[group.key] || [];
+    if (items.length === 0) return;
+    total += items.length;
+    html += `<div class="search-group"><div class="search-group-header"><i class="fas ${group.icon}"></i>${group.label}</div>`;
+    items.forEach(item => {
+      const result = _buildItemHtml(item, q);
+      _searchItems.push(result.item);
+      html += result.html;
+    });
+    html += '</div>';
+  });
+
+  if (total === 0) {
+    resultsEl.innerHTML = '<div class="search-empty">Keine Ergebnisse gefunden</div>';
+    return;
+  }
+
+  resultsEl.innerHTML = html;
+  _searchActiveIndex = 0;
+  _updateActiveItem();
+}
+
+function _updateActiveItem() {
+  document.querySelectorAll(".search-item").forEach((el, i) => {
+    el.classList.toggle("active", i === _searchActiveIndex);
+  });
+  const active = document.querySelector(`.search-item[data-index="${_searchActiveIndex}"]`);
+  if (active) active.scrollIntoView({ block: "nearest" });
+}
+
 async function loadSuggestions() {
+  if (_searchAbortController) _searchAbortController.abort();
+  _searchAbortController = new AbortController();
+
   const res = await authFetch(`${API_BASE}/search?q=`);
   if (!res || !res.ok) return;
   const data = await res.json();
   if (!data.suggestions) return;
-  const total = data.todos.length + data.notizen.length + data.events.length;
-  if (total === 0) return;
 
-  let html = '<div class="search-group"><div class="search-group-header"><i class="fas fa-clock"></i>Zuletzt verwendet</div>';
+  const hasAny = data.todos.length || data.notizen.length || data.events.length || data.dokumente.length;
+  if (!hasAny) return;
 
-  data.todos.forEach(t => {
-    html += `<div class="search-item" onclick="navigateTo('todo', ${t.id})">
-      <i class="tasks fas fa-check-circle"></i>
-      <span class="si-title">${escHtml(t.titel)}</span>
-      <span class="si-meta">${t.status}</span>
-    </div>`;
-  });
-  data.notizen.forEach(n => {
-    html += `<div class="search-item" onclick="navigateTo('notes', ${n.id})">
-      <i class="notes fas fa-sticky-note"></i>
-      <span class="si-title">${escHtml(n.titel)}</span>
-    </div>`;
-  });
-  data.events.forEach(e => {
-    const date = e.start_datum ? new Date(e.start_datum) : null;
-    const dateStr = date ? `${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}` : "";
-    html += `<div class="search-item" onclick="navigateTo('calendar', ${e.id})">
-      <i class="events fas fa-calendar-alt"></i>
-      <span class="si-title">${escHtml(e.titel)}</span>
-      <span class="si-meta">${dateStr}</span>
-    </div>`;
-  });
-  html += '</div>';
-  document.getElementById("searchResults").innerHTML = html;
+  _renderResults(data, "");
 }
 
-window.closeSearch = function (e) {
-  if (e && e.target !== e.currentTarget) return;
-  document.getElementById("searchOverlay").classList.remove("open");
-  clearTimeout(searchTimeout);
+window.navigateToResult = function (index) {
+  if (index < 0 || index >= _searchItems.length) return;
+  const item = _searchItems[index];
+  closeSearch();
+  const paths = { todo: "/todo", notiz: "/notes", event: "/calendar", dokument: "/documents" };
+  const base = paths[item.typ] || "/";
+  window.location.href = item.id ? `${base}#${item.typ}-${item.id}` : base;
 };
 
 async function performSearch(q) {
@@ -312,65 +398,21 @@ async function performSearch(q) {
     return;
   }
 
+  if (_searchAbortController) _searchAbortController.abort();
+  _searchAbortController = new AbortController();
+  const signal = _searchAbortController.signal;
+
   const res = await authFetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`);
-  if (!res || !res.ok) { resultsEl.innerHTML = '<div class="search-empty">Fehler bei der Suche</div>'; return; }
-
-  const data = await res.json();
-  const total = data.todos.length + data.notizen.length + data.events.length;
-
-  if (total === 0) {
-    resultsEl.innerHTML = '<div class="search-empty">Keine Ergebnisse gefunden</div>';
+  if (!res || !res.ok) {
+    if (!signal.aborted) resultsEl.innerHTML = '<div class="search-empty">Fehler bei der Suche</div>';
     return;
   }
 
-  let html = "";
+  const data = await res.json();
+  if (signal.aborted) return;
 
-  if (data.todos.length > 0) {
-    html += '<div class="search-group"><div class="search-group-header"><i class="fas fa-check-circle"></i>Aufgaben</div>';
-    data.todos.forEach(t => {
-      html += `<div class="search-item" onclick="navigateTo('todo', ${t.id})">
-        <i class="tasks fas fa-check-circle"></i>
-        <span class="si-title">${escHtml(t.titel)}</span>
-        <span class="si-meta">${t.status}</span>
-      </div>`;
-    });
-    html += '</div>';
-  }
-
-  if (data.notizen.length > 0) {
-    html += '<div class="search-group"><div class="search-group-header"><i class="fas fa-sticky-note"></i>Notizen</div>';
-    data.notizen.forEach(n => {
-      html += `<div class="search-item" onclick="navigateTo('notes', ${n.id})">
-        <i class="notes fas fa-sticky-note"></i>
-        <span class="si-title">${escHtml(n.titel)}</span>
-      </div>`;
-    });
-    html += '</div>';
-  }
-
-  if (data.events.length > 0) {
-    html += '<div class="search-group"><div class="search-group-header"><i class="fas fa-calendar-alt"></i>Termine</div>';
-    data.events.forEach(e => {
-      const date = e.start_datum ? new Date(e.start_datum) : null;
-      const dateStr = date ? `${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}` : "";
-      html += `<div class="search-item" onclick="navigateTo('calendar', ${e.id})">
-        <i class="events fas fa-calendar-alt"></i>
-        <span class="si-title">${escHtml(e.titel)}</span>
-        <span class="si-meta">${dateStr}</span>
-      </div>`;
-    });
-    html += '</div>';
-  }
-
-  resultsEl.innerHTML = html;
+  _renderResults(data, q);
 }
-
-window.navigateTo = function (page, id) {
-  closeSearch();
-  const paths = { todo: `/todo`, notes: `/notes`, calendar: `/calendar` };
-  const base = paths[page] || "/";
-  window.location.href = id ? `${base}#${id}` : base;
-};
 
 function escHtml(s) {
   if (!s) return "";
@@ -386,7 +428,8 @@ document.addEventListener("keydown", function (e) {
     openSearch();
   }
   if (e.key === "Escape") {
-    if (document.getElementById("searchOverlay").classList.contains("open")) {
+    const overlay = document.getElementById("searchOverlay");
+    if (overlay.classList.contains("open")) {
       closeSearch();
     }
   }
@@ -395,16 +438,32 @@ document.addEventListener("keydown", function (e) {
 // Search input with debounce
 document.addEventListener("input", function (e) {
   if (e.target.id === "searchInput") {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => performSearch(e.target.value), 200);
+    clearTimeout(_searchTimeout);
+    _searchTimeout = setTimeout(() => performSearch(e.target.value), 200);
   }
 });
 
-// Enter on search = open first result
+// Keyboard navigation within search results (arrow keys + enter)
 document.addEventListener("keydown", function (e) {
-  if (e.key === "Enter" && document.activeElement?.id === "searchInput") {
-    const first = document.querySelector(".search-item");
-    if (first) first.click();
+  if (document.getElementById("searchOverlay").classList.contains("open")) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (_searchItems.length > 0) {
+        _searchActiveIndex = (_searchActiveIndex + 1) % _searchItems.length;
+        _updateActiveItem();
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (_searchItems.length > 0) {
+        _searchActiveIndex = (_searchActiveIndex - 1 + _searchItems.length) % _searchItems.length;
+        _updateActiveItem();
+      }
+    } else if (e.key === "Enter") {
+      if (_searchItems.length > 0 && _searchActiveIndex >= 0) {
+        e.preventDefault();
+        navigateToResult(_searchActiveIndex);
+      }
+    }
   }
 });
 
