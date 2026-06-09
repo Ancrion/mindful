@@ -21,6 +21,9 @@ router.get("/documents", auth, (req, res) => res.render("documents", { currentPa
 router.get("/dokumente", auth, (req, res) => res.render("documents", { currentPage: "documents" }));
 router.get("/leaderboard", auth, (req, res) => res.render("leaderboard", { currentPage: "leaderboard" }));
 router.get("/rangliste", auth, (req, res) => res.render("leaderboard", { currentPage: "leaderboard" }));
+router.get("/user/:id", auth, (req, res) => res.render("user_profile", { currentPage: "leaderboard", userId: req.params.id }));
+router.get("/messages", auth, (req, res) => res.render("messages", { currentPage: "messages" }));
+router.get("/nachrichten", auth, (req, res) => res.render("messages", { currentPage: "messages" }));
 router.get("/profile", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 

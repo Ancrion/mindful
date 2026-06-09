@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Profil</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="profile-page">
+        <div class="up-card" id="upCard">
+          <div class="up-loading">Lade Profil...</div>
+        </div>
+
+        <div class="up-actions" id="upActions" style="display:none">
+          <button class="primary-btn" id="upMessageBtn">
+            <i class="fas fa-envelope"></i> Nachricht senden
+          </button>
+        </div>
+
+        <div class="up-send" id="upSend" style="display:none">
+          <h3>Nachricht senden</h3>
+          <input type="text" id="upSubject" placeholder="Betreff" />
+          <textarea id="upBody" placeholder="Deine Nachricht..." rows="4"></textarea>
+          <div class="up-send-actions">
+            <button class="primary-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Senden</button>
+            <button class="secondary-btn" onclick="cancelMessage()">Abbrechen</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script>
+      const PROFILE_USER_ID = <%= userId %>;
+    </script>
+    <script src="/js/user_profile.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

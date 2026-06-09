@@ -1,44 +1,56 @@
+let lbData = null;
+let activeTab = "todosDone";
+
 async function loadLeaderboard() {
   const res = await authFetch(`${API_BASE}/leaderboard`);
   if (!res || !res.ok) return;
-
-  const data = await res.json();
-
-  document.getElementById("totalUsers").textContent = data.totalUsers;
-  document.getElementById("totalTodos").textContent = data.totalTodos;
-
-  renderCategory("lbTodosDone", data.todosDone, "Aufgaben", (v) => `${v} erledigt`);
-  renderCategory("lbPomodoro", data.pomodoro, "Minuten", (v) => formatDuration(v));
-  renderCategory("lbTracked", data.tracked, "Minuten", (v) => formatDuration(v));
+  lbData = await res.json();
+  document.getElementById("totalUsers").textContent = lbData.totalUsers;
+  document.getElementById("totalTodos").textContent = lbData.totalTodos;
+  renderTab(activeTab);
 }
 
-function renderCategory(id, entries, unit, formatValue) {
-  const el = document.getElementById(id);
-  if (!entries || entries.length === 0) {
-    el.innerHTML = '<p class="lb-empty">Heute noch keine Einträge</p>';
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll(".lb-tab").forEach((t) => t.classList.toggle("active", t.onclick.toString().includes(tab)));
+  renderTab(tab);
+}
+
+function renderTab(tab) {
+  const entries = lbData?.[tab] || [];
+  const tbody = document.getElementById("lbBody");
+  const empty = document.getElementById("lbEmpty");
+
+  if (entries.length === 0) {
+    tbody.innerHTML = "";
+    empty.style.display = "block";
     return;
   }
+  empty.style.display = "none";
 
   const medal = ["lb-gold", "lb-silver", "lb-bronze"];
-  el.innerHTML = entries
+  tbody.innerHTML = entries
     .map(
       (e, i) => `
-      <div class="lb-entry ${medal[i] || ""}">
-        <span class="lb-rank">${i + 1}</span>
-        <span class="lb-name">${escHtml(e.name)}</span>
-        <span class="lb-value">${formatValue(e.value)}</span>
-      </div>`,
+      <tr class="lb-row ${medal[i] || ""}">
+        <td class="lb-rank">${i + 1}</td>
+        <td><a href="/user/${e.id}" class="lb-user-link">${escHtml(e.name)}</a></td>
+        <td class="lb-col-value">${formatLBValue(tab, e.value)}</td>
+      </tr>`,
     )
     .join("");
 }
 
-function formatDuration(sec) {
-  if (!sec || sec === 0) return "0 Min";
-  const min = Math.round(sec / 60);
+function formatLBValue(tab, value) {
+  if (!value || value === 0) return "0";
+  if (tab === "todosDone") return `${value}`;
+  const min = Math.round(value / 60);
   if (min < 60) return `${min} Min`;
   const h = Math.floor(min / 60);
   const m = min % 60;
   return m ? `${h}h ${m}m` : `${h}h`;
 }
 
-document.addEventListener("DOMContentLoaded", loadLeaderboard);
+document.addEventListener("DOMContentLoaded", () => {
+  loadLeaderboard();
+});

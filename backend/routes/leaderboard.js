@@ -4,7 +4,7 @@ const db = require("../database/db");
 const auth = require("../middleware/auth");
 
 function todayStr() {
-  return new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+  return new Date().toLocaleDateString("en-CA");
 }
 
 router.get("/", auth, (req, res) => {
@@ -18,8 +18,7 @@ router.get("/", auth, (req, res) => {
          JOIN users u ON t.user_id = u.id
          WHERE t.status = 'erledigt' AND date(t.erledigt, 'unixepoch') = date(?)
          GROUP BY u.id
-         ORDER BY value DESC
-         LIMIT 10`,
+         ORDER BY value DESC`,
       )
       .all(today);
 
@@ -30,20 +29,18 @@ router.get("/", auth, (req, res) => {
          JOIN users u ON p.user_id = u.id
          WHERE date(p.completed_at) = date(?)
          GROUP BY u.id
-         ORDER BY value DESC
-         LIMIT 10`,
+         ORDER BY value DESC`,
       )
       .all(today);
 
     const tracked = db
       .prepare(
         `SELECT u.id, u.name, COALESCE(SUM(t.duration_seconds), 0) AS value
-         FROM time_entries t
-         JOIN users u ON t.user_id = u.id
-         WHERE date(t.created_at) = date(?)
+         FROM time_entries te
+         JOIN users u ON te.user_id = u.id
+         WHERE date(te.created_at) = date(?)
          GROUP BY u.id
-         ORDER BY value DESC
-         LIMIT 10`,
+         ORDER BY value DESC`,
       )
       .all(today);
 

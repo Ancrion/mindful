@@ -164,6 +164,7 @@ const migrations = [
   "ALTER TABLE notizen ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
   "CREATE TABLE IF NOT EXISTS dashboard_widgets (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, typ TEXT NOT NULL, position INTEGER NOT NULL, config TEXT DEFAULT '{}', FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)",
   "CREATE TABLE IF NOT EXISTS time_entries (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, todo_id INTEGER, start_time TEXT NOT NULL, end_time TEXT, duration_seconds INTEGER DEFAULT 0, description TEXT, created_at TEXT DEFAULT (datetime('now', 'localtime')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL)",
+  "CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, from_user_id INTEGER NOT NULL, to_user_id INTEGER NOT NULL, subject TEXT NOT NULL, body TEXT, read INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now', 'localtime')), FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE)",
 ];
 for (const sql of migrations) {
   try {

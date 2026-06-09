@@ -16,6 +16,8 @@ const zeitRoutes = require("./zeit");
 const searchRoutes = require("./search");
 const dashboardWidgetRoutes = require("./dashboard_widgets");
 const leaderboardRoutes = require("./leaderboard");
+const usersRoutes = require("./users");
+const messagesRoutes = require("./messages");
 
 // Auth Routes (öffentlich - kein auth erforderlich)
 router.use("/auth", authRoutes);
@@ -33,6 +35,8 @@ router.use("/zeit", auth, zeitRoutes);
 router.use("/search", auth, searchRoutes);
 router.use("/dashboard/widgets", auth, dashboardWidgetRoutes);
 router.use("/leaderboard", auth, leaderboardRoutes);
+router.use("/users", auth, usersRoutes);
+router.use("/messages", auth, messagesRoutes);
 
 // Health Check
 router.get("/health", (req, res) => {

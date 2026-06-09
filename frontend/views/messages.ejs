@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Nachrichten</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="messages-page">
+        <header class="msg-header">
+          <div>
+            <div class="eyebrow">Community</div>
+            <h1>Nachrichten</h1>
+          </div>
+        </header>
+
+        <div class="msg-tabs">
+          <button class="msg-tab active" onclick="switchMsgTab('inbox')">
+            <i class="fas fa-inbox"></i> Posteingang <span class="msg-badge" id="unreadBadge"></span>
+          </button>
+          <button class="msg-tab" onclick="switchMsgTab('sent')">
+            <i class="fas fa-paper-plane"></i> Gesendet
+          </button>
+        </div>
+
+        <div class="msg-list" id="msgList">
+          <p class="msg-loading">Lade Nachrichten...</p>
+        </div>
+
+        <div class="msg-detail" id="msgDetail" style="display:none">
+          <button class="msg-back" onclick="closeDetail()"><i class="fas fa-arrow-left"></i> Zurück</button>
+          <div class="msg-detail-body" id="msgDetailBody"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/messages.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

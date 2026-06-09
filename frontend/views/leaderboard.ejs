@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mindful – Leaderboard</title>
+    <title>Mindful – Rangliste</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
     <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
@@ -20,49 +20,39 @@
         <header class="lb-header">
           <div>
             <div class="eyebrow">Community</div>
-            <h1>Leaderboard</h1>
-            <p class="lb-subtitle" id="lbSubtitle">Heute</p>
-          </div>
-          <div class="lb-stats" id="lbStats">
-            <span class="lb-stat"><i class="fas fa-users"></i> <span id="totalUsers">0</span> Nutzer</span>
-            <span class="lb-stat"><i class="fas fa-tasks"></i> <span id="totalTodos">0</span> Aufgaben</span>
+            <h1>Rangliste</h1>
+            <p class="lb-subtitle">Heute · <span id="totalUsers">0</span> Nutzer · <span id="totalTodos">0</span> Aufgaben</p>
           </div>
         </header>
 
-        <div class="lb-grid" id="lbGrid">
-          <div class="lb-card" data-category="todosDone">
-            <div class="lb-card-header">
-              <i class="fas fa-check-circle lb-card-icon"></i>
-              <h2>Erledigte Aufgaben</h2>
-            </div>
-            <div class="lb-card-body" id="lbTodosDone">
-              <p class="lb-empty">Lade Daten...</p>
-            </div>
-          </div>
-
-          <div class="lb-card" data-category="pomodoro">
-            <div class="lb-card-header">
-              <i class="fas fa-clock lb-card-icon"></i>
-              <h2>Pomodoro-Zeit</h2>
-            </div>
-            <div class="lb-card-body" id="lbPomodoro">
-              <p class="lb-empty">Lade Daten...</p>
-            </div>
-          </div>
-
-          <div class="lb-card" data-category="tracked">
-            <div class="lb-card-header">
-              <i class="fas fa-stopwatch lb-card-icon"></i>
-              <h2>Zeiterfassung</h2>
-            </div>
-            <div class="lb-card-body" id="lbTracked">
-              <p class="lb-empty">Lade Daten...</p>
-            </div>
-          </div>
+        <div class="lb-tabs" id="lbTabs">
+          <button class="lb-tab active" onclick="switchTab('todosDone')">
+            <i class="fas fa-check-circle"></i> Aufgaben
+          </button>
+          <button class="lb-tab" onclick="switchTab('pomodoro')">
+            <i class="fas fa-clock"></i> Pomodoro
+          </button>
+          <button class="lb-tab" onclick="switchTab('tracked')">
+            <i class="fas fa-stopwatch"></i> Zeiterfassung
+          </button>
         </div>
 
-        <div class="lb-refresh" onclick="loadLeaderboard()" title="Aktualisieren">
-          <i class="fas fa-sync-alt"></i> Aktualisieren
+        <div class="lb-table-wrap">
+          <table class="lb-table" id="lbTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th class="lb-col-value">Wert</th>
+              </tr>
+            </thead>
+            <tbody id="lbBody"></tbody>
+          </table>
+        </div>
+
+        <div class="lb-empty" id="lbEmpty" style="display:none">
+          <i class="fas fa-trophy"></i>
+          <p>Heute noch keine Einträge in dieser Kategorie</p>
         </div>
       </main>
     </div>
