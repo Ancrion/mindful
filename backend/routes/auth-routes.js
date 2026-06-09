@@ -10,18 +10,16 @@ const fs = require("fs");
 const db = require("../database/db");
 const auth = require("../middleware/auth");
 
-let transporter = null;
-if (process.env.MAIL_USER && process.env.MAIL_PASS) {
-  transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.MAIL_PORT || "587"),
-    secure: process.env.MAIL_SECURE === "true",
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-  });
-}
+const transporter = nodemailer.createTransport(
+  process.env.MAIL_USER && process.env.MAIL_PASS
+    ? {
+        host: process.env.MAIL_HOST || "smtp.gmail.com",
+        port: parseInt(process.env.MAIL_PORT || "587"),
+        secure: process.env.MAIL_SECURE === "true",
+        auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
+      }
+    : { sendmail: true, newline: "unix", path: "/usr/sbin/sendmail" }
+);
 
 const wallpaperDir = path.join(__dirname, "../uploads/wallpapers");
 if (!fs.existsSync(wallpaperDir)) fs.mkdirSync(wallpaperDir, { recursive: true });
@@ -370,8 +368,6 @@ router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: "E-Mail erforderlich" });
-    if (!transporter) return res.status(500).json({ error: "SMTP nicht konfiguriert – E-Mail-Konto im .env hinterlegen" });
-
     const user = db.prepare("SELECT id, name FROM users WHERE email = ?").get(email);
     if (!user) return res.json({ message: "Wenn die E-Mail existiert, wurde ein Reset-Link gesendet." });
 

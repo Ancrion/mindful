@@ -1043,18 +1043,16 @@ git push --tags</script>
 <script type="text/plain" id="jaro-13">const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-let transporter = null;
-if (process.env.MAIL_USER && process.env.MAIL_PASS) {
-  transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.MAIL_PORT || "587"),
-    secure: process.env.MAIL_SECURE === "true",
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-  });
-}
+const transporter = nodemailer.createTransport(
+  process.env.MAIL_USER && process.env.MAIL_PASS
+    ? {
+        host: process.env.MAIL_HOST || "smtp.gmail.com",
+        port: parseInt(process.env.MAIL_PORT || "587"),
+        secure: process.env.MAIL_SECURE === "true",
+        auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
+      }
+    : { sendmail: true, newline: "unix", path: "/usr/sbin/sendmail" }
+);
 
 router.get("/me", auth, (req, res) => {
   const user = db.prepare("SELECT id, name, email, wallpaper, avatar FROM users WHERE id = ?").get(req.user.id);
