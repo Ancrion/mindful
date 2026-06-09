@@ -228,11 +228,8 @@
     <!-- ═══════════════════════════════════════════════ -->
     <!-- CODE-SNIPPETS (via DOM, kein JS-Escaping nötig)  -->
     <!-- ═══════════════════════════════════════════════ -->
-<script type="text/plain" id="ilhan-1">// backend/database/db.js — migrations-Array (nach db.exec()):
-
-// Schema-Migrationen für bestehende Datenbanken
+<script type="text/plain" id="ilhan-1">// Schema-Migrationen für bestehende Datenbanken
 const migrations = [
-  // ALTER TABLE … Spalten nachträglich hinzufügen
   "ALTER TABLE notizen ADD COLUMN ordner_id INTEGER REFERENCES ordner(id)",
   "ALTER TABLE notizen ADD COLUMN aktualisiert TEXT",
   "ALTER TABLE events ADD COLUMN ort TEXT",
@@ -247,35 +244,21 @@ const migrations = [
   "ALTER TABLE todos ADD COLUMN schritte TEXT DEFAULT '[]'",
   "ALTER TABLE events ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
   "ALTER TABLE notizen ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
-  // Neue Tabellen
-  "CREATE TABLE IF NOT EXISTS dashboard_widgets (...)",
-  "CREATE TABLE IF NOT EXISTS time_entries (...)",
-  "CREATE TABLE IF NOT EXISTS messages (...)",        // ← hier eingefügt
+  "CREATE TABLE IF NOT EXISTS dashboard_widgets (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, typ TEXT NOT NULL, position INTEGER NOT NULL, config TEXT DEFAULT '{}', FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)",
+  "CREATE TABLE IF NOT EXISTS time_entries (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, todo_id INTEGER, start_time TEXT NOT NULL, end_time TEXT, duration_seconds INTEGER DEFAULT 0, description TEXT, created_at TEXT DEFAULT (datetime('now', 'localtime')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL)",
+  "CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, from_user_id INTEGER NOT NULL, to_user_id INTEGER NOT NULL, subject TEXT NOT NULL, body TEXT, read INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now', 'localtime')), FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE)",
 ];
-
 for (const sql of migrations) {
-  try { db.exec(sql); } catch (_) { /* Spalte existiert bereits */ }
+  try {
+    db.exec(sql);
+  } catch (_) {
+    // Spalte existiert bereits
+  }
 }
-
 console.log("✅ Datenbank bereit (mindful.db) ohne E-Mail-Pflicht");
-
-// Die messages-Tabelle im migrations-Array (Zeile ~167):
-// CREATE TABLE IF NOT EXISTS messages (
-//   id            INTEGER PRIMARY KEY AUTOINCREMENT,
-//   from_user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-//   to_user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-//   subject       TEXT NOT NULL,
-//   body          TEXT,
-//   read          INTEGER DEFAULT 0,
-//   created_at    TEXT DEFAULT (datetime('now', 'localtime'))
-// )
-
-// Wichtig: Neue Tabellen NICHT in db.exec() oben einfügen,
-// sondern als Migration unten — so bleiben alte DBs kompatibel.</script>
-<script type="text/plain" id="ilhan-2">// backend/database/db.js — db.exec() Block (Zeilen 9-147):
-
-db.exec(`
-  -- 1. BENUTZER
+module.exports = db;</script>
+<script type="text/plain" id="ilhan-2">db.exec(`
+  -- 1. BENUTZER (E-Mail entfernt)
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
@@ -288,21 +271,131 @@ db.exec(`
   -- 2. SESSIONS
   CREATE TABLE IF NOT EXISTS sessions (
     token    TEXT PRIMARY KEY,
-    user_id  INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    erstellt TEXT DEFAULT (datetime('now', 'localtime'))
+    user_id  INTEGER,
+    erstellt TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
-  -- 3. WORKSPACES … 4. TODOS … 5. KALENDER_KATEGORIEN … 6. EVENTS …
-  -- 7. NOTIZEN … 8. ORDNER … 9. DOKUMENTE … 10. POMODORO_SESSIONS … 11. TIME_ENTRIES
-`);
+  -- 3. WORKSPACES
+  CREATE TABLE IF NOT EXISTS workspaces (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id  INTEGER NOT NULL,
+    name     TEXT NOT NULL,
+    farbe    TEXT DEFAULT 'orange',
+    erstellt TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
 
-// Vollständige Liste aller Tabellen (werden beim ersten Start automatisch angelegt):
-// users, sessions, workspaces, todos, kalender_kategorien, events,
-// notizen, ordner, dokumente, pomodoro_sessions, time_entries
-// → Später via migrations-Array hinzugefügt: dashboard_widgets, messages
+  -- 4. TODOS
+  CREATE TABLE IF NOT EXISTS todos (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL,
+    workspace_id INTEGER,
+    titel        TEXT NOT NULL,
+    beschreibung TEXT,
+    status       TEXT DEFAULT 'offen',
+    faellig      TEXT,
+    erledigt     INTEGER DEFAULT 0,
+    erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE SET NULL
+  );
 
-// Alle CREATE TABLE … IF NOT EXISTS — kein manueller Check nötig.
-// SQLite legt fehlende Tabellen beim Start automatisch an.</script>
+  -- 5. KALENDER KATEGORIEN
+  CREATE TABLE IF NOT EXISTS kalender_kategorien (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id  INTEGER NOT NULL,
+    name     TEXT NOT NULL,
+    farbe    TEXT DEFAULT 'blue',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 6. EVENTS
+  CREATE TABLE IF NOT EXISTS events (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL,
+    titel        TEXT NOT NULL,
+    beschreibung TEXT,
+    start_datum  TEXT NOT NULL,
+    end_datum    TEXT,
+    farbe        TEXT DEFAULT '#3B82F6',
+    ort          TEXT,
+    dauer        INTEGER DEFAULT 60,
+    wiederholung TEXT DEFAULT 'none',
+    ganztag      INTEGER DEFAULT 0,
+    erinnerung   TEXT DEFAULT 'keine',
+    erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 7. NOTIZEN
+  CREATE TABLE IF NOT EXISTS notizen (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id  INTEGER NOT NULL,
+    titel    TEXT NOT NULL,
+    inhalt   TEXT,
+    farbe    TEXT DEFAULT '#FFFFFF',
+    todo_id  INTEGER,
+    event_id INTEGER,
+    erstellt TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 8. ORDNER
+  CREATE TABLE IF NOT EXISTS ordner (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL,
+    name       TEXT NOT NULL,
+    farbe      TEXT DEFAULT 'color-sand',
+    erstellt   TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 9. DOKUMENTE
+  CREATE TABLE IF NOT EXISTS dokumente (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL,
+    ordner_id    INTEGER,
+    titel        TEXT NOT NULL,
+    typ          TEXT,
+    dateiname    TEXT NOT NULL,
+    gespeichert  TEXT NOT NULL,
+    groesse      TEXT,
+    ist_bild     INTEGER DEFAULT 0,
+    bereich      TEXT,
+    todo_id      INTEGER,
+    event_id     INTEGER,
+    notiz_id     INTEGER,
+    erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (ordner_id) REFERENCES ordner(id) ON DELETE SET NULL
+  );
+
+  -- 10. POMODORO-SITZUNGEN
+  CREATE TABLE IF NOT EXISTS pomodoro_sessions (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL,
+    todo_id         INTEGER,
+    duration_seconds INTEGER NOT NULL,
+    completed_at    TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL
+  );
+
+  -- 11. ZEITERFASSUNG
+  CREATE TABLE IF NOT EXISTS time_entries (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id          INTEGER NOT NULL,
+    todo_id          INTEGER,
+    start_time       TEXT NOT NULL,
+    end_time         TEXT,
+    duration_seconds INTEGER DEFAULT 0,
+    description      TEXT,
+    created_at       TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL
+  );
+`);</script>
 <script type="text/plain" id="sascha-1">// In backend/routes/index.js:
 
 router.get("/leaderboard", auth, (req, res) =>
@@ -351,31 +444,31 @@ router.get("/", auth, (req, res) => {
     const today = todayStr();
 
     const todosDone = db.prepare(
-      \`SELECT u.id, u.name, COUNT(*) AS value
+      `SELECT u.id, u.name, COUNT(*) AS value
        FROM todos t JOIN users u ON t.user_id = u.id
        WHERE t.status = 'erledigt' AND date(t.erledigt,'unixepoch') = ?
-       GROUP BY u.id ORDER BY value DESC\`
+       GROUP BY u.id ORDER BY value DESC`
     ).all(today);
 
     const pomodoro = db.prepare(
-      \`SELECT u.id, u.name, COALESCE(SUM(p.duration_seconds),0) AS value
+      `SELECT u.id, u.name, COALESCE(SUM(p.duration_seconds),0) AS value
        FROM pomodoro_sessions p JOIN users u ON p.user_id = u.id
        WHERE date(p.completed_at) = ?
-       GROUP BY u.id ORDER BY value DESC\`
+       GROUP BY u.id ORDER BY value DESC`
     ).all(today);
 
     const tracked = db.prepare(
-      \`SELECT u.id, u.name, COALESCE(SUM(te.duration_seconds),0) AS value
+      `SELECT u.id, u.name, COALESCE(SUM(te.duration_seconds),0) AS value
        FROM time_entries te JOIN users u ON te.user_id = u.id
        WHERE date(te.created_at) = ?
-       GROUP BY u.id ORDER BY value DESC\`
+       GROUP BY u.id ORDER BY value DESC`
     ).all(today);
 
     const totalTodos = db.prepare(
-      \`SELECT COUNT(*) AS c FROM todos\`
+      `SELECT COUNT(*) AS c FROM todos`
     ).get().c;
     const totalUsers = db.prepare(
-      \`SELECT COUNT(*) AS c FROM users\`
+      `SELECT COUNT(*) AS c FROM users`
     ).get().c;
 
     res.json({ todosDone, pomodoro, tracked, totalTodos, totalUsers });
@@ -468,10 +561,10 @@ router.post("/", auth, (req, res) => {
 router.get("/inbox", auth, (req, res) => {
   try {
     const msgs = db.prepare(
-      \`SELECT m.id,m.subject,m.body,m.read,m.created_at,
+      `SELECT m.id,m.subject,m.body,m.read,m.created_at,
               u.id AS from_id, u.name AS from_name
        FROM messages m JOIN users u ON m.from_user_id = u.id
-       WHERE m.to_user_id = ? ORDER BY m.created_at DESC\`
+       WHERE m.to_user_id = ? ORDER BY m.created_at DESC`
     ).all(req.user.id);
     res.json(msgs);
   } catch (err) {
@@ -482,10 +575,10 @@ router.get("/inbox", auth, (req, res) => {
 router.get("/sent", auth, (req, res) => {
   try {
     const msgs = db.prepare(
-      \`SELECT m.id,m.subject,m.body,m.read,m.created_at,
+      `SELECT m.id,m.subject,m.body,m.read,m.created_at,
               u.id AS to_id, u.name AS to_name
        FROM messages m JOIN users u ON m.to_user_id = u.id
-       WHERE m.from_user_id = ? ORDER BY m.created_at DESC\`
+       WHERE m.from_user_id = ? ORDER BY m.created_at DESC`
     ).all(req.user.id);
     res.json(msgs);
   } catch (err) {
@@ -535,7 +628,7 @@ router.put("/:id", auth, (req, res) => {
     if (req.body.workspace_id !== undefined){ sets.push("workspace_id=?");params.push(req.body.workspace_id||null); }
     params.push(req.params.id, req.user.id);
     db.prepare(
-      \`UPDATE events SET \${sets.join(", ")} WHERE id=? AND user_id=?\`
+      `UPDATE events SET ${sets.join(", ")} WHERE id=? AND user_id=?`
     ).run(...params);
     res.json({ message: "Event geupdated" });
   } catch (err) {
@@ -558,10 +651,10 @@ const erledigtValue = status === "erledigt" && todo.status !== "erledigt"
   ? Math.floor(Date.now() / 1000)
   : (status === "offen" ? null : (erledigt ?? todo.erledigt));
 
-db.prepare(\`UPDATE todos SET
+db.prepare(`UPDATE todos SET
   titel=?, beschreibung=?, faellig=?, status=?, erledigt=?,
   workspace_id=?, prioritaet=?, schritte=?
-WHERE id=? AND user_id=?\`).run(
+WHERE id=? AND user_id=?`).run(
   titel ?? todo.titel,
   beschreibung ?? todo.beschreibung,
   faellig,
@@ -574,24 +667,24 @@ WHERE id=? AND user_id=?\`).run(
 );</script>
 <script type="text/plain" id="jaro-6">// In POST-Handler:
 const note = db.prepare(
-  \`SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe
+  `SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe
    FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id
-   WHERE n.id = ?\`
+   WHERE n.id = ?`
 ).get(result.lastInsertRowid);
 res.status(201).json(note);
 
 // In PUT-Handler (nach UPDATE):
 const note = db.prepare(
-  \`SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe
+  `SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe
    FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id
-   WHERE n.id = ? AND n.user_id = ?\`
+   WHERE n.id = ? AND n.user_id = ?`
 ).get(req.params.id, req.user.id);
 res.json(note);</script>
 <script type="text/plain" id="jaro-7">// Such-Query fix (aktualisiert → erstellt):
 const recentNotes = db.prepare(
-  \`SELECT id, titel, NULL AS snippet, 'notiz' AS typ
+  `SELECT id, titel, NULL AS snippet, 'notiz' AS typ
    FROM notizen WHERE user_id = ?
-   ORDER BY COALESCE(aktualisiert, erstellt) DESC LIMIT ?\`
+   ORDER BY COALESCE(aktualisiert, erstellt) DESC LIMIT ?`
 ).all(userId, recentLimit);
 
 // 8 statt 10 Recent-Results
@@ -753,7 +846,7 @@ git push --tags</script>
 let activeTab = "todosDone";
 
 async function loadLeaderboard() {
-  const res = await authFetch(\`\${API_BASE}/leaderboard\`);
+  const res = await authFetch(`${API_BASE}/leaderboard`);
   if (!res || !res.ok) return;
   lbData = await res.json();
   document.getElementById("totalUsers").textContent = lbData.totalUsers;
@@ -778,22 +871,22 @@ function renderTab(tab) {
   }
   empty.style.display = "none";
   const medal = ["lb-gold","lb-silver","lb-bronze"];
-  tbody.innerHTML = entries.map((e,i) => \`
-    <tr class="lb-row \${medal[i]||""}">
-      <td class="lb-rank">\${i+1}</td>
-      <td><a href="/user/\${e.id}" class="lb-user-link">\${escHtml(e.name)}</a></td>
-      <td class="lb-col-value">\${formatLBValue(tab, e.value)}</td>
-    </tr>\`).join("");
+  tbody.innerHTML = entries.map((e,i) => `
+    <tr class="lb-row ${medal[i]||""}">
+      <td class="lb-rank">${i+1}</td>
+      <td><a href="/user/${e.id}" class="lb-user-link">${escHtml(e.name)}</a></td>
+      <td class="lb-col-value">${formatLBValue(tab, e.value)}</td>
+    </tr>`).join("");
 }
 
 function formatLBValue(tab, value) {
   if (!value || value === 0) return "0";
-  if (tab === "todosDone") return \`\${value}\`;
+  if (tab === "todosDone") return `${value}`;
   const min = Math.round(value / 60);
-  if (min < 60) return \`\${min} Min\`;
+  if (min < 60) return `${min} Min`;
   const h = Math.floor(min / 60);
   const m = min % 60;
-  return m ? \`\${h}h \${m}m\` : \`\${h}h\`;
+  return m ? `${h}h ${m}m` : `${h}h`;
 }
 
 document.addEventListener("DOMContentLoaded", loadLeaderboard);</script>
@@ -820,7 +913,7 @@ document.addEventListener("DOMContentLoaded", loadLeaderboard);</script>
 <script src="/js/user_profile.js"><\/script></script>
 <script type="text/plain" id="omar-4">async function loadProfile() {
   const res = await authFetch(
-    \`\${API_BASE}/users/\${PROFILE_USER_ID}/profile\`
+    `${API_BASE}/users/${PROFILE_USER_ID}/profile`
   );
   if (!res || !res.ok) {
     document.getElementById("upCard").innerHTML =
@@ -834,33 +927,33 @@ document.addEventListener("DOMContentLoaded", loadLeaderboard);</script>
   const avatarHtml = u.avatar
     ? '<img src="'+u.avatar+'" class="up-avatar-img" />'
     : '<span class="up-avatar-initial">'+initial+'</span>';
-  document.getElementById("upCard").innerHTML = \`
+  document.getElementById("upCard").innerHTML = `
     <div class="up-hero">
-      <div class="up-avatar">\${avatarHtml}</div>
+      <div class="up-avatar">${avatarHtml}</div>
       <div class="up-info">
-        <h2>\${escHtml(u.name)}</h2>
+        <h2>${escHtml(u.name)}</h2>
         <p class="up-joined">Mitglied seit
-          \${new Date(u.created_at).toLocaleDateString("de-DE")}</p>
+          ${new Date(u.created_at).toLocaleDateString("de-DE")}</p>
       </div>
     </div>
     <div class="up-stats">
       <div class="up-stat">
-        <span class="up-stat-value">\${s.totalTodos}</span>
+        <span class="up-stat-value">${s.totalTodos}</span>
         <span class="up-stat-label">Aufgaben</span>
       </div>
       <div class="up-stat">
-        <span class="up-stat-value">\${s.todosDone}</span>
+        <span class="up-stat-value">${s.todosDone}</span>
         <span class="up-stat-label">Erledigt</span>
       </div>
       <div class="up-stat">
-        <span class="up-stat-value">\${formatDuration(s.pomodoroTotal)}</span>
+        <span class="up-stat-value">${formatDuration(s.pomodoroTotal)}</span>
         <span class="up-stat-label">Pomodoro</span>
       </div>
       <div class="up-stat">
-        <span class="up-stat-value">\${formatDuration(s.trackedTotal)}</span>
+        <span class="up-stat-value">${formatDuration(s.trackedTotal)}</span>
         <span class="up-stat-label">Zeit</span>
       </div>
-    </div>\`;
+    </div>`;
   document.getElementById("upActions").style.display = "";
 }
 function showSendForm() {
@@ -875,7 +968,7 @@ async function sendMessage() {
   const subject = document.getElementById("upSubject").value.trim();
   const body = document.getElementById("upBody").value.trim();
   if (!subject) return;
-  const res = await authFetch(\`\${API_BASE}/messages\`, {
+  const res = await authFetch(`${API_BASE}/messages`, {
     method: "POST",
     body: JSON.stringify({ to_user_id: PROFILE_USER_ID, subject, body }),
   });
@@ -944,9 +1037,9 @@ let selectedUserId = null;
 
 async function loadMessages() {
   const [inboxRes, sentRes, unreadRes] = await Promise.all([
-    authFetch(\`\${API_BASE}/messages/inbox\`),
-    authFetch(\`\${API_BASE}/messages/sent\`),
-    authFetch(\`\${API_BASE}/messages/unread\`),
+    authFetch(`${API_BASE}/messages/inbox`),
+    authFetch(`${API_BASE}/messages/sent`),
+    authFetch(`${API_BASE}/messages/unread`),
   ]);
   const inbox = inboxRes?.ok ? await inboxRes.json() : [];
   const sent = sentRes?.ok ? await sentRes.json() : [];
@@ -961,7 +1054,7 @@ async function loadMessages() {
 }
 
 async function loadUsers() {
-  const res = await authFetch(\`\${API_BASE}/users\`);
+  const res = await authFetch(`${API_BASE}/users`);
   if (res?.ok) allUsers = await res.json();
 }
 
@@ -983,13 +1076,13 @@ function renderList(tab) {
     list.innerHTML = '<p class="msg-empty">Keine Nachrichten</p>'; return;
   }
   const other = tab === "inbox" ? "from_name" : "to_name";
-  list.innerHTML = msgs.map(m => \`
-    <div class="msg-item \${m.read?"":"msg-unread"}"
-      onclick="openMsg(\${m.id},'\${tab}')">
-      <div class="msg-item-from">\${escHtml(m[other])}</div>
-      <div class="msg-item-subject">\${escHtml(m.subject)}</div>
-      <div class="msg-item-date">\${formatDate(m.created_at)}</div>
-    </div>\`).join("");
+  list.innerHTML = msgs.map(m => `
+    <div class="msg-item ${m.read?"":"msg-unread"}"
+      onclick="openMsg(${m.id},'${tab}')">
+      <div class="msg-item-from">${escHtml(m[other])}</div>
+      <div class="msg-item-subject">${escHtml(m.subject)}</div>
+      <div class="msg-item-date">${formatDate(m.created_at)}</div>
+    </div>`).join("");
 }
 
 function showCompose() {
@@ -1002,7 +1095,7 @@ async function sendCompose() {
   const subject = document.getElementById("msgSubject").value.trim();
   if (!subject) return showToast("Bitte gib einen Betreff ein","error");
   const body = document.getElementById("msgBody").value.trim();
-  const res = await authFetch(\`\${API_BASE}/messages\`, {
+  const res = await authFetch(`${API_BASE}/messages`, {
     method:"POST",
     body: JSON.stringify({to_user_id:selectedUserId, subject, body}),
   });
@@ -1205,8 +1298,8 @@ function renderUserList(users) {
     return;
   }
   dd.innerHTML = users.map(u =>
-    \`<div class="msg-user-opt" data-id="\${u.id}"
-      onclick="selectUser(\${u.id},'\${escHtml(u.name)}')">\${escHtml(u.name)}</div>\`
+    `<div class="msg-user-opt" data-id="${u.id}"
+      onclick="selectUser(${u.id},'${escHtml(u.name)}')">${escHtml(u.name)}</div>`
   ).join("");
 }</script>
 <script type="text/plain" id="yaman-4">// ⬅ Du bist bereits auf dieser Seite.
