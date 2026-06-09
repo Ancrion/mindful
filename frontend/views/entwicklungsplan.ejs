@@ -32,33 +32,26 @@
       .plan-stat strong { display: block; font-size: 1.6rem; }
       .plan-stat span { font-size: 0.78rem; color: var(--text-secondary); }
 
-      .plan-team {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 12px;
-        margin-bottom: 36px;
+      .plan-section { margin-bottom: 36px; }
+      .plan-section-header {
+        display: flex; align-items: center; gap: 14px;
+        margin-bottom: 12px;
       }
-      .plan-member {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 14px 16px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .plan-member .avatar {
-        width: 38px; height: 38px; border-radius: 50%;
+      .plan-section-header .avatar {
+        width: 32px; height: 32px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-weight: 700; font-size: 0.85rem; color: #fff; flex-shrink: 0;
+        font-weight: 700; font-size: 0.78rem; color: #fff; flex-shrink: 0;
       }
-      .plan-member .info strong { display: block; font-size: 0.85rem; }
-      .plan-member .info small { font-size: 0.72rem; color: var(--text-secondary); }
-
-      .plan-phase { margin-bottom: 28px; }
-      .plan-phase h2 {
-        font-size: 1.1rem; font-weight: 600; margin: 0 0 12px;
-        display: flex; align-items: center; gap: 10px;
+      .plan-section-header h2 { font-size: 1.05rem; font-weight: 600; margin: 0; }
+      .plan-section-header .section-role {
+        font-size: 0.75rem; color: var(--text-secondary);
+      }
+      .plan-section-header .section-count {
+        margin-left: auto;
+        font-size: 0.72rem; color: var(--text-secondary);
+        background: var(--surface-2);
+        padding: 2px 10px;
+        border-radius: 20px;
       }
 
       .plan-task {
@@ -67,45 +60,45 @@
         border-left: 4px solid var(--border);
         border-radius: 10px;
         padding: 14px 18px;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         display: grid;
-        grid-template-columns: 36px 100px 1fr 120px;
+        grid-template-columns: 32px 1fr;
         gap: 12px;
         align-items: start;
         font-size: 0.85rem;
-        transition: border-color 0.15s, opacity 0.15s;
+        transition: border-color 0.15s, opacity 0.2s, transform 0.2s;
         cursor: pointer;
+        order: 0;
       }
       .plan-task:hover { border-color: var(--accent); }
-      .plan-task.status-done { border-left-color: #10b981; opacity: 0.7; }
-      .plan-task.status-done:hover { opacity: 0.85; }
-      .plan-task.status-wip { border-left-color: #f59e0b; }
-      .plan-task.status-open { border-left-color: var(--border); }
+      .plan-task.status-done {
+        border-left-color: #10b981;
+        opacity: 0.55;
+      }
+      .plan-task.status-done:hover { opacity: 0.75; }
 
-      .plan-task .checkbox {
-        width: 20px; height: 20px; border-radius: 6px;
+      .plan-task .cb-wrap {
+        width: 24px; height: 24px; border-radius: 7px;
         border: 2px solid var(--border);
         background: var(--surface);
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0; margin-top: 1px;
         transition: all 0.15s;
-        color: transparent; font-size: 0.65rem;
+        font-size: 0.65rem;
+        color: transparent;
       }
-      .plan-task.status-done .checkbox {
-        background: #10b981; border-color: #10b981; color: #fff;
+      .plan-task.status-done .cb-wrap {
+        background: #10b981; border-color: #10b981;
+        color: #fff;
       }
-      .plan-task.status-wip .checkbox {
-        border-color: #f59e0b; color: #f59e0b;
-      }
-      .plan-task.status-wip .checkbox::after { content: "\f04b"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 0.55rem; }
 
-      .plan-task .person { font-weight: 600; white-space: nowrap; color: var(--text); }
-      .plan-task .person small { display: block; font-weight: 400; font-size: 0.7rem; color: var(--text-secondary); }
-
-      .plan-task .details .file { font-family: var(--font-mono, monospace); font-size: 0.78rem; color: var(--accent); margin-bottom: 4px; }
-      .plan-task .details .desc { color: var(--text-secondary); line-height: 1.4; }
-      .plan-task .details .commit-msg {
-        margin-top: 6px;
+      .plan-task .info .file {
+        font-family: var(--font-mono, monospace);
+        font-size: 0.78rem; color: var(--accent); margin-bottom: 3px;
+      }
+      .plan-task .info .desc { color: var(--text-secondary); line-height: 1.4; }
+      .plan-task .info .commit-msg {
+        margin-top: 5px;
         font-family: var(--font-mono, monospace);
         font-size: 0.72rem;
         background: var(--surface-2);
@@ -115,22 +108,7 @@
         color: var(--text-secondary);
       }
 
-      .plan-task .status-select {
-        text-align: right;
-      }
-      .plan-task .status-select select {
-        font-size: 0.72rem;
-        padding: 3px 8px;
-        border-radius: 20px;
-        border: 1px solid var(--border);
-        background: var(--surface);
-        color: var(--text);
-        cursor: pointer;
-        font-weight: 600;
-        text-transform: uppercase;
-        outline: none;
-      }
-      .plan-task .status-select select option { text-transform: uppercase; font-weight: 600; }
+      .plan-tasks { display: flex; flex-direction: column; }
 
       .plan-footer {
         margin-top: 40px;
@@ -153,689 +131,434 @@
           <div class="eyebrow">Entwicklungsprozess</div>
           <h1>Projektplan</h1>
           <p class="plan-subtitle">
-            Aufgaben abhaken sobald erledigt. Status und Fortschritt werden automatisch gespeichert.
+            Aufgaben pro Person – Checkbox klicken zum Abhaken. Erledigte Aufgaben wandern nach unten.
           </p>
         </header>
 
-        <!-- Statistics -->
         <div class="plan-summary" id="planSummary">
           <div class="plan-stat"><strong id="statTotal">0</strong><span>Tasks gesamt</span></div>
           <div class="plan-stat"><strong id="statDone">0</strong><span>erledigt</span></div>
-          <div class="plan-stat"><strong id="statWip">0</strong><span>in Arbeit</span></div>
           <div class="plan-stat"><strong id="statOpen">0</strong><span>offen</span></div>
         </div>
 
-        <!-- Team -->
-        <div class="plan-team">
-          <div class="plan-member">
-            <div class="avatar" style="background:#4c91ff">SA</div>
-            <div class="info"><strong>Sascha</strong><small>Backend · Daten</small></div>
-          </div>
-          <div class="plan-member">
-            <div class="avatar" style="background:#10b981">JA</div>
-            <div class="info"><strong>Jaro</strong><small>Backend</small></div>
-          </div>
-          <div class="plan-member">
-            <div class="avatar" style="background:#f59e0b">OM</div>
-            <div class="info"><strong>Omar</strong><small>Frontend</small></div>
-          </div>
-          <div class="plan-member">
-            <div class="avatar" style="background:#cf79ff">AI</div>
-            <div class="info"><strong>Aisha</strong><small>Frontend</small></div>
-          </div>
-          <div class="plan-member">
-            <div class="avatar" style="background:#f97316">MO</div>
-            <div class="info"><strong>Mo</strong><small>UI/UX</small></div>
-          </div>
-          <div class="plan-member">
-            <div class="avatar" style="background:#8B5CF6">YA</div>
-            <div class="info"><strong>Yaman</strong><small>UI/UX</small></div>
-          </div>
-          <div class="plan-member">
+        <!-- ══════ ILHAN ══════ -->
+        <div class="plan-section">
+          <div class="plan-section-header">
             <div class="avatar" style="background:#ef4444">IL</div>
-            <div class="info"><strong>Ilhan</strong><small>Dateninfrastruktur</small></div>
+            <h2>Ilhan</h2>
+            <span class="section-role">Dateninfrastruktur</span>
+            <span class="section-count" id="count-ilhan">0/0</span>
           </div>
-        </div>
-
-        <!-- Phase 1: Dateninfrastruktur -->
-        <div class="plan-phase">
-          <h2>Phase 1 – Dateninfrastruktur</h2>
-
-          <div class="plan-task status-open" data-id="t1-1">
-            <div class="checkbox"></div>
-            <div class="person">Ilhan, Sascha<small>Dateninfra / Backend</small></div>
-            <div class="details">
-              <div class="file">backend/database/db.js</div>
-              <div class="desc"><code>messages</code>-Tabelle anlegen: <code>id</code>, <code>from_user_id</code>, <code>to_user_id</code>, <code>subject</code>, <code>body</code>, <code>read</code>, <code>created_at</code>. Migration am Ende der Datei einfügen.</div>
-              <div class="commit-msg">git commit -m "add messages table schema with read flag and timestamps"</div>
+          <div class="plan-tasks" data-person="ilhan">
+            <div class="plan-task" data-id="ilhan-1" onclick="toggle('ilhan-1')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/database/db.js</div>
+                <div class="desc"><code>messages</code>-Tabelle anlegen: <code>id</code>, <code>from_user_id</code>, <code>to_user_id</code>, <code>subject</code>, <code>body</code>, <code>read</code>, <code>created_at</code>. Migration am Ende der Datei einfügen.</div>
+                <div class="commit-msg">git commit -m "add messages table schema with read flag and timestamps"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t1-1', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t1-2">
-            <div class="checkbox"></div>
-            <div class="person">Ilhan, Sascha<small>Dateninfra / Backend</small></div>
-            <div class="details">
-              <div class="file">backend/database/db.js</div>
-              <div class="desc">Auto-Create für alle Tabellen: <code>notes</code>, <code>todos</code>, <code>pomodoro_sessions</code>, <code>tracked_time</code>, <code>messages</code> – prüfen ob vorhanden, ggf. erstellen.</div>
-              <div class="commit-msg">git commit -m "ensure all tables auto-create on startup"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t1-2', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="ilhan-2" onclick="toggle('ilhan-2')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/database/db.js</div>
+                <div class="desc">Auto-Create für alle Tabellen: <code>notes</code>, <code>todos</code>, <code>pomodoro_sessions</code>, <code>tracked_time</code>, <code>messages</code> – prüfen ob vorhanden, ggf. erstellen.</div>
+                <div class="commit-msg">git commit -m "ensure all tables auto-create on startup"</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Phase 2: Backend API – Community -->
-        <div class="plan-phase">
-          <h2>Phase 2 – Backend API: Community</h2>
-
-          <div class="plan-task status-open" data-id="t2-1">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/routes/leaderboard.js</div>
-              <div class="desc">Neue Datei: <code>GET /api/leaderboard</code>. Zählt pro Benutzer: erledigte Todos (heute), Pomodoro-Sitzungen (heute), getrackte Zeit (heute). Gibt sortiertes Array zurück mit <code>user_id</code>, <code>name</code>, <code>initial</code>, <code>value</code>.</div>
-              <div class="commit-msg">git commit -m "add leaderboard api returning all users per category"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t2-1', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
+        <!-- ══════ SASCHA ══════ -->
+        <div class="plan-section">
+          <div class="plan-section-header">
+            <div class="avatar" style="background:#4c91ff">SA</div>
+            <h2>Sascha</h2>
+            <span class="section-role">Backend · Dateninfrastruktur</span>
+            <span class="section-count" id="count-sascha">0/0</span>
           </div>
-
-          <div class="plan-task status-open" data-id="t2-2">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/routes/users.js</div>
-              <div class="desc">Neue Datei: <code>GET /api/users</code> (alle Nutzer) und <code>GET /api/users/:id</code> (Profil + Stats: Todos erledigt, Pomodoro-Sessions, getrackte Zeit).</div>
-              <div class="commit-msg">git commit -m "add user list and profile api for community features"</div>
+          <div class="plan-tasks" data-person="sascha">
+            <div class="plan-task" data-id="sascha-1" onclick="toggle('sascha-1')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/routes/index.js</div>
+                <div class="desc">View-Routen: <code>/leaderboard</code>, <code>/rangliste</code>, <code>/user/:id</code>, <code>/messages</code>, <code>/nachrichten</code>, <code>/profile</code>, <code>/profil</code>, <code>/entwicklungsplan</code> mit <code>auth</code>-Middleware.</div>
+                <div class="commit-msg">git commit -m "add view routes for leaderboard user messages profile and plan pages"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t2-2', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="sascha-2" onclick="toggle('sascha-2')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/app.js</div>
+                <div class="desc">Neue Router (<code>leaderboard.js</code>, <code>users.js</code>, <code>messages.js</code>) per <code>app.use('/api', ...)</code> einbinden.</div>
+                <div class="commit-msg">git commit -m "wire up leaderboard users and messages api routers"</div>
+              </div>
             </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t2-3">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/routes/messages.js</div>
-              <div class="desc">Neue Datei: <code>POST /api/messages/send</code>, <code>GET /api/messages/inbox</code>, <code>GET /api/messages/sent</code>, <code>PUT /api/messages/:id/read</code>, <code>GET /api/messages/unread-count</code>.</div>
-              <div class="commit-msg">git commit -m "add messaging api with send inbox sent read endpoints"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t2-3', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t2-4">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/routes/index.js</div>
-              <div class="desc">View-Routen hinzufügen: <code>/leaderboard</code>, <code>/rangliste</code>, <code>/user/:id</code>, <code>/messages</code>, <code>/nachrichten</code>, <code>/profile</code>, <code>/profil</code>, <code>/entwicklungsplan</code>. Alle mit <code>auth</code>-Middleware.</div>
-              <div class="commit-msg">git commit -m "add view routes for leaderboard user messages profile and plan pages"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t2-4', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t2-5">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/app.js</div>
-              <div class="desc">Neue Router (<code>leaderboard.js</code>, <code>users.js</code>, <code>messages.js</code>) per <code>app.use('/api', ...)</code> einbinden.</div>
-              <div class="commit-msg">git commit -m "wire up leaderboard users and messages api routers"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t2-5', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="sascha-3" onclick="toggle('sascha-3')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">Server-Deployment</div>
+                <div class="desc">PM2-Prozess für <code>mindful_uni</code>: <code>pm2 start backend/app.js --name mindful-uni</code>. Port ggf. auf 3001 ändern.</div>
+                <div class="commit-msg">pm2 start backend/app.js --name mindful-uni</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Phase 3: Backend Bugfixes & Optimierungen -->
-        <div class="plan-phase">
-          <h2>Phase 3 – Backend Bugfixes & Optimierungen</h2>
-
-          <div class="plan-task status-open" data-id="t3-1">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/routes/kalender.js</div>
-              <div class="desc">Fix: Dynamischer SET-Build bei PUT, sodass nur übergebene Felder aktualisiert werden. Ersetzt hartcodierte Spaltenliste.</div>
-              <div class="commit-msg">git commit -m "fix calendar put to dynamically build SET clause for partial updates"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t3-1', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
+        <!-- ══════ JARO ══════ -->
+        <div class="plan-section">
+          <div class="plan-section-header">
+            <div class="avatar" style="background:#10b981">JA</div>
+            <h2>Jaro</h2>
+            <span class="section-role">Backend</span>
+            <span class="section-count" id="count-jaro">0/0</span>
           </div>
-
-          <div class="plan-task status-open" data-id="t3-2">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/routes/todos.js</div>
-              <div class="desc">Fix: <code>workspace_id</code> leeren String auf <code>null</code> setzen. <code>faellig</code>-Feld zurücksetzen wenn Datum gelöscht wird. <code>erledigt</code> automatisch Unix-Timestamp bei Status "erledigt". Quote-Escaping in SQL-Strings.</div>
-              <div class="commit-msg">git commit -m "fix todos: workspace null, faellig clear, erledigt auto-timestamp, quote escaping"</div>
+          <div class="plan-tasks" data-person="jaro">
+            <div class="plan-task" data-id="jaro-1" onclick="toggle('jaro-1')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/routes/leaderboard.js (neu)</div>
+                <div class="desc"><code>GET /api/leaderboard</code>. Zählt pro Benutzer: erledigte Todos (heute), Pomodoro-Sitzungen (heute), getrackte Zeit (heute). Gibt sortiertes Array mit <code>user_id</code>, <code>name</code>, <code>initial</code>, <code>value</code>.</div>
+                <div class="commit-msg">git commit -m "add leaderboard api returning all users per category"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t3-2', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="jaro-2" onclick="toggle('jaro-2')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/routes/users.js (neu)</div>
+                <div class="desc"><code>GET /api/users</code> (alle Nutzer) und <code>GET /api/users/:id</code> (Profil + Stats).</div>
+                <div class="commit-msg">git commit -m "add user list and profile api for community features"</div>
+              </div>
             </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t3-3">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/routes/notizen.js</div>
-              <div class="desc">Fix: Bei POST/PUT die Note mit <code>LEFT JOIN workspace</code> zurückgeben, damit Frontend workspace-Id und -Farbe sofort hat.</div>
-              <div class="commit-msg">git commit -m "fix notes post/put to return workspace join data"</div>
+            <div class="plan-task" data-id="jaro-3" onclick="toggle('jaro-3')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/routes/messages.js (neu)</div>
+                <div class="desc"><code>POST /api/messages/send</code>, <code>GET /api/messages/inbox</code>, <code>GET /api/messages/sent</code>, <code>PUT /api/messages/:id/read</code>, <code>GET /api/messages/unread-count</code>.</div>
+                <div class="commit-msg">git commit -m "add messaging api with send inbox sent read endpoints"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t3-3', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="jaro-4" onclick="toggle('jaro-4')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/routes/kalender.js</div>
+                <div class="desc">Fix: Dynamischer SET-Build bei PUT. Ersetzt hartcodierte Spaltenliste durch dynamische Generierung.</div>
+                <div class="commit-msg">git commit -m "fix calendar put to dynamically build SET clause for partial updates"</div>
+              </div>
             </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t3-4">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">backend/routes/search.js</div>
-              <div class="desc">Fix: Such-Query verwendet <code>erstellt</code>-Spalte statt fehlendem <code>aktualisiert</code>. 8 Recent-Results. AbortController für Request-Abbruch. Spotlight-Design im Frontend.</div>
-              <div class="commit-msg">git commit -m "fix search: correct column, 8 recents, abort controller, spotlight design"</div>
+            <div class="plan-task" data-id="jaro-5" onclick="toggle('jaro-5')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/routes/todos.js</div>
+                <div class="desc">Fix: <code>workspace_id</code> leeren String → <code>null</code>. <code>faellig</code> zurücksetzen. <code>erledigt</code> auto Unix-Timestamp. Quote-Escaping.</div>
+                <div class="commit-msg">git commit -m "fix todos: workspace null, faellig clear, erledigt auto-timestamp, quote escaping"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t3-4', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="jaro-6" onclick="toggle('jaro-6')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/routes/notizen.js</div>
+                <div class="desc">Fix: Bei POST/PUT <code>LEFT JOIN workspace</code> zurückgeben für workspace-Id und -Farbe.</div>
+                <div class="commit-msg">git commit -m "fix notes post/put to return workspace join data"</div>
+              </div>
             </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t3-5">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">frontend/public/js/app.js (search)</div>
-              <div class="desc">Search-UI: Keyboard-Navigation (Pfeiltasten, Enter, Escape), Spotlight-Modal-Overlay, Dokumente + Snippets in den Ergebnissen, Strg+K-Shortcut.</div>
-              <div class="commit-msg">git commit -m "add keyboard nav, document results, and spotlight modal to search"</div>
+            <div class="plan-task" data-id="jaro-7" onclick="toggle('jaro-7')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">backend/routes/search.js</div>
+                <div class="desc">Fix: Query verwendet <code>erstellt</code> statt <code>aktualisiert</code>. 8 Recent-Results. AbortController. Spotlight-Design.</div>
+                <div class="commit-msg">git commit -m "fix search: correct column, 8 recents, abort controller, spotlight design"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t3-5', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="jaro-8" onclick="toggle('jaro-8')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/js/notes.js</div>
+                <div class="desc">Error-Toast in <code>saveNote()</code>-else. <code>showEditor()</code>-Toggle. Live-Preview. Toolbar deaktivieren (<code>.editor-disabled</code>).</div>
+                <div class="commit-msg">git commit -m "add error toast, showEditor toggle, live preview, disabled toolbar to notes"</div>
+              </div>
             </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t3-6">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">frontend/public/js/notes.js</div>
-              <div class="desc">Fix: Error-Toast in saveNote()-else-Zweig hinzugefügt. <code>showEditor()</code>-Toggle. Live-Preview-Toggle (Preview-Button). Toolbar deaktivieren wenn keine Notiz offen (<code>.editor-disabled</code>).</div>
-              <div class="commit-msg">git commit -m "add error toast, showEditor toggle, live preview, disabled toolbar to notes"</div>
+            <div class="plan-task" data-id="jaro-9" onclick="toggle('jaro-9')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/js/app.js (search)</div>
+                <div class="desc">Search-UI: Keyboard-Navigation (Pfeiltasten, Enter, Escape), Spotlight-Modal, Dokumente + Snippets, Strg+K.</div>
+                <div class="commit-msg">git commit -m "add keyboard nav, document results, and spotlight modal to search"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t3-6', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="jaro-10" onclick="toggle('jaro-10')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/views/register.ejs + register.js + register.css + dashboard.ejs</div>
+                <div class="desc">Dead Code entfernen: nicht mehr verwendete Dateien gelöscht.</div>
+                <div class="commit-msg">git commit -m "remove dead code: register ejs/js/css and dashboard ejs"</div>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Phase 4: Frontend – Notizen -->
-        <div class="plan-phase">
-          <h2>Phase 4 – Frontend: Notizen-Seite</h2>
-
-          <div class="plan-task status-open" data-id="t4-1">
-            <div class="checkbox"></div>
-            <div class="person">Omar, Aisha<small>Frontend</small></div>
-            <div class="details">
-              <div class="file">frontend/views/notes.ejs</div>
-              <div class="desc">"Neue Notiz"-Button im Editor-Header hinzugefügt. Leeren-Zustand (Empty State) eingebaut. Live-Preview-Toggle-Button (Augen-Symbol). Toolbar ausgegraut wenn keine Notiz offen.</div>
-              <div class="commit-msg">git commit -m "add new note button, empty state, live preview to notes page"</div>
+            <div class="plan-task" data-id="jaro-11" onclick="toggle('jaro-11')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">Neues Verzeichnis</div>
+                <div class="desc"><code>/home/ubuntu/mindful_uni</code> anlegen, Code kopieren, <code>git init && git add -A && git commit -m "initial commit"</code>.</div>
+                <div class="commit-msg">git commit -m "initial commit: mindful dashboard base project"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t4-1', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t4-2">
-            <div class="checkbox"></div>
-            <div class="person">Mo, Yaman<small>UI/UX</small></div>
-            <div class="details">
-              <div class="file">frontend/public/css/notes.css</div>
-              <div class="desc">CSS für leeren Zustand (Empty State), deaktivierte Toolbar (<code>.editor-disabled</code>), Live-Preview-Styling.</div>
-              <div class="commit-msg">git commit -m "add notes css for empty state, disabled toolbar, and live preview"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t4-2', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t4-3">
-            <div class="checkbox"></div>
-            <div class="person">Mo, Yaman<small>UI/UX</small></div>
-            <div class="details">
-              <div class="file">frontend/public/css/style.css</div>
-              <div class="desc">Primäre/Sekundäre Button-Styles für Notes-Toolbar. Konsistente Akzentfarben.</div>
-              <div class="commit-msg">git commit -m "add primary and secondary button styles for notes toolbar"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t4-3', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="jaro-12" onclick="toggle('jaro-12')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">Remote GitLab</div>
+                <div class="desc"><code>git remote add origin &lt;gitlab-url&gt; && git push -u origin master</code>.</div>
+                <div class="commit-msg">git push -u origin master</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Phase 5: Frontend – Community -->
-        <div class="plan-phase">
-          <h2>Phase 5 – Frontend: Community-Seiten</h2>
-
-          <div class="plan-task status-open" data-id="t5-1">
-            <div class="checkbox"></div>
-            <div class="person">Omar, Aisha<small>Frontend</small></div>
-            <div class="details">
-              <div class="file">frontend/views/leaderboard.ejs</div>
-              <div class="desc">Neue Seite: Rangliste mit Tab-Navigation (Aufgaben / Pomodoro / Zeiterfassung), Tabelle mit Platz #, Name, Wert. Gold/Silber/Bronze für Platz 1–3. Leerer Zustand.</div>
-              <div class="commit-msg">git commit -m "create leaderboard page with category tabs and ranking table"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t5-1', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
+        <!-- ══════ OMAR ══════ -->
+        <div class="plan-section">
+          <div class="plan-section-header">
+            <div class="avatar" style="background:#f59e0b">OM</div>
+            <h2>Omar</h2>
+            <span class="section-role">Frontend</span>
+            <span class="section-count" id="count-omar">0/0</span>
           </div>
-
-          <div class="plan-task status-open" data-id="t5-2">
-            <div class="checkbox"></div>
-            <div class="person">Omar, Aisha<small>Frontend</small></div>
-            <div class="details">
-              <div class="file">frontend/public/js/leaderboard.js</div>
-              <div class="desc">Lädt von <code>/api/leaderboard?type=…</code>. Tabs rendern. Gold/Silber/Bronze-Medaille. Leeren Zustand bei fehlenden Daten.</div>
-              <div class="commit-msg">git commit -m "add leaderboard frontend with tab switching and medal styling"</div>
+          <div class="plan-tasks" data-person="omar">
+            <div class="plan-task" data-id="omar-1" onclick="toggle('omar-1')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/views/leaderboard.ejs (neu)</div>
+                <div class="desc">Rangliste mit Tab-Navigation (Aufgaben / Pomodoro / Zeiterfassung), Tabelle mit Platz #, Name, Wert. Gold/Silber/Bronze.</div>
+                <div class="commit-msg">git commit -m "create leaderboard page with category tabs and ranking table"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t5-2', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="omar-2" onclick="toggle('omar-2')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/js/leaderboard.js (neu)</div>
+                <div class="desc">Daten von <code>/api/leaderboard</code> laden, Tabs rendern, Medaillen, leerer Zustand.</div>
+                <div class="commit-msg">git commit -m "add leaderboard frontend with tab switching and medal styling"</div>
+              </div>
             </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t5-3">
-            <div class="checkbox"></div>
-            <div class="person">Omar, Aisha<small>Frontend</small></div>
-            <div class="details">
-              <div class="file">frontend/views/user_profile.ejs</div>
-              <div class="desc">Neue Seite: Öffentliches Profil. Avatar, Name, Stati (Todos/Pomodoro/Zeit). "Nachricht senden"-Button.</div>
-              <div class="commit-msg">git commit -m "create public user profile page with stats and message button"</div>
+            <div class="plan-task" data-id="omar-3" onclick="toggle('omar-3')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/views/user_profile.ejs (neu)</div>
+                <div class="desc">Öffentliches Profil: Avatar, Name, Stati, "Nachricht senden"-Button.</div>
+                <div class="commit-msg">git commit -m "create public user profile page with stats and message button"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t5-3', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t5-4">
-            <div class="checkbox"></div>
-            <div class="person">Omar, Aisha<small>Frontend</small></div>
-            <div class="details">
-              <div class="file">frontend/public/js/user_profile.js</div>
-              <div class="desc">Lädt Profil von <code>/api/users/:id</code>. "Nachricht senden" leitet zu /messages mit Parameter.</div>
-              <div class="commit-msg">git commit -m "add user profile frontend with data loading and send message"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t5-4', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t5-5">
-            <div class="checkbox"></div>
-            <div class="person">Omar, Aisha<small>Frontend</small></div>
-            <div class="details">
-              <div class="file">frontend/views/messages.ejs</div>
-              <div class="desc">Neue Seite: Posteingang/Gesendet-Tabs. Nachrichtenliste. Detailansicht beim Klick. Compose-Formular mit User-Suche.</div>
-              <div class="commit-msg">git commit -m "create messages page with inbox sent tabs and compose modal"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t5-5', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t5-6">
-            <div class="checkbox"></div>
-            <div class="person">Omar, Aisha<small>Frontend</small></div>
-            <div class="details">
-              <div class="file">frontend/public/js/messages.js</div>
-              <div class="desc">Lädt Inbox/Sent. Rendert Liste + Detail. Compose: User-Suche clientseitig, Senden/Abbrechen, ungelesene-Anzeige.</div>
-              <div class="commit-msg">git commit -m "add messages frontend with inbox sent compose and user search"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t5-6', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="omar-4" onclick="toggle('omar-4')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/js/user_profile.js (neu)</div>
+                <div class="desc">Profil von <code>/api/users/:id</code> laden. "Nachricht senden" leitet zu /messages.</div>
+                <div class="commit-msg">git commit -m "add user profile frontend with data loading and send message"</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Phase 6: UI/UX Design -->
-        <div class="plan-phase">
-          <h2>Phase 6 – UI/UX Design & Styling</h2>
-
-          <div class="plan-task status-open" data-id="t6-1">
-            <div class="checkbox"></div>
-            <div class="person">Mo, Yaman<small>UI/UX</small></div>
-            <div class="details">
-              <div class="file">frontend/public/css/style.css</div>
-              <div class="desc">Leaderboard-Styles: Tabs, Tabelle, Medaillen (Gold/Silber/Bronze), Hover-Effekte. User-Profil-Styles. Messages-Styles: Tabs, Liste, Compose-Modal, Formular.</div>
-              <div class="commit-msg">git commit -m "style leaderboard, profile, and messages pages"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t6-1', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
+        <!-- ══════ AISHA ══════ -->
+        <div class="plan-section">
+          <div class="plan-section-header">
+            <div class="avatar" style="background:#cf79ff">AI</div>
+            <h2>Aisha</h2>
+            <span class="section-role">Frontend</span>
+            <span class="section-count" id="count-aisha">0/0</span>
           </div>
-
-          <div class="plan-task status-open" data-id="t6-2">
-            <div class="checkbox"></div>
-            <div class="person">Mo, Yaman<small>UI/UX</small></div>
-            <div class="details">
-              <div class="file">frontend/views/partials/sidebar.ejs</div>
-              <div class="desc">Links für Rangliste (<code>/leaderboard</code>) und Nachrichten (<code>/messages</code>) in der Navigation hinzufügen. Entwicklungsplan-Link (<code>/entwicklungsplan</code>) dezent.</div>
-              <div class="commit-msg">git commit -m "add rangliste, nachrichten, and entwicklungsplan links to sidebar"</div>
+          <div class="plan-tasks" data-person="aisha">
+            <div class="plan-task" data-id="aisha-1" onclick="toggle('aisha-1')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/views/messages.ejs (neu)</div>
+                <div class="desc">Posteingang/Gesendet-Tabs, Nachrichtenliste, Detailansicht, Compose-Formular mit User-Suche.</div>
+                <div class="commit-msg">git commit -m "create messages page with inbox sent tabs and compose modal"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t6-2', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t6-3">
-            <div class="checkbox"></div>
-            <div class="person">Mo, Yaman<small>UI/UX</small></div>
-            <div class="details">
-              <div class="file">frontend/public/css/style.css (msg-compose)</div>
-              <div class="desc">Compose-Button (<code>.msg-compose-btn</code>) + sekundäre Variante (<code>.msg-compose-btn-secondary</code>) für Senden/Abbrechen im einheitlichen Design.</div>
-              <div class="commit-msg">git commit -m "style senden/abbrechen buttons to match msg-compose-btn design"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t6-3', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t6-4">
-            <div class="checkbox"></div>
-            <div class="person">Mo, Yaman<small>UI/UX</small></div>
-            <div class="details">
-              <div class="file">frontend/views/messages.ejs</div>
-              <div class="desc">Senden/Abbrechen-Buttons von <code>.primary-btn</code>/<code>.secondary-btn</code> auf <code>.msg-compose-btn</code>/<code>.msg-compose-btn-secondary</code> umgestellt.</div>
-              <div class="commit-msg">git commit -m "update compose buttons to use msg-compose-btn classes"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t6-4', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t6-5">
-            <div class="checkbox"></div>
-            <div class="person">Mo, Yaman<small>UI/UX</small></div>
-            <div class="details">
-              <div class="file">frontend/public/js/messages.js</div>
-              <div class="desc">"Keine Nutzer gefunden"-Meldung nur anzeigen wenn Suchfeld nicht leer ist. User-Search-Verhalten verbessert.</div>
-              <div class="commit-msg">git commit -m "only show 'keine nutzer gefunden' when search input is non-empty"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t6-5', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="aisha-2" onclick="toggle('aisha-2')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/js/messages.js (neu)</div>
+                <div class="desc">Inbox/Sent laden, rendern, Compose mit User-Suche, Senden/Abbrechen, ungelesene-Anzeige.</div>
+                <div class="commit-msg">git commit -m "add messages frontend with inbox sent compose and user search"</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Phase 7: Aufräumarbeiten -->
-        <div class="plan-phase">
-          <h2>Phase 7 – Code-Bereinigung</h2>
-
-          <div class="plan-task status-open" data-id="t7-1">
-            <div class="checkbox"></div>
-            <div class="person">Jaro, Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">frontend/views/register.ejs</div>
-              <div class="desc">Dead Code entfernen: <code>register.ejs</code>, <code>register.js</code>, <code>register.css</code>, <code>dashboard.ejs</code> wurden gelöscht – nicht mehr verwendete Dateien aus dem Projekt entfernt.</div>
-              <div class="commit-msg">git commit -m "remove dead code: register ejs/js/css and dashboard ejs"</div>
+        <!-- ══════ MO ══════ -->
+        <div class="plan-section">
+          <div class="plan-section-header">
+            <div class="avatar" style="background:#f97316">MO</div>
+            <h2>Mo</h2>
+            <span class="section-role">UI/UX</span>
+            <span class="section-count" id="count-mo">0/0</span>
+          </div>
+          <div class="plan-tasks" data-person="mo">
+            <div class="plan-task" data-id="mo-1" onclick="toggle('mo-1')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/views/notes.ejs</div>
+                <div class="desc">"Neue Notiz"-Button im Editor-Header. Leeren-Zustand (Empty State). Live-Preview-Toggle (Augen-Symbol). Toolbar ausgrauen wenn keine Notiz offen.</div>
+                <div class="commit-msg">git commit -m "add new note button, empty state, live preview to notes page"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t7-1', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="mo-2" onclick="toggle('mo-2')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/css/notes.css</div>
+                <div class="desc">CSS für Empty State, deaktivierte Toolbar (<code>.editor-disabled</code>), Live-Preview.</div>
+                <div class="commit-msg">git commit -m "add notes css for empty state, disabled toolbar, and live preview"</div>
+              </div>
+            </div>
+            <div class="plan-task" data-id="mo-3" onclick="toggle('mo-3')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/css/style.css</div>
+                <div class="desc">Button-Styles primär/sekundär für Notes-Toolbar.</div>
+                <div class="commit-msg">git commit -m "add primary and secondary button styles for notes toolbar"</div>
+              </div>
+            </div>
+            <div class="plan-task" data-id="mo-4" onclick="toggle('mo-4')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/css/style.css</div>
+                <div class="desc">Leaderboard-Styles (Tabs, Tabelle, Medaillen). User-Profil-Styles. Messages-Styles (Tabs, Liste, Compose-Modal).</div>
+                <div class="commit-msg">git commit -m "style leaderboard, profile, and messages pages"</div>
+              </div>
+            </div>
+            <div class="plan-task" data-id="mo-5" onclick="toggle('mo-5')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/views/partials/sidebar.ejs</div>
+                <div class="desc">Links für Rangliste (<code>/leaderboard</code>) und Nachrichten (<code>/messages</code>) in der Navigation. Entwicklungsplan-Link (<code>/entwicklungsplan</code>) dezent.</div>
+                <div class="commit-msg">git commit -m "add rangliste, nachrichten, and entwicklungsplan links to sidebar"</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Phase 8: Projekt-Setup & Dokumentation -->
-        <div class="plan-phase">
-          <h2>Phase 8 – Projekt-Setup & GitLab-Workflow</h2>
-
-          <div class="plan-task status-open" data-id="t8-1">
-            <div class="checkbox"></div>
-            <div class="person">Jaro<small>Backend</small></div>
-            <div class="details">
-              <div class="file">Neues Verzeichnis anlegen</div>
-              <div class="desc">Neues Projektverzeichnis auf dem Server anlegen: <code>/home/ubuntu/mindful_uni</code>. Code aus <code>mindful_github</code> ohne <code>.git</code> kopieren. <code>git init && git add -A && git commit -m "initial commit: mindful dashboard base project"</code>.</div>
-              <div class="commit-msg">git commit -m "initial commit: mindful dashboard base project"</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t8-1', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
+        <!-- ══════ YAMAN ══════ -->
+        <div class="plan-section">
+          <div class="plan-section-header">
+            <div class="avatar" style="background:#8B5CF6">YA</div>
+            <h2>Yaman</h2>
+            <span class="section-role">UI/UX</span>
+            <span class="section-count" id="count-yaman">0/0</span>
           </div>
-
-          <div class="plan-task status-open" data-id="t8-2">
-            <div class="checkbox"></div>
-            <div class="person">Jaro<small>Backend</small></div>
-            <div class="details">
-              <div class="file">Remote GitLab</div>
-              <div class="desc">Remote auf Uni GitLab: <code>git remote add origin &lt;gitlab-url&gt;</code>. <code>git push -u origin master</code>.</div>
-              <div class="commit-msg">git push -u origin master</div>
+          <div class="plan-tasks" data-person="yaman">
+            <div class="plan-task" data-id="yaman-1" onclick="toggle('yaman-1')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/css/style.css (msg-compose)</div>
+                <div class="desc"><code>.msg-compose-btn</code> + <code>.msg-compose-btn-secondary</code> für Senden/Abbrechen.</div>
+                <div class="commit-msg">git commit -m "style senden/abbrechen buttons to match msg-compose-btn design"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t8-2', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="yaman-2" onclick="toggle('yaman-2')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/views/messages.ejs</div>
+                <div class="desc">Senden/Abbrechen-Buttons auf <code>.msg-compose-btn</code>/<code>.msg-compose-btn-secondary</code> umgestellt.</div>
+                <div class="commit-msg">git commit -m "update compose buttons to use msg-compose-btn classes"</div>
+              </div>
             </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t8-3">
-            <div class="checkbox"></div>
-            <div class="person">Sascha<small>Backend</small></div>
-            <div class="details">
-              <div class="file">Server-Deployment</div>
-              <div class="desc">PM2-Prozess für <code>mindful_uni</code>: <code>pm2 start backend/app.js --name mindful-uni</code>. Port ggf. auf 3001 ändern.</div>
-              <div class="commit-msg">pm2 start backend/app.js --name mindful-uni</div>
+            <div class="plan-task" data-id="yaman-3" onclick="toggle('yaman-3')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/public/js/messages.js</div>
+                <div class="desc">"Keine Nutzer gefunden" nur wenn Suchfeld nicht leer. User-Search-Verhalten optimiert.</div>
+                <div class="commit-msg">git commit -m "only show 'keine nutzer gefunden' when search input is non-empty"</div>
+              </div>
             </div>
-            <div class="status-select">
-              <select onchange="setStatus('t8-3', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="plan-task status-open" data-id="t8-4">
-            <div class="checkbox"></div>
-            <div class="person">Ilhan<small>Dateninfrastruktur</small></div>
-            <div class="details">
-              <div class="file">GitLab-Workflow</div>
-              <div class="desc">Nach jeder Phase Tags setzen: <code>git tag phase-1-dateninfra</code>, <code>git tag phase-2-backend-api</code>, <code>git tag phase-3-bugfixes</code> usw. Alle Commits müssen den Nachrichten aus diesem Plan entsprechen.</div>
-              <div class="commit-msg">git tag phase-1-dateninfra</div>
-            </div>
-            <div class="status-select">
-              <select onchange="setStatus('t8-4', this.value)">
-                <option value="open" selected>offen</option>
-                <option value="wip">in Arbeit</option>
-                <option value="done">erledigt</option>
-              </select>
+            <div class="plan-task" data-id="yaman-4" onclick="toggle('yaman-4')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">frontend/views/entwicklungsplan.ejs</div>
+                <div class="desc">Diese Seite: Projektplan mit Checkboxen, Personen-Sektionen, sortiert, localStorage.</div>
+                <div class="commit-msg">git commit -m "create entwicklungsplan page with per-person tasks and checkboxes"</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Footer -->
+        <!-- ══════ GEMEINSAME PHASEN ══════ -->
+        <div class="plan-section">
+          <div class="plan-section-header">
+            <div class="avatar" style="background:#6b7280"><i class="fas fa-users" style="font-size:0.85rem"></i></div>
+            <h2>Gemeinsame Meilensteine</h2>
+            <span class="section-role">Alle</span>
+            <span class="section-count" id="count-team">0/0</span>
+          </div>
+          <div class="plan-tasks" data-person="team">
+            <div class="plan-task" data-id="team-1" onclick="toggle('team-1')">
+              <div class="cb-wrap"><i class="fas fa-check"></i></div>
+              <div class="info">
+                <div class="file">GitLab-Workflow</div>
+                <div class="desc">Jeder committed seine Tasks in der richtigen Reihenfolge auf dem Uni GitLab mit den vorgegebenen Commit-Nachrichten. Nach jeder Phase Tag setzen: <code>git tag phase-...</code>.</div>
+                <div class="commit-msg">git tag phase-1 ... phase-2 ...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="plan-footer">
-          <strong>So funktioniert's:</strong> Jeder Task hat ein Select-Feld (offen / in Arbeit / erledigt). Status wird im Browser gespeichert (localStorage). Nach einem Klick auf "erledigt" wird die Zeile abgehakt und ausgegraut. Die Statistik oben zählt automatisch mit. Wenn ich neue Features oder Bugfixes einbaue, füge ich hier einen neuen Task hinzu.
+          <strong>So funktioniert's:</strong> Jede Person hat ihren eigenen Bereich. Checkbox klicken = Task erledigt. Erledigte Tasks wandern automatisch nach unten. Status bleibt im Browser gespeichert (localStorage). Wenn ich neue Features oder Bugfixes baue, füge ich hier automatisch neue Tasks als "offen" hinzu.
         </div>
       </main>
     </div>
 
     <script>
-    // ─── Status-Management mit localStorage ───
     const STORAGE_KEY = 'mindful_plan_status';
 
-    function loadAllStatus() {
+    function loadMap() {
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
     }
-    function saveAllStatus(map) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+    function saveMap(m) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
     }
 
-    function getTaskId(el) {
-      while (el && !el.dataset.id) el = el.parentElement;
-      return el ? el.dataset.id : null;
-    }
-
-    function setStatus(id, value) {
-      const map = loadAllStatus();
-      map[id] = value;
-      saveAllStatus(map);
+    function toggle(id) {
+      const m = loadMap();
+      m[id] = m[id] === 'done' ? 'open' : 'done';
+      saveMap(m);
       renderAll();
     }
 
     function renderAll() {
-      const map = loadAllStatus();
-      const tasks = document.querySelectorAll('.plan-task');
-      let total = 0, done = 0, wip = 0, open = 0;
-      tasks.forEach(t => {
-        const id = t.dataset.id;
-        const saved = map[id];
-        const status = (saved === 'done' || saved === 'wip') ? saved : 'open';
-        t.className = 'plan-task status-' + status;
-        const sel = t.querySelector('select');
-        if (sel) sel.value = status;
-        total++;
-        if (status === 'done') done++;
-        else if (status === 'wip') wip++;
-        else open++;
+      const m = loadMap();
+      document.querySelectorAll('.plan-tasks').forEach(container => {
+        const tasks = [...container.querySelectorAll('.plan-task')];
+        let done = 0, total = 0;
+        tasks.forEach(t => {
+          const id = t.dataset.id;
+          const status = m[id] === 'done' ? 'done' : 'open';
+          t.className = 'plan-task status-' + status;
+          total++;
+          if (status === 'done') done++;
+        });
+        // sort: open first, done last
+        tasks.sort((a, b) => {
+          const aDone = m[a.dataset.id] === 'done' ? 1 : 0;
+          const bDone = m[b.dataset.id] === 'done' ? 1 : 0;
+          return aDone - bDone;
+        });
+        tasks.forEach(t => container.appendChild(t));
+        // update count
+        const person = container.dataset.person;
+        const el = document.getElementById('count-' + person);
+        if (el) el.textContent = done + '/' + total;
       });
+      // totals
+      const allIds = [...document.querySelectorAll('.plan-task')].map(t => t.dataset.id);
+      const total = allIds.length;
+      const done = allIds.filter(id => m[id] === 'done').length;
       document.getElementById('statTotal').textContent = total;
       document.getElementById('statDone').textContent = done;
-      document.getElementById('statWip').textContent = wip;
-      document.getElementById('statOpen').textContent = open;
+      document.getElementById('statOpen').textContent = total - done;
     }
 
     document.addEventListener('DOMContentLoaded', renderAll);
     </script>
-
     <script src="/js/app.js?v=<%= Date.now() %>"></script>
   </body>
 </html>
