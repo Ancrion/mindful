@@ -1520,6 +1520,20 @@ body.dark .search-overlay {
   box-shadow: var(--shadow-sm);
 }
 
+.msg-compose-btn-secondary {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.msg-compose-btn-secondary:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--text-secondary);
+  transform: none;
+  box-shadow: none;
+}
+
 .msg-badge {
   background: #EF4444;
   color: #fff;
