@@ -97,7 +97,7 @@ async function loadTodos() {
       const isOverdue = todo.faellig && new Date(todo.faellig) < now && todo.status !== "erledigt";
       const dueDate = todo.faellig ? todo.faellig.split("T")[0] : "";
       return `
-    <div class="task-item" draggable="true" data-id="${todo.id}" data-priority="${prio}" onclick='editTask(${JSON.stringify(todo).replace(/"/g, "&quot;")}, event)' oncontextmenu="showTaskCtxMenu(event, ${todo.id}, ${todo.status === 'erledigt'})">
+    <div class="task-item" draggable="true" data-id="${todo.id}" data-priority="${prio}" onclick='editTask(${JSON.stringify(todo).replace(/"/g, "&quot;").replace(/'/g, "&#39;")}, event)' oncontextmenu="showTaskCtxMenu(event, ${todo.id}, ${todo.status === 'erledigt'})">
       <div class="task-check${todo.status === "erledigt" ? " checked" : ""}" data-id="${todo.id}" onclick="event.stopPropagation(); toggleDone(${todo.id})">
         <i class="fas fa-check"></i>
       </div>
@@ -227,7 +227,7 @@ async function saveTask() {
   const todoData = {
     titel: document.getElementById("taskTitle").value,
     beschreibung: document.getElementById("taskDesc").value,
-    workspace_id: document.getElementById("taskWorkspaceSelect").value,
+    workspace_id: document.getElementById("taskWorkspaceSelect").value || null,
     prioritaet: prioInput ? prioInput.value : "mittel",
     status: document.getElementById("taskStatus").value,
     faellig: document.getElementById("taskDueDate").value || null,
@@ -251,6 +251,9 @@ async function saveTask() {
     closeEditor();
     loadTodos();
     loadStatusCounts();
+  } else {
+    const err = res ? await res.json().catch(() => ({})) : {};
+    showToast(err.error || "Fehler beim Speichern", "error");
   }
 }
 

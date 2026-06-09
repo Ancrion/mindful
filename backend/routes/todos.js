@@ -110,7 +110,7 @@ router.post("/", auth, (req, res) => {
 router.put("/:id", auth, (req, res) => {
   try {
     const { titel, beschreibung, status, erledigt, workspace_id, prioritaet, schritte } = req.body;
-    const faellig = req.body.faellig ?? req.body.due_date;
+    const faellig = req.body.faellig !== undefined ? req.body.faellig : (req.body.due_date ?? null);
 
     const todo = db
       .prepare("SELECT * FROM todos WHERE id = ? AND user_id = ?")
@@ -124,7 +124,7 @@ router.put("/:id", auth, (req, res) => {
     ).run(
       titel ?? todo.titel,
       beschreibung ?? todo.beschreibung,
-      faellig ?? todo.faellig,
+      faellig,
       status ?? todo.status,
       erledigt ?? todo.erledigt,
       workspace_id ?? todo.workspace_id,
