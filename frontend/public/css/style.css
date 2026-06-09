@@ -699,7 +699,7 @@ body.dark .stats-card { background: var(--surface-2); }
   backdrop-filter: blur(8px);
   z-index: 10000;
   place-items: center;
-  padding: 10vh 16px 48px;
+  padding: 16px;
   animation: searchFadeIn 0.15s ease-out;
 }
 .search-overlay.open {
