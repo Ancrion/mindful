@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS - Intelligenter Wissens-Workspace</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <span class="logo-text">NEXUS</span>
+            <span class="logo-dot">•</span>
+          </div>
+          <p class="logo-subtitle">INTELLIGENTER WISSENS-<br />WORKSPACE</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="nav-item active">
+              <a
+                href="#"
+                onclick="
+                  showPage('dashboard');
+                  return false;
+                "
+              >
+                <span class="nav-icon">⌂</span>
+                <span>DASHBOARD</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="#"
+                onclick="
+                  showPage('notizen');
+                  return false;
+                "
+              >
+                <span class="nav-icon">☐</span>
+                <span>NOTIZEN</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="#"
+                onclick="
+                  showPage('aufgaben');
+                  return false;
+                "
+              >
+                <span class="nav-icon">✓</span>
+                <span>AUFGABEN</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="#"
+                onclick="
+                  showPage('kalender');
+                  return false;
+                "
+              >
+                <span class="nav-icon">▦</span>
+                <span>KALENDER</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="#"
+                onclick="
+                  showPage('dokumente');
+                  return false;
+                "
+              >
+                <span class="nav-icon">❏</span>
+                <span>DOKUMENTE</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-search">
+          <a
+            href="#"
+            class="search-link"
+            onclick="
+              showPage('suche');
+              return false;
+            "
+          >
+            <span class="nav-icon">🔍</span>
+            <span>INTELLIGENTE SUCHE</span>
+          </a>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-info">
+            <div>
+              <div class="user-name">Admin</div>
+              <div class="user-email">ADMIN@NEXUS.APP</div>
+            </div>
+            <button class="logout-btn" title="Abmelden">⇥</button>
+          </div>
+          <div class="lang-switcher">
+            <button class="lang-btn active">DE</button>
+            <button class="lang-btn">EN</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <main class="main-content">
+        <!-- ===== DASHBOARD ===== -->
+        <div class="page active" id="page-dashboard">
+          <div class="breadcrumb">/ DASHBOARD</div>
+          <h1 class="welcome-title">
+            Willkommen zurück, <span class="highlight">Admin</span>
+          </h1>
+          <p class="welcome-subtitle">
+            Dein intelligenter Workspace. Alles verbunden.
+          </p>
+
+          <!-- STATS -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-icon">☐</span>
+                <span class="stat-label">NOTIZEN GESAMT</span>
+              </div>
+              <div class="stat-value" id="stat-notizen">0</div>
+            </div>
+            <div class="stat-card accent">
+              <div class="stat-header">
+                <span class="stat-icon">☑</span>
+                <span class="stat-label">OFFENE AUFGABEN</span>
+              </div>
+              <div class="stat-value" id="stat-offen">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-icon">✔</span>
+                <span class="stat-label">ERLEDIGTE AUFGABEN</span>
+              </div>
+              <div class="stat-value" id="stat-erledigt">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-icon">📅</span>
+                <span class="stat-label">KOMMENDE TERMINE</span>
+              </div>
+              <div class="stat-value" id="stat-termine">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-icon">📄</span>
+                <span class="stat-label">DOKUMENTE</span>
+              </div>
+              <div class="stat-value" id="stat-dokumente">0</div>
+            </div>
+          </div>
+
+          <!-- SCHNELLAKTIONEN -->
+          <div class="quick-actions">
+            <div class="section-label">/ SCHNELLAKTIONEN</div>
+            <div class="actions-row">
+              <button class="action-btn" onclick="openModal('notiz')">
+                + NOTIZ HINZUFÜGEN
+              </button>
+              <button class="action-btn" onclick="openModal('aufgabe')">
+                + AUFGABE HINZUFÜGEN
+              </button>
+              <button class="action-btn" onclick="openModal('termin')">
+                + TERMIN HINZUFÜGEN
+              </button>
+              <button class="action-btn" onclick="openModal('dokument')">
+                + DOKUMENT HOCHLADEN
+              </button>
+              <button class="action-btn red" onclick="showPage('suche')">
+                + INTELLIGENTE SUCHE
+              </button>
+            </div>
+          </div>
+
+          <!-- OVERVIEW GRID -->
+          <div class="overview-grid">
+            <div class="overview-card">
+              <div class="overview-header">
+                <h3>Notizen</h3>
+                <span class="arrow" onclick="showPage('notizen')">→</span>
+              </div>
+              <div id="overview-notizen">
+                <p class="empty-text">Keine Ergebnisse</p>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="overview-header">
+                <h3>Aufgaben</h3>
+                <span class="arrow" onclick="showPage('aufgaben')">→</span>
+              </div>
+              <div id="overview-aufgaben">
+                <p class="empty-text">Keine Ergebnisse</p>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="overview-header">
+                <h3>Kalender</h3>
+                <span class="arrow" onclick="showPage('kalender')">→</span>
+              </div>
+              <div id="overview-kalender">
+                <p class="empty-text">Keine Ergebnisse</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== NOTIZEN PAGE ===== -->
+        <div class="page" id="page-notizen">
+          <div class="breadcrumb">/ NOTIZEN</div>
+          <h1 class="page-title">Notizen</h1>
+          <p class="welcome-subtitle">Alle deine Notizen auf einen Blick.</p>
+          <div class="quick-actions mb-20">
+            <div class="actions-row">
+              <button class="action-btn" onclick="openModal('notiz')">
+                + NOTIZ HINZUFÜGEN
+              </button>
+            </div>
+          </div>
+          <div class="items-list" id="notizen-liste">
+            <p class="empty-text">Keine Notizen vorhanden.</p>
+          </div>
+        </div>
+
+        <!-- ===== AUFGABEN PAGE ===== -->
+        <div class="page" id="page-aufgaben">
+          <div class="breadcrumb">/ AUFGABEN</div>
+          <h1 class="page-title">Aufgaben</h1>
+          <p class="welcome-subtitle">
+            Behalte den Überblick über deine Aufgaben.
+          </p>
+          <div class="quick-actions mb-20">
+            <div class="actions-row">
+              <button class="action-btn" onclick="openModal('aufgabe')">
+                + AUFGABE HINZUFÜGEN
+              </button>
+            </div>
+          </div>
+          <div class="items-list" id="aufgaben-liste">
+            <p class="empty-text">Keine Aufgaben vorhanden.</p>
+          </div>
+        </div>
+
+        <!-- ===== KALENDER PAGE ===== -->
+        <div class="page" id="page-kalender">
+          <div class="breadcrumb">/ KALENDER</div>
+          <h1 class="page-title">Kalender</h1>
+          <p class="welcome-subtitle">Deine kommenden Termine im Überblick.</p>
+          <div class="quick-actions mb-20">
+            <div class="actions-row">
+              <button class="action-btn" onclick="openModal('termin')">
+                + TERMIN HINZUFÜGEN
+              </button>
+            </div>
+          </div>
+          <div class="items-list" id="kalender-liste">
+            <p class="empty-text">Keine Termine vorhanden.</p>
+          </div>
+        </div>
+
+        <!-- ===== DOKUMENTE PAGE ===== -->
+        <div class="page" id="page-dokumente">
+          <div class="breadcrumb">/ DOKUMENTE</div>
+          <h1 class="page-title">Dokumente</h1>
+          <p class="welcome-subtitle">Verwalte deine Dokumente und Dateien.</p>
+          <div class="quick-actions mb-20">
+            <div class="actions-row">
+              <button class="action-btn" onclick="openModal('dokument')">
+                + DOKUMENT HOCHLADEN
+              </button>
+            </div>
+          </div>
+          <div class="items-list" id="dokumente-liste">
+            <p class="empty-text">Keine Dokumente vorhanden.</p>
+          </div>
+        </div>
+
+        <!-- ===== SUCHE PAGE ===== -->
+        <div class="page" id="page-suche">
+          <div class="breadcrumb">/ INTELLIGENTE SUCHE</div>
+          <h1 class="page-title">Intelligente Suche</h1>
+          <p class="welcome-subtitle">
+            Durchsuche alle deine Inhalte gleichzeitig.
+          </p>
+          <div class="mb-20">
+            <input
+              type="text"
+              class="modal-input"
+              id="suche-query"
+              placeholder="Suchbegriff eingeben..."
+              oninput="intelligenteSuche()"
+              style="font-size: 15px; padding: 14px 18px"
+            />
+          </div>
+          <div id="suche-ergebnisse" class="suche-results"></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ===== MODAL OVERLAY ===== -->
+    <div
+      class="modal-overlay"
+      id="modal-overlay"
+      onclick="closeModalOutside(event)"
+    >
+      <!-- NOTIZ MODAL -->
+      <div class="modal" id="modal-notiz">
+        <div class="modal-header">
+          <h2>Neue Notiz</h2>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <label>TITEL</label>
+          <input
+            type="text"
+            class="modal-input"
+            id="notiz-titel"
+            placeholder="Notiz-Titel..."
+          />
+          <label>INHALT</label>
+          <textarea
+            class="modal-textarea"
+            id="notiz-inhalt"
+            placeholder="Notiz-Inhalt..."
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal()">ABBRECHEN</button>
+          <button class="btn-save" onclick="saveNotiz()">SPEICHERN</button>
+        </div>
+      </div>
+
+      <!-- AUFGABE MODAL -->
+      <div class="modal" id="modal-aufgabe">
+        <div class="modal-header">
+          <h2>Neue Aufgabe</h2>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <label>TITEL</label>
+          <input
+            type="text"
+            class="modal-input"
+            id="aufgabe-titel"
+            placeholder="Aufgabe..."
+          />
+          <label>PRIORITÄT</label>
+          <select class="modal-input" id="aufgabe-prio">
+            <option value="hoch">Hoch</option>
+            <option value="mittel" selected>Mittel</option>
+            <option value="niedrig">Niedrig</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal()">ABBRECHEN</button>
+          <button class="btn-save" onclick="saveAufgabe()">SPEICHERN</button>
+        </div>
+      </div>
+
+      <!-- TERMIN MODAL -->
+      <div class="modal" id="modal-termin">
+        <div class="modal-header">
+          <h2>Neuer Termin</h2>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <label>TITEL</label>
+          <input
+            type="text"
+            class="modal-input"
+            id="termin-titel"
+            placeholder="Terminbezeichnung..."
+          />
+          <label>DATUM & UHRZEIT</label>
+          <input type="datetime-local" class="modal-input" id="termin-datum" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal()">ABBRECHEN</button>
+          <button class="btn-save" onclick="saveTermin()">SPEICHERN</button>
+        </div>
+      </div>
+
+      <!-- DOKUMENT MODAL -->
+      <div class="modal" id="modal-dokument">
+        <div class="modal-header">
+          <h2>Dokument hochladen</h2>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <label>NAME</label>
+          <input
+            type="text"
+            class="modal-input"
+            id="dokument-name"
+            placeholder="Dokumentenname..."
+          />
+          <label>DATEI</label>
+          <input type="file" class="modal-input" id="dokument-datei" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal()">ABBRECHEN</button>
+          <button class="btn-save" onclick="saveDokument()">HOCHLADEN</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

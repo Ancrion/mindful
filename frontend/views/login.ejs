@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Login</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/login.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <main class="auth-shell">
+      <section class="auth-showcase">
+        <div class="showcase-inner">
+          <div class="brand-mark">
+            <span class="brand-dot"></span>
+            <span class="brand-name">MINDFUL</span>
+          </div>
+          <div class="showcase-copy">
+            <p class="quote-text" id="loginQuote">Lade Zitat…</p>
+            <p class="quote-author" id="loginQuoteAuthor"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="auth-panel-wrap">
+        <div class="auth-panel">
+          <div class="auth-panel-head">
+            <h2 id="authTitle">Willkommen zurück</h2>
+            <p id="authSubtext">
+              Melde dich an, um auf dein Dashboard zuzugreifen.
+            </p>
+          </div>
+
+          <!-- Tab-Navigation -->
+          <div class="auth-switch">
+            <button
+              class="switch-btn active"
+              id="loginTab"
+              type="button"
+              onclick="switchAuth('login')"
+            >
+              Login
+            </button>
+            <button
+              class="switch-btn"
+              id="registerTab"
+              type="button"
+              onclick="switchAuth('register')"
+            >
+              Registrieren
+            </button>
+          </div>
+
+          <!-- Login Form -->
+          <form id="loginForm" class="auth-form active">
+            <div class="form-group">
+              <label>Benutzername</label>
+              <div class="input-shell">
+                <i class="fa-regular fa-user"></i>
+                <input
+                  type="text"
+                  id="loginName"
+                  placeholder="Benutzername eingeben"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Passwort</label>
+              <div class="input-shell">
+                <i class="fa-solid fa-lock"></i>
+                <input
+                  type="password"
+                  id="loginPassword"
+                  placeholder="Passwort eingeben"
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" class="primary-btn">Anmelden</button>
+          </form>
+
+          <!-- Register Form -->
+          <form id="registerForm" class="auth-form">
+            <div class="form-group">
+              <label>Benutzername</label>
+              <div class="input-shell">
+                <i class="fa-regular fa-user"></i>
+                <input
+                  type="text"
+                  id="regName"
+                  placeholder="Benutzername wählen"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Passwort</label>
+              <div class="input-shell">
+                <i class="fa-solid fa-lock"></i>
+                <input
+                  type="password"
+                  id="regPassword"
+                  placeholder="Passwort erstellen"
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" class="primary-btn">Account erstellen</button>
+          </form>
+
+          <!-- Nachrichten-Box -->
+          <div id="authMessage" class="auth-message"></div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      if (localStorage.getItem("darkMode") === "1" ||
+          (!localStorage.getItem("darkMode") && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.body.classList.add("dark");
+      }
+    </script>
+    <script src="/js/login.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

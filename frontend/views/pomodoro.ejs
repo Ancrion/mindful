@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Pomodoro</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/pomodoro.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="pomo-main">
+        <header class="pomo-header">
+          <div class="breadcrumb">Fokus / Pomodoro</div>
+          <h1>Pomodoro <span>Timer</span></h1>
+          <p class="subtitle">Arbeite fokussiert in festgelegten Intervallen.</p>
+        </header>
+
+        <div class="pomo-content">
+          <div class="pomo-timer-card">
+            <div class="pomo-timer-display">
+              <span class="pomo-minutes" id="pomoMinutes">25</span>
+              <span class="pomo-sep">:</span>
+              <span class="pomo-seconds" id="pomoSeconds">00</span>
+            </div>
+
+            <div class="pomo-controls">
+              <button class="pomo-btn pomo-start" id="pomoStartBtn"><i class="fas fa-play"></i> Start</button>
+              <button class="pomo-btn pomo-pause" id="pomoPauseBtn" style="display:none"><i class="fas fa-pause"></i> Pause</button>
+              <button class="pomo-btn pomo-reset" id="pomoResetBtn"><i class="fas fa-undo"></i></button>
+            </div>
+
+            <div class="pomo-duration-wrap">
+              <label>Intervall (min)</label>
+              <div class="pomo-duration-btns" id="pomoDurationBtns">
+                <button class="dur-btn active" data-min="25">25</button>
+                <button class="dur-btn" data-min="15">15</button>
+                <button class="dur-btn" data-min="30">30</button>
+                <button class="dur-btn" data-min="45">45</button>
+                <button class="dur-btn" data-min="60">60</button>
+              </div>
+            </div>
+
+            <div class="pomo-task-select-wrap">
+              <label>Aufgabe (optional)</label>
+              <select id="pomoTaskSelect">
+                <option value="">– Keine Aufgabe –</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pomo-stats-card">
+            <h2><i class="fas fa-chart-simple"></i> Heute</h2>
+            <div class="pomo-today-stats">
+              <div class="pomo-stat-box">
+                <span class="pomo-stat-num" id="pomoTodaySessions">0</span>
+                <span class="pomo-stat-label">Sessions</span>
+              </div>
+              <div class="pomo-stat-box">
+                <span class="pomo-stat-num" id="pomoTodayMinutes">0</span>
+                <span class="pomo-stat-label">Minuten</span>
+              </div>
+              <div class="pomo-stat-box">
+                <span class="pomo-stat-num" id="pomoTotalHours">0</span>
+                <span class="pomo-stat-label">Fokus (h)</span>
+              </div>
+              <div class="pomo-stat-box">
+                <span class="pomo-stat-num" id="pomoSuccessRate">0%</span>
+                <span class="pomo-stat-label">Erfolg</span>
+              </div>
+            </div>
+
+            <h2><i class="fas fa-calendar-week"></i> Diese Woche</h2>
+            <div class="pomo-chart-wrap">
+              <canvas id="pomoWeekChart"></canvas>
+            </div>
+          </div>
+        </div>
+      <div class="global-timer" id="globalTimer" style="display:none">
+        <i class="fas fa-clock"></i>
+        <span id="globalTimerDisplay">00:00</span>
+      </div>
+      </main>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/pomodoro.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

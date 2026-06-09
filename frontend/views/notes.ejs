@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Notizen</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/notes.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout cols-3">
+      <%- include('partials/sidebar') %>
+
+      <aside class="folders-panel">
+        <button class="sidebar-toggle fp-toggle" onclick="toggleFoldersPanel()" title="Ordner ein-/ausblenden">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="fp-extra">
+          <div class="folders-header">
+            <div>
+              <div class="eyebrow">Struktur</div>
+              <h2>Ordner</h2>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="icon-btn" onclick="toggleFolderForm()" title="Ordner erstellen">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button class="icon-btn" onclick="importFolder()" title="Ordner vom PC importieren">
+                <i class="fas fa-folder-open"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="folder-form" id="folderForm">
+            <div class="ff-header">
+              <i class="fas fa-folder-plus"></i>
+              <span>Neuer Ordner</span>
+            </div>
+            <div class="ff-body">
+              <input type="text" id="folderName" placeholder="Ordnername" />
+              <div class="ff-colors">
+                <span class="ff-dot active" data-color="color-sand" style="background:#cfb999" onclick="selectFolderColor(this)"></span>
+                <span class="ff-dot" data-color="color-coral" style="background:#ef7a68" onclick="selectFolderColor(this)"></span>
+                <span class="ff-dot" data-color="color-sage" style="background:#90a985" onclick="selectFolderColor(this)"></span>
+                <span class="ff-dot" data-color="color-blue" style="background:#6d8ab7" onclick="selectFolderColor(this)"></span>
+                <span class="ff-dot" data-color="color-plum" style="background:#86637c" onclick="selectFolderColor(this)"></span>
+              </div>
+              <button class="ff-btn" onclick="createFolder()">
+                <i class="fas fa-check"></i> Erstellen
+              </button>
+            </div>
+          </div>
+
+          <div class="folder-tree" id="folderTree">
+          </div>
+        </div>
+      </aside>
+
+      <main class="editor-panel">
+        <header class="editor-header">
+          <div>
+            <p class="editor-subtitle" id="currentFolderName">&nbsp;</p>
+          </div>
+        </header>
+
+        <div class="editor-main-card">
+          <div class="editor-toolbar">
+            <div class="toolbar-left">
+              <input
+                type="text"
+                id="noteTitle"
+                class="editor-title-input"
+                placeholder="Unbenannte Notiz"
+                oninput="onTitleChange()"
+              />
+            </div>
+            <div class="toolbar-format">
+              <button class="fmt-btn" onclick="fmtCmd('bold')" title="Fett (Strg+B)"><i class="fas fa-bold"></i></button>
+              <button class="fmt-btn" onclick="fmtCmd('italic')" title="Kursiv (Strg+I)"><i class="fas fa-italic"></i></button>
+              <button class="fmt-btn" onclick="fmtCmd('underline')" title="Unterstrichen (Strg+U)"><i class="fas fa-underline"></i></button>
+              <span class="fmt-sep"></span>
+              <button class="fmt-btn" onclick="fmtCmd('formatBlock', 'h1')" title="Überschrift 1"><i class="fas fa-heading"></i> 1</button>
+              <button class="fmt-btn" onclick="fmtCmd('formatBlock', 'h2')" title="Überschrift 2"><i class="fas fa-heading"></i> 2</button>
+              <button class="fmt-btn" onclick="fmtCmd('formatBlock', 'h3')" title="Überschrift 3"><i class="fas fa-heading"></i> 3</button>
+              <button class="fmt-btn" onclick="fmtCmd('formatBlock', 'p')" title="Normal"><i class="fas fa-paragraph"></i></button>
+              <span class="fmt-sep"></span>
+              <button class="fmt-btn" onclick="fmtCmd('insertUnorderedList')" title="Aufzählung"><i class="fas fa-list-ul"></i></button>
+              <button class="fmt-btn" onclick="fmtCmd('insertOrderedList')" title="Nummerierte Liste"><i class="fas fa-list-ol"></i></button>
+              <button class="fmt-btn" onclick="fmtCmd('formatBlock', 'blockquote')" title="Zitat"><i class="fas fa-quote-right"></i></button>
+              <span class="fmt-sep"></span>
+              <button class="fmt-btn" onclick="fmtCmd('insertHorizontalRule')" title="Trennlinie"><i class="fas fa-minus"></i></button>
+              <button class="fmt-btn" onclick="fmtCmd('removeFormat')" title="Formatierung entfernen"><i class="fas fa-eraser"></i></button>
+              <span class="fmt-sep"></span>
+              <button class="fmt-btn fmt-btn-active" id="autoListToggle" onclick="toggleAutoList()" title="Auto-Aufzählung ( - / * / 1. )">¶</button>
+            </div>
+            <div class="toolbar-actions">
+              <span class="save-status" id="saveStatus">
+                <i class="fas fa-circle" style="font-size:6px;color:var(--text-secondary);vertical-align:middle"></i>
+                <span id="saveStatusText">Bereit</span>
+              </span>
+              <button class="toolbar-btn" onclick="saveNote()" title="Speichern (Strg+S)">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="toolbar-btn toolbar-btn-danger" onclick="deleteNote()" title="Löschen">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="note-editor"
+            id="noteContent"
+            contenteditable="true"
+            data-placeholder="Schreibe etwas..."
+            oninput="onContentChange()"
+          ></div>
+        </div>
+      <div class="global-timer" id="globalTimer" style="display:none">
+        <i class="fas fa-clock"></i>
+        <span id="globalTimerDisplay">00:00</span>
+      </div>
+      </main>
+    </div>
+
+    <div class="ctx-menu" id="ctxMenu">
+      <div class="ctx-item" data-action="new-note"><i class="fas fa-plus"></i> Neue Notiz</div>
+      <div class="ctx-item" data-action="upload-file"><i class="fas fa-upload"></i> Datei hochladen</div>
+      <div class="ctx-separator"></div>
+      <div class="ctx-item" data-action="rename"><i class="fas fa-pencil-alt"></i> Umbenennen</div>
+      <div class="ctx-item" data-action="download"><i class="fas fa-download"></i> Herunterladen</div>
+      <div class="ctx-separator"></div>
+      <div class="ctx-item ctx-danger" data-action="delete"><i class="fas fa-trash"></i> L&ouml;schen</div>
+    </div>
+
+    <input type="file" id="fileUploadInput" style="display:none" />
+    <input type="file" id="folderImportInput" style="display:none" webkitdirectory multiple />
+
+    <div class="notes-dropzone-overlay" id="notesDropzone">
+      <div class="notes-dropzone-box">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <h3>Dateien ablegen</h3>
+        <p>Lasse Dateien fallen, um sie in <span class="dropzone-folder-name" id="dropzoneFolderName">den Ordner</span> hochzuladen</p>
+      </div>
+    </div>
+
+    <div class="file-modal-overlay" id="fileModalOverlay" onclick="closeFileModal()"></div>
+    <div class="file-modal" id="fileModal">
+      <div class="file-modal-header">
+        <div class="file-modal-header-left">
+          <div class="file-modal-icon" id="fileModalIcon"><i class="fas fa-file"></i></div>
+          <div>
+            <h2 id="fileModalTitle">Datei</h2>
+            <span class="file-modal-meta" id="fileModalMeta"></span>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeFileModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="file-modal-body" id="fileModalBody">
+        <div class="file-modal-preview" id="fileModalPreview"></div>
+        <div class="file-modal-info" id="fileModalInfo"></div>
+      </div>
+      <div class="file-modal-footer">
+        <a class="primary-btn" id="fileDownloadBtn" target="_blank" download>
+          <i class="fas fa-download"></i> &Ouml;ffnen
+        </a>
+        <button class="secondary-btn" onclick="renameFile()">
+          <i class="fas fa-pencil-alt"></i> Umbenennen
+        </button>
+        <button class="secondary-btn danger" onclick="deleteFile()">
+          <i class="fas fa-trash"></i> L&ouml;schen
+        </button>
+      </div>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/notes.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

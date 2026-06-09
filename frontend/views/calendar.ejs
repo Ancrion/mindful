@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Kalender</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/calendar.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="calendar-main">
+        <div class="cal-toolbar">
+          <button class="cal-btn cal-btn-today" onclick="goToday()">Heute</button>
+          <div class="cal-nav">
+            <button class="cal-icon-btn" onclick="goPrev()"><i class="fas fa-chevron-left"></i></button>
+            <button class="cal-icon-btn" onclick="goNext()"><i class="fas fa-chevron-right"></i></button>
+          </div>
+          <h2 class="cal-title" id="calTitle">Juni 2026</h2>
+          <div class="cal-spacer"></div>
+          <div class="cal-view-switch" id="viewSwitch">
+            <button class="view-btn" data-view="day">Tag</button>
+            <button class="view-btn active" data-view="week">Woche</button>
+            <button class="view-btn" data-view="month">Monat</button>
+            <button class="view-btn" data-view="year">Jahr</button>
+          </div>
+          <button class="cal-btn cal-btn-add" onclick="openEventModal()">+</button>
+        </div>
+
+        <div class="cal-viewport" id="calViewport">
+          <div class="cal-loading">Lade Kalender...</div>
+        </div>
+      <div class="global-timer" id="globalTimer" style="display:none">
+        <i class="fas fa-clock"></i>
+        <span id="globalTimerDisplay">00:00</span>
+      </div>
+      </main>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="cal-modal-overlay" id="eventModalOverlay" onclick="closeEventModal(event)">
+      <div class="cal-modal" onclick="event.stopPropagation()">
+        <div class="cal-modal-header">
+          <div class="cal-modal-title">
+            <input type="text" id="evTitle" placeholder="Titel" />
+          </div>
+          <button class="cal-icon-btn modal-close" onclick="closeEventModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cal-modal-body">
+          <div class="cal-modal-row">
+            <div class="cal-modal-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="cal-modal-fields">
+              <div class="cal-field-row">
+                <div class="cal-field cal-field-date">
+                  <label>Datum</label>
+                  <input type="date" id="evDate" />
+                </div>
+                <div class="cal-field cal-field-time">
+                  <label>von</label>
+                  <input type="time" id="evStartTime" value="10:00" />
+                </div>
+                <div class="cal-field cal-field-time">
+                  <label>bis</label>
+                  <input type="time" id="evEndTime" value="11:00" />
+                </div>
+              </div>
+              <label class="cal-checkbox">
+                <input type="checkbox" id="evAllDay" onchange="toggleAllDay()" />
+                <span>Ganztägig</span>
+              </label>
+            </div>
+          </div>
+          <div class="cal-modal-row">
+            <div class="cal-modal-icon"><i class="fas fa-clock"></i></div>
+            <div class="cal-modal-fields">
+              <div class="cal-field">
+                <label>Dauer</label>
+                <select id="evDuration" onchange="toggleCustomDuration()">
+                  <option value="15">15 Min</option>
+                  <option value="30">30 Min</option>
+                  <option value="60" selected>1 Std</option>
+                  <option value="90">1,5 Std</option>
+                  <option value="120">2 Std</option>
+                  <option value="180">3 Std</option>
+                  <option value="custom">Benutzerdefiniert</option>
+                </select>
+                <input type="number" id="evCustomDuration" style="display:none;margin-top:8px" placeholder="Minuten" min="1" max="1440" />
+              </div>
+            </div>
+          </div>
+          <div class="cal-modal-row">
+            <div class="cal-modal-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="cal-modal-fields">
+              <div class="cal-field cal-field-full">
+                <label>Ort</label>
+                <input type="text" id="evLocation" placeholder="Raum, Adresse oder virtuell" />
+              </div>
+            </div>
+          </div>
+          <div class="cal-modal-row">
+            <div class="cal-modal-icon"><i class="fas fa-repeat"></i></div>
+            <div class="cal-modal-fields">
+              <div class="cal-field">
+                <label>Wiederholung</label>
+                <select id="evRepeat">
+                  <option value="none">Nie</option>
+                  <option value="daily">Täglich</option>
+                  <option value="weekly">Wöchentlich</option>
+                  <option value="biweekly">Alle 2 Wochen</option>
+                  <option value="monthly">Monatlich</option>
+                  <option value="yearly">Jährlich</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="cal-modal-row">
+            <div class="cal-modal-icon"><i class="fas fa-bell"></i></div>
+            <div class="cal-modal-fields">
+              <div class="cal-field">
+                <label>Erinnerung</label>
+                <select id="evReminder">
+                  <option value="keine">Keine</option>
+                  <option value="5min">5 Minuten vorher</option>
+                  <option value="15min">15 Minuten vorher</option>
+                  <option value="30min">30 Minuten vorher</option>
+                  <option value="1h">1 Stunde vorher</option>
+                  <option value="1d">1 Tag vorher</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="cal-modal-row">
+            <div class="cal-modal-icon"><i class="fas fa-layer-group"></i></div>
+            <div class="cal-modal-fields">
+              <div class="cal-field cal-field-full">
+                <label>Workspace</label>
+                <select id="evWorkspace" onchange="onWsChange()">
+                  <option value="">Kein Workspace</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="cal-modal-row">
+            <div class="cal-modal-icon"><i class="fas fa-palette"></i></div>
+            <div class="cal-modal-fields">
+              <div class="cal-field cal-color-picker">
+                <label>Farbe</label>
+                <div class="color-options" id="evColorOptions">
+                  <span class="color-dot active" data-color="#3B82F6" style="background:#3B82F6"></span>
+                  <span class="color-dot" data-color="#EF4444" style="background:#EF4444"></span>
+                  <span class="color-dot" data-color="#F59E0B" style="background:#F59E0B"></span>
+                  <span class="color-dot" data-color="#10B981" style="background:#10B981"></span>
+                  <span class="color-dot" data-color="#8B5CF6" style="background:#8B5CF6"></span>
+                  <span class="color-dot" data-color="#EC4899" style="background:#EC4899"></span>
+                  <span class="color-dot" data-color="#6366F1" style="background:#6366F1"></span>
+                  <span class="color-dot" data-color="#F97316" style="background:#F97316"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cal-modal-row cal-modal-row-textarea">
+            <div class="cal-modal-icon"><i class="fas fa-align-left"></i></div>
+            <div class="cal-modal-fields">
+              <div class="cal-field cal-field-full">
+                <label>Notiz</label>
+                <textarea id="evDescription" rows="3" placeholder="Beschreibung..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cal-modal-footer">
+          <button class="cal-btn cal-btn-delete" id="evDeleteBtn" onclick="deleteEvent()">Löschen</button>
+          <div class="cal-modal-footer-right">
+            <button class="cal-btn" onclick="closeEventModal()">Abbrechen</button>
+            <button class="cal-btn cal-btn-primary" onclick="saveEventModal()">Fertig</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/calendar.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

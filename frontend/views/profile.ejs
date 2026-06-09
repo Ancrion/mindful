@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Profil</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/profile.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="profile-main">
+        <header class="profile-header">
+          <div class="breadcrumb">Einstellungen / Profil</div>
+          <h1>Dein <span>Profil</span></h1>
+          <p class="subtitle">Verwalte deine Account-Einstellungen.</p>
+        </header>
+
+        <div class="profile-content">
+          <div class="profile-card">
+            <div class="card-header">
+              <i class="fas fa-user-circle"></i>
+              <h2>Allgemein</h2>
+            </div>
+            <div class="form-group">
+              <label>Name</label>
+              <div class="input-row">
+                <input type="text" id="profileName" placeholder="Dein Name" pattern="[a-z]+" title="Nur Kleinbuchstaben erlaubt" />
+                <button class="primary-btn" onclick="updateName()">Speichern</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="card-header">
+              <i class="fas fa-lock"></i>
+              <h2>Passwort ändern</h2>
+            </div>
+            <div class="form-group">
+              <label>Aktuelles Passwort</label>
+              <input type="password" id="currentPassword" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label>Neues Passwort</label>
+              <input type="password" id="newPassword" placeholder="mind. 6 Zeichen" />
+            </div>
+            <div class="form-group">
+              <label>Neues Passwort bestätigen</label>
+              <input type="password" id="confirmPassword" placeholder="Wiederholen" />
+            </div>
+            <button class="primary-btn full-btn" onclick="changePassword()">
+              Passwort ändern
+            </button>
+          </div>
+
+          <div class="profile-card">
+            <div class="card-header">
+              <i class="fas fa-camera"></i>
+              <h2>Profilbild</h2>
+            </div>
+            <p class="card-desc">Wähle ein Bild für dein Profil (wird in der Sidebar angezeigt).</p>
+            <div class="avatar-preview" id="avatarPreview">
+              <div class="av-preview-placeholder">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <div class="av-actions">
+              <label class="wp-upload-btn">
+                <i class="fas fa-upload"></i> Bild auswählen
+                <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" hidden />
+              </label>
+              <button class="wp-remove-btn" id="avRemoveBtn" style="display:none" onclick="removeAvatar()">
+                <i class="fas fa-trash"></i> Entfernen
+              </button>
+            </div>
+          </div>
+
+          <div class="profile-card" id="wallpaperCard">
+            <div class="card-header">
+              <i class="fas fa-image"></i>
+              <h2>Hintergrundbild</h2>
+            </div>
+            <p class="card-desc">Wähle ein Bild von deinem Gerät als Hintergrund für alle Seiten.</p>
+            <div class="wallpaper-preview" id="wallpaperPreview">
+              <div class="wp-preview-placeholder">
+                <i class="fas fa-mountain"></i>
+                <span>Kein Hintergrund</span>
+              </div>
+            </div>
+            <div class="wp-actions">
+              <label class="wp-upload-btn">
+                <i class="fas fa-upload"></i> Bild auswählen
+                <input type="file" id="wallpaperInput" accept="image/jpeg,image/png,image/webp" hidden />
+              </label>
+              <button class="wp-remove-btn" id="wpRemoveBtn" style="display:none" onclick="removeWallpaper()">
+                <i class="fas fa-trash"></i> Entfernen
+              </button>
+            </div>
+          </div>
+
+          <div class="profile-card danger-card">
+            <div class="card-header">
+              <i class="fas fa-trash-alt"></i>
+              <h2>Account löschen</h2>
+            </div>
+            <p class="card-desc">
+              Hiermit löschst du deinen Account und alle deine Daten unwiderruflich.
+            </p>
+            <button class="danger-btn full-btn" onclick="deleteAccount()">
+              Account unwiderruflich löschen
+            </button>
+          </div>
+        </div>
+      <div class="global-timer" id="globalTimer" style="display:none">
+        <i class="fas fa-clock"></i>
+        <span id="globalTimerDisplay">00:00</span>
+      </div>
+      </main>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/profile.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

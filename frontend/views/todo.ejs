@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Aufgaben</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/todo.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout cols-3">
+      <%- include('partials/sidebar') %>
+
+      <aside class="todo-sidebar">
+        <div class="todo-sidebar-inner">
+          <p class="ws-label">Workspace</p>
+          <div class="ws-selector" id="wsSelector" onclick="toggleWsDropdown()">
+            <span class="ws-sel-dot" id="wsSelDot" style="background:#999"></span>
+            <span class="ws-sel-name" id="wsSelName">Alle</span>
+            <i class="fas fa-chevron-down ws-sel-chevron"></i>
+          </div>
+
+          <div class="ws-dropdown" id="wsDropdown">
+            <div class="ws-dropdown-panel">
+              <div class="ws-dd-header">
+                <i class="fas fa-layer-group"></i>
+                <span>Workspaces</span>
+              </div>
+              <div class="ws-dd-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="wsSearch" placeholder="Filtern..." oninput="filterWorkspaces()" />
+              </div>
+              <div class="ws-dd-list" id="workspaceList"></div>
+              <div class="ws-dd-divider"></div>
+              <div class="ws-dd-create">
+                <div class="ws-dd-create-row">
+                  <i class="fas fa-plus-circle ws-dd-create-icon"></i>
+                  <input type="text" id="wsNewName" placeholder="Neuen Workspace anlegen..." />
+                </div>
+                <div class="ws-dd-create-colors" id="wsNewColors">
+                  <span class="ws-color-dot active" data-color="orange" style="background:#f19a3d"></span>
+                  <span class="ws-color-dot" data-color="blue" style="background:#4c91ff"></span>
+                  <span class="ws-color-dot" data-color="green" style="background:#78b85f"></span>
+                  <span class="ws-color-dot" data-color="pink" style="background:#cf79ff"></span>
+                  <span class="ws-color-dot" data-color="red" style="background:#ff5b50"></span>
+                  <span class="ws-color-dot" data-color="purple" style="background:#8B5CF6"></span>
+                  <span class="ws-color-dot" data-color="teal" style="background:#14B8A6"></span>
+                  <span class="ws-color-dot" data-color="yellow" style="background:#F59E0B"></span>
+                </div>
+                <button class="ws-dd-add-btn" onclick="quickCreateWorkspace()">
+                  <i class="fas fa-plus"></i> Hinzufügen
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-tiles">
+            <button class="status-tile active" data-status="offen" onclick="filterStatus('offen', event)">
+              <div class="st-icon st-icon-open"><i class="fas fa-inbox"></i></div>
+              <div class="st-content">
+                <span class="st-label">Offen</span>
+                <span class="st-count" id="countOpen">0</span>
+              </div>
+            </button>
+            <button class="status-tile" data-status="in arbeit" onclick="filterStatus('in arbeit', event)">
+              <div class="st-icon st-icon-progress"><i class="fas fa-spinner"></i></div>
+              <div class="st-content">
+                <span class="st-label">In Arbeit</span>
+                <span class="st-count" id="countProgress">0</span>
+              </div>
+            </button>
+            <button class="status-tile" data-status="erledigt" onclick="filterStatus('erledigt', event)">
+              <div class="st-icon st-icon-done"><i class="fas fa-check-circle"></i></div>
+              <div class="st-content">
+                <span class="st-label">Erledigt</span>
+                <span class="st-count" id="countDone">0</span>
+              </div>
+            </button>
+          </div>
+
+          <div class="progress-section">
+            <div class="progress-header">
+              <span class="progress-label">Fortschritt</span>
+              <span class="progress-pct" id="progressPct">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="progressFill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="todo-main">
+        <header class="todo-header">
+          <div class="todo-header-left">
+            <h1>To-Do</h1>
+            <p id="taskCountText" class="todo-subtitle">Lade Aufgaben...</p>
+          </div>
+          <button class="btn btn-primary" onclick="openEditor()">
+            <i class="fas fa-plus"></i> Neues To-Do
+          </button>
+        </header>
+
+        <div class="todo-body">
+          <div class="task-list-card" id="taskListCard">
+            <div class="tlc-header">
+              <h3 id="currentViewTitle">Aufgaben</h3>
+            </div>
+            <div class="skeleton-list" id="skeletonList">
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+            </div>
+            <div class="task-list" id="taskList"></div>
+          </div>
+
+          <div class="detail-panel" id="detailPanel">
+            <div class="dp-header">
+              <div class="dp-header-left">
+                <span class="dp-status-badge" id="dpStatusBadge">In Arbeit</span>
+                <h3 id="dpTitle">Aufgabenname</h3>
+              </div>
+              <button class="dp-close" onclick="closeDetailPanel()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="dp-body">
+              <p class="dp-desc" id="dpDesc"></p>
+              <div class="dp-subtasks" id="dpSubtasks">
+                <div class="dp-sub-label">Schritte</div>
+                <div id="dpSubtaskList"></div>
+                <div class="dp-sub-add">
+                  <input type="text" id="dpSubInput" placeholder="Neuer Schritt..." />
+                  <button class="dp-sub-add-btn" onclick="addSubtask()"><i class="fas fa-plus"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pomo-panel" id="pomoPanel">
+            <div class="pomo-display">
+              <svg class="pomo-ring" viewBox="0 0 120 120">
+                <circle class="pomo-ring-bg" cx="60" cy="60" r="52" />
+                <circle class="pomo-ring-fg" id="pomoRing" cx="60" cy="60" r="52" />
+              </svg>
+              <div class="pomo-time" id="pomoTime">25:00</div>
+            </div>
+            <div class="pomo-controls">
+              <div class="pomo-duration">
+                <button class="pomo-dur-btn" onclick="setPomoTime(300)">5</button>
+                <button class="pomo-dur-btn" onclick="setPomoTime(600)">10</button>
+                <button class="pomo-dur-btn active" onclick="setPomoTime(1500)">25</button>
+                <button class="pomo-dur-btn" onclick="setPomoTime(1800)">30</button>
+                <button class="pomo-dur-btn" onclick="setPomoTime(3600)">60</button>
+              </div>
+              <div class="pomo-actions">
+                <button class="pomo-btn" id="pomoStartBtn" onclick="togglePomo()"><i class="fas fa-play"></i> Start</button>
+                <button class="pomo-btn pomo-btn-secondary" onclick="resetPomo()"><i class="fas fa-redo-alt"></i></button>
+              </div>
+            </div>
+            <button class="pomo-done-btn" onclick="finishTask()">
+              <i class="fas fa-check-circle"></i> Fertig – in Erledigt verschieben
+            </button>
+          </div>
+        </div>
+      <div class="global-timer" id="globalTimer" style="display:none">
+        <i class="fas fa-clock"></i>
+        <span id="globalTimerDisplay">00:00</span>
+      </div>
+      </main>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="closeEditor()">
+      <div class="modal-card" id="modalCard" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h3 id="editorTitle">Neue Aufgabe</h3>
+          <button class="modal-close" onclick="closeEditor()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editTaskId" />
+          <div class="fg">
+            <input type="text" id="taskTitle" placeholder="Was ist zu tun?" autofocus />
+          </div>
+          <div class="fg">
+            <textarea id="taskDesc" placeholder="Beschreibung (optional)" rows="3"></textarea>
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label>Workspace</label>
+              <select id="taskWorkspaceSelect"></select>
+            </div>
+            <div class="fg">
+              <label>Priorität</label>
+              <div class="priority-select" id="prioritySelect">
+                <label class="prio-option" data-value="niedrig">
+                  <input type="radio" name="prio" value="niedrig" />
+                  <span class="prio-dot" style="background:#78b85f"></span> Niedrig
+                </label>
+                <label class="prio-option" data-value="mittel">
+                  <input type="radio" name="prio" value="mittel" checked />
+                  <span class="prio-dot" style="background:#f19a3d"></span> Mittel
+                </label>
+                <label class="prio-option" data-value="hoch">
+                  <input type="radio" name="prio" value="hoch" />
+                  <span class="prio-dot" style="background:#ff5b50"></span> Hoch
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label>Status</label>
+              <select id="taskStatus">
+                <option value="offen">Offen</option>
+                <option value="in arbeit">In Arbeit</option>
+                <option value="erledigt">Erledigt</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Fällig am</label>
+              <input type="date" id="taskDueDate" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary btn-full" onclick="saveTask()">
+              <i class="fas fa-check"></i> Speichern
+            </button>
+            <button class="btn btn-ghost btn-full" id="deleteBtn" style="display:none" onclick="deleteTask()">
+              <i class="fas fa-trash"></i> Löschen
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctx-menu" id="ctxMenu">
+      <div class="ctx-item" data-action="edit"><i class="fas fa-pencil-alt"></i> Bearbeiten</div>
+      <div class="ctx-separator"></div>
+      <div class="ctx-item" data-action="toggle-done"><i class="fas fa-check-circle"></i> <span id="ctxToggleLabel">Als erledigt markieren</span></div>
+      <div class="ctx-item ctx-danger" data-action="delete"><i class="fas fa-trash"></i> Löschen</div>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/todo.js?v=<%= Date.now() %>"></script>
+    <script>
+      function toggleWsDropdown() {
+        document.getElementById("wsDropdown").classList.toggle("open");
+        document.getElementById("wsSelector").classList.toggle("open");
+      }
+      document.addEventListener("click", function (e) {
+        const sel = document.getElementById("wsSelector");
+        const dd = document.getElementById("wsDropdown");
+        if (!sel.contains(e.target) && !dd.contains(e.target)) {
+          dd.classList.remove("open");
+          sel.classList.remove("open");
+        }
+      });
+    </script>
+  </body>
+</html>

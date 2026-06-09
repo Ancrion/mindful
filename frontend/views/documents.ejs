@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Dokumente</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/documents.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="documents-main">
+        <div class="doc-toolbar">
+          <div class="doc-toolbar-top">
+            <h1 class="doc-heading">Dokumente</h1>
+            <div class="doc-toolbar-actions">
+              <div class="doc-search-wrap">
+                <i class="fas fa-search"></i>
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Durchsuchen&hellip;"
+                />
+              </div>
+              <button class="primary-btn" onclick="toggleUpload()">
+                <i class="fas fa-upload"></i> Hochladen
+              </button>
+            </div>
+          </div>
+          <div class="category-chips" id="categoryChips"></div>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Datei hier ablegen oder klicken zum Ausw&auml;hlen</p>
+            <input type="file" id="fileInput" hidden />
+          </div>
+          <div class="upload-fields" id="uploadFields" style="display:none">
+            <input type="text" id="docTitle" placeholder="Titel (optional)" />
+            <select id="docCategory">
+              <option value="">Keine Kategorie</option>
+              <option value="Privat">Privat</option>
+              <option value="Arbeit">Arbeit</option>
+              <option value="Finanzen">Finanzen</option>
+              <option value="Wichtig">Wichtig</option>
+            </select>
+            <button class="primary-btn" onclick="uploadDocument()">
+              <i class="fas fa-check"></i> Speichern
+            </button>
+            <button class="secondary-btn" onclick="cancelUpload()">Abbrechen</button>
+          </div>
+          <div class="upload-progress" id="uploadProgress" style="display:none">
+            <div class="upload-progress-bar" id="uploadProgressBar"></div>
+          </div>
+        </div>
+
+        <div class="doc-grid" id="docGrid"></div>
+
+        <div class="doc-empty" id="docEmpty" style="display:none">
+          <i class="fas fa-file-export"></i>
+          <h3>Noch keine Dokumente</h3>
+          <p>Lade deine ersten Dateien hoch.</p>
+          <button class="primary-btn" onclick="toggleUpload()">
+            <i class="fas fa-upload"></i> Erste Datei hochladen
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <div class="slide-over-overlay" id="slideOverOverlay" onclick="closeSlideOver()"></div>
+    <aside class="slide-over" id="slideOver">
+      <div class="slide-over-header">
+        <div class="slide-over-header-left">
+          <div class="slide-over-icon" id="slideIcon">
+            <i class="fas fa-file"></i>
+          </div>
+          <div>
+            <h2 id="slideTitle">Dokument</h2>
+            <span class="slide-cat-tag" id="slideCat"></span>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="closeSlideOver()" title="Schließen">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="slide-over-body" id="slideBody"></div>
+      <div class="slide-over-footer" id="slideFooter">
+        <a class="primary-btn" id="slideDownloadBtn" target="_blank">
+          <i class="fas fa-download"></i> Datei &ouml;ffnen
+        </a>
+        <button class="secondary-btn danger" onclick="confirmDelete()">
+          <i class="fas fa-trash"></i> L&ouml;schen
+        </button>
+      </div>
+    </aside>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/documents.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

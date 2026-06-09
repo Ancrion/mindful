@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/dashboard.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="breadcrumb">
+            Übersicht
+            <span class="bc-sep">/</span>
+            <span class="bc-ws" id="dashWsFilter" onclick="toggleWsFromCalendar(event)">
+              <span class="bc-ws-dot" id="dashWsDot" style="background:#999"></span>
+              <span id="dashWsLabel">Alle Bereiche</span>
+              <i class="fas fa-chevron-down bc-ws-chevron"></i>
+            </span>
+          </div>
+          <div class="topbar-right">
+            <h1>Willkommen zurück, <span id="userGreeting">User</span>.</h1>
+          </div>
+          <p class="subtitle">Hier ist der aktuelle Stand deiner Projekte.</p>
+        </header>
+
+        <div class="widget-grid-header">
+          <button class="widget-manage-btn" id="widgetManageBtn" title="Widgets verwalten">Widgets</button>
+        </div>
+
+        <section class="widget-grid" id="widgetGrid">
+          <div class="widget-loading"><i class="fas fa-spinner fa-spin"></i> Lade Widgets...</div>
+        </section>
+      <div class="global-timer" id="globalTimer" style="display:none">
+        <i class="fas fa-clock"></i>
+        <span id="globalTimerDisplay">00:00</span>
+      </div>
+      </main>
+    </div>
+
+    <div class="modal-overlay" id="widgetModal">
+      <div class="modal widget-modal">
+        <div class="modal-header">
+          <h2>Widgets verwalten</h2>
+          <button class="modal-close" id="widgetModalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-sub">Aktiviere oder deaktiviere Widgets per Klick. Ziehen zum Sortieren.</p>
+          <div class="widget-manager-list" id="widgetManagerList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctx-menu" id="ctxMenu">
+      <div class="ctx-item" data-action="edit"><i class="fas fa-pencil-alt"></i> Bearbeiten</div>
+      <div class="ctx-item" data-action="toggle" style="display:none"><i class="fas fa-check-circle"></i> <span id="ctxToggleLabel">Als erledigt markieren</span></div>
+      <div class="ctx-item ctx-danger" data-action="delete"><i class="fas fa-trash"></i> Löschen</div>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/index.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

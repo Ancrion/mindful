@@ -1,0 +1,138 @@
+<aside class="module-sidebar" id="mainSidebar">
+  <div class="module-top">
+    <div class="sidebar-header">
+      <button class="sidebar-toggle" onclick="toggleSidebar()" title="Sidebar umschalten">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+      <button class="sidebar-toggle" id="searchToggle" onclick="openSearch()" title="Suchen (Strg+K)">
+        <i class="fas fa-search"></i>
+      </button>
+      <button class="sidebar-toggle" id="darkModeToggle" onclick="toggleDarkMode()" title="Dark Mode">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+    <a href="/profile" class="module-user">
+      <div class="user-avatar" id="userInitials">JD</div>
+      <div class="user-info">
+        <strong id="userNameDisplay">...</strong>
+        <small onclick="event.stopPropagation(); logout()">Abmelden</small>
+      </div>
+    </a>
+    <div class="sidebar-ws" id="sidebarWs">
+      <div class="ws-sb-trigger" onclick="toggleWsSidebar(event)" title="Workspace wechseln">
+        <span class="ws-sb-dot" id="wsSbDot" style="background:#999"></span>
+        <span class="ws-sb-name" id="wsSbName">Alle</span>
+      </div>
+      <div class="ws-sb-dropdown" id="wsSbDropdown">
+        <div class="ws-sb-dd-inner">
+          <div class="ws-sb-dd-item active" data-id="" onclick="event.stopPropagation();selectWsSidebar('')">
+            <i class="fas fa-layer-group"></i>
+            <span>Alle Bereiche</span>
+            <span class="ws-sb-check"><i class="fas fa-check"></i></span>
+          </div>
+          <div class="ws-sb-dd-divider"></div>
+          <div id="wsSbList"></div>
+          <div class="ws-sb-dd-divider"></div>
+          <div class="ws-sb-dd-create">
+            <input type="text" id="wsSbNewName" placeholder="Neuer Workspace…" />
+            <div class="ws-sb-dd-colors" id="wsSbNewColors">
+              <span class="ws-color-dot active" data-color="orange" style="background:#f19a3d"></span>
+              <span class="ws-color-dot" data-color="blue" style="background:#4c91ff"></span>
+              <span class="ws-color-dot" data-color="green" style="background:#78b85f"></span>
+              <span class="ws-color-dot" data-color="pink" style="background:#cf79ff"></span>
+              <span class="ws-color-dot" data-color="red" style="background:#ff5b50"></span>
+              <span class="ws-color-dot" data-color="purple" style="background:#8B5CF6"></span>
+              <span class="ws-color-dot" data-color="teal" style="background:#14B8A6"></span>
+              <span class="ws-color-dot" data-color="yellow" style="background:#F59E0B"></span>
+            </div>
+            <button class="ws-sb-add-btn" onclick="event.stopPropagation();quickCreateWsSidebar()">
+              <i class="fas fa-plus"></i> Hinzufügen
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav class="module-nav">
+      <a href="/" class="module-link <%= currentPage === 'dashboard' ? 'active' : '' %>">
+        <i class="fas fa-th-large"></i> <span>Dashboard</span>
+      </a>
+      <a href="/todo" class="module-link <%= currentPage === 'todo' ? 'active' : '' %>">
+        <i class="fas fa-check-circle"></i> <span>To-Do</span>
+      </a>
+      <a href="/notes" class="module-link <%= currentPage === 'notes' ? 'active' : '' %>">
+        <i class="fas fa-sticky-note"></i> <span>Notizen</span>
+      </a>
+      <a href="/calendar" class="module-link <%= currentPage === 'calendar' ? 'active' : '' %>">
+        <i class="fas fa-calendar-alt"></i> <span>Kalender</span>
+      </a>
+      <a href="/pomodoro" class="module-link <%= currentPage === 'pomodoro' ? 'active' : '' %>">
+        <i class="fas fa-clock"></i> <span>Pomodoro</span>
+      </a>
+      <a href="/tracking" class="module-link <%= currentPage === 'tracking' ? 'active' : '' %>">
+        <i class="fas fa-stopwatch"></i> <span>Zeiterfassung</span>
+      </a>
+    </nav>
+  </div>
+</aside>
+
+<div class="search-overlay" id="searchOverlay" onclick="closeSearch(event)">
+  <div class="search-modal" onclick="event.stopPropagation()">
+    <div class="search-input-wrap">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Durchsuchen…" autocomplete="off" spellcheck="false" />
+      <span class="search-hint">ESC</span>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const layout = document.querySelector(".app-layout");
+    const expanded = layout.classList.toggle("sidebar-expanded");
+    const icon = document.querySelector(".sidebar-toggle i");
+    if (icon) icon.className = expanded ? "fas fa-chevron-left" : "fas fa-chevron-right";
+  }
+  function toggleWsSidebar(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    const dd = document.getElementById("wsSbDropdown");
+    const open = dd.classList.toggle("open");
+      if (open) {
+        document.body.appendChild(dd);
+        dd.style.transform = "none";
+        const trigger = document.querySelector(".ws-sb-trigger");
+        const rect = trigger.getBoundingClientRect();
+        if (document.querySelector(".sidebar-expanded")) {
+          dd.style.top = (rect.bottom + 2) + "px";
+          dd.style.left = "8px";
+          dd.style.right = "auto";
+          dd.style.bottom = "auto";
+        } else {
+          dd.style.top = rect.top + "px";
+          dd.style.left = (rect.right + 4) + "px";
+          dd.style.right = "auto";
+          dd.style.bottom = "auto";
+        }
+      } else {
+        const ws = document.getElementById("sidebarWs");
+        if (ws && dd.parentNode !== ws) ws.appendChild(dd);
+      }
+  }
+  document.addEventListener("click", function (e) {
+    const ws = document.getElementById("sidebarWs");
+    const dd = document.getElementById("wsSbDropdown");
+    const calFilter = document.getElementById("calWsFilter");
+    const dashFilter = document.getElementById("dashWsFilter");
+    const inWs = ws && ws.contains(e.target);
+    const inDd = dd && dd.contains(e.target);
+    const inCal = calFilter && calFilter.contains(e.target);
+    const inDash = dashFilter && dashFilter.contains(e.target);
+    if (!inWs && !inDd && !inCal && !inDash) {
+      if (dd) {
+        dd.classList.remove("open");
+        const ws = document.getElementById("sidebarWs");
+        if (ws && dd.parentNode !== ws) ws.appendChild(dd);
+      }
+    }
+  });
+</script>

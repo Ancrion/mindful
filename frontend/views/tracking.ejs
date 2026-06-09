@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Zeiterfassung</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/tracking.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="tracking-main">
+        <header class="tracking-header">
+          <div class="breadcrumb">Fokus / Zeiterfassung</div>
+          <h1>Zeiterfassung</h1>
+          <p class="subtitle">Starte und stoppe die Zeit für deine Aufgaben.</p>
+        </header>
+
+        <div class="tracking-content">
+          <!-- Active Timer Card -->
+          <div class="tracking-timer-card" id="trackingTimerCard" style="display:none">
+            <div class="tracking-timer-info">
+              <span class="tracking-timer-task" id="trackingTimerTask">–</span>
+              <span class="tracking-timer-time" id="trackingTimerTime">00:00:00</span>
+            </div>
+            <button class="tracking-btn tracking-btn-stop" id="trackingStopBtn" onclick="stopTracking()">
+              <i class="fas fa-stop"></i> Stoppen
+            </button>
+          </div>
+
+          <!-- Start Tracking Card -->
+          <div class="tracking-start-card" id="trackingStartCard">
+            <h2><i class="fas fa-play-circle"></i> Zeit erfassen</h2>
+            <div class="tracking-start-form">
+              <select id="trackingTaskSelect">
+                <option value="">– Aufgabe wählen –</option>
+              </select>
+              <input type="text" id="trackingDescription" placeholder="Beschreibung (optional)" />
+              <button class="tracking-btn tracking-btn-start" onclick="startTracking()">
+                <i class="fas fa-play"></i> Start
+              </button>
+            </div>
+          </div>
+
+          <!-- Today's Entries -->
+          <div class="tracking-entries-card">
+            <div class="tracking-entries-header">
+              <h2><i class="fas fa-list"></i> Heute</h2>
+              <span class="tracking-total-time" id="trackingTotalTime">00:00</span>
+            </div>
+            <div class="tracking-entries-list" id="trackingEntriesList">
+              <div class="tracking-loading">Lade Einträge...</div>
+            </div>
+          </div>
+        </div>
+
+      <div class="global-timer" id="globalTimer" style="display:none">
+        <i class="fas fa-clock"></i>
+        <span id="globalTimerDisplay">00:00</span>
+      </div>
+      </main>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/tracking.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>
