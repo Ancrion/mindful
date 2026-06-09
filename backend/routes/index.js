@@ -17,6 +17,8 @@ router.get("/notizen", auth, (req, res) => res.render("notes", { currentPage: "n
 router.get("/pomodoro", auth, (req, res) => res.render("pomodoro", { currentPage: "pomodoro" }));
 router.get("/tracking", auth, (req, res) => res.render("tracking", { currentPage: "tracking" }));
 router.get("/zeiterfassung", auth, (req, res) => res.render("tracking", { currentPage: "tracking" }));
+router.get("/documents", auth, (req, res) => res.render("documents", { currentPage: "documents" }));
+router.get("/dokumente", auth, (req, res) => res.render("documents", { currentPage: "documents" }));
 router.get("/profile", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 

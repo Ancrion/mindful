@@ -47,25 +47,54 @@ router.post("/", auth, (req, res) => {
 
 router.put("/:id", auth, (req, res) => {
   try {
-    const { titel, beschreibung, start_datum, end_datum, farbe, ort, dauer, wiederholung, ganztag, erinnerung, workspace_id } = req.body;
-
-    db.prepare(
-      "UPDATE events SET titel=?, beschreibung=?, start_datum=?, end_datum=?, farbe=?, ort=?, dauer=?, wiederholung=?, ganztag=?, erinnerung=?, workspace_id=? WHERE id=? AND user_id=?",
-    ).run(
-      titel,
-      beschreibung || null,
-      start_datum,
-      end_datum || null,
-      farbe,
-      ort || null,
-      dauer || 60,
-      wiederholung || "none",
-      ganztag ? 1 : 0,
-      erinnerung || "keine",
-      workspace_id || null,
-      req.params.id,
-      req.user.id,
-    );
+    const sets = [];
+    const params = [];
+    if (req.body.titel !== undefined) {
+      sets.push("titel=?");
+      params.push(req.body.titel);
+    }
+    if (req.body.beschreibung !== undefined) {
+      sets.push("beschreibung=?");
+      params.push(req.body.beschreibung);
+    }
+    if (req.body.start_datum !== undefined) {
+      sets.push("start_datum=?");
+      params.push(req.body.start_datum);
+    }
+    if (req.body.end_datum !== undefined) {
+      sets.push("end_datum=?");
+      params.push(req.body.end_datum);
+    }
+    if (req.body.farbe !== undefined) {
+      sets.push("farbe=?");
+      params.push(req.body.farbe);
+    }
+    if (req.body.ort !== undefined) {
+      sets.push("ort=?");
+      params.push(req.body.ort);
+    }
+    if (req.body.dauer !== undefined) {
+      sets.push("dauer=?");
+      params.push(req.body.dauer);
+    }
+    if (req.body.wiederholung !== undefined) {
+      sets.push("wiederholung=?");
+      params.push(req.body.wiederholung);
+    }
+    if (req.body.ganztag !== undefined) {
+      sets.push("ganztag=?");
+      params.push(req.body.ganztag ? 1 : 0);
+    }
+    if (req.body.erinnerung !== undefined) {
+      sets.push("erinnerung=?");
+      params.push(req.body.erinnerung);
+    }
+    if (req.body.workspace_id !== undefined) {
+      sets.push("workspace_id=?");
+      params.push(req.body.workspace_id || null);
+    }
+    params.push(req.params.id, req.user.id);
+    db.prepare(`UPDATE events SET ${sets.join(", ")} WHERE id=? AND user_id=?`).run(...params);
 
     res.json({ message: "Event geupdated" });
   } catch (err) {
