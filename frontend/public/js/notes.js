@@ -51,6 +51,7 @@ async function init() {
   const user = await checkAuthStatus();
   if (!user) return;
 
+  showEditor(false);
   await loadData();
 
   const hash = window.location.hash.replace("#", "");
@@ -432,10 +433,17 @@ window.openNoteById = function (id) {
   if (note) openNote(note);
 };
 
+function showEditor(show) {
+  document.getElementById("editorEmpty").style.display = show ? "none" : "";
+  document.getElementById("noteContent").style.display = show ? "" : "none";
+  document.getElementById("noteTitle").disabled = !show;
+}
+
 function openNote(note) {
   currentNoteId = note.id;
   isDirty = false;
 
+  showEditor(true);
   document.getElementById("noteTitle").value = note.titel || "";
   document.getElementById("noteContent").innerHTML = note.inhalt || "";
 
@@ -479,6 +487,7 @@ window.deleteNote = async function (noteId) {
       document.getElementById("noteTitle").value = "";
       document.getElementById("noteContent").innerHTML = "";
       document.getElementById("currentFolderName").innerHTML = "&nbsp;";
+      showEditor(false);
       setSaveStatus("idle", "Bereit");
     }
     await loadData();

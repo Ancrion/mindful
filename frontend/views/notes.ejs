@@ -115,12 +115,21 @@
               </button>
             </div>
           </div>
+          <div class="editor-empty" id="editorEmpty">
+            <div class="editor-empty-icon"><i class="far fa-file-alt"></i></div>
+            <h3>Keine Notiz geöffnet</h3>
+            <p>Wähle eine Notiz aus dem Ordnerbaum oder erstelle eine neue.</p>
+            <button class="primary-btn" onclick="createNewNote()">
+              <i class="fas fa-plus"></i> Neue Notiz
+            </button>
+          </div>
           <div
             class="note-editor"
             id="noteContent"
             contenteditable="true"
             data-placeholder="Schreibe etwas..."
             oninput="onContentChange()"
+            style="display:none"
           ></div>
         </div>
       <div class="global-timer" id="globalTimer" style="display:none">
