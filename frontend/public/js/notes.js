@@ -433,10 +433,18 @@ window.openNoteById = function (id) {
   if (note) openNote(note);
 };
 
+let previewActive = false;
+
 function showEditor(show) {
   document.getElementById("editorEmpty").style.display = show ? "none" : "";
-  document.getElementById("noteContent").style.display = show ? "" : "none";
+  document.getElementById("noteContent").style.display = show && !previewActive ? "" : "none";
+  document.getElementById("notePreview").style.display = show && previewActive ? "" : "none";
   document.getElementById("noteTitle").disabled = !show;
+  document.querySelector(".editor-main-card").classList.toggle("editor-disabled", !show);
+  if (!show) {
+    previewActive = false;
+    document.getElementById("previewToggle").classList.remove("active");
+  }
 }
 
 function openNote(note) {
@@ -446,6 +454,9 @@ function openNote(note) {
   showEditor(true);
   document.getElementById("noteTitle").value = note.titel || "";
   document.getElementById("noteContent").innerHTML = note.inhalt || "";
+  if (previewActive) {
+    document.getElementById("notePreview").innerHTML = note.inhalt || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+  }
 
   const folderName = note.ordner_id
     ? (allFolders.find((f) => f.id === note.ordner_id)?.name || "")
@@ -540,6 +551,23 @@ window.deleteFolder = async function (folderId) {
   }
 };
 
+window.togglePreview = function () {
+  if (!currentNoteId) return;
+  previewActive = !previewActive;
+  const preview = document.getElementById("notePreview");
+  const editor = document.getElementById("noteContent");
+  const btn = document.getElementById("previewToggle");
+  btn.classList.toggle("active", previewActive);
+  if (previewActive) {
+    preview.innerHTML = editor.innerHTML || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+    editor.style.display = "none";
+    preview.style.display = "";
+  } else {
+    editor.style.display = "";
+    preview.style.display = "none";
+  }
+};
+
 window.saveNote = async function () {
   if (!currentNoteId) return;
 
@@ -560,6 +588,9 @@ window.saveNote = async function () {
     const idx = allNotes.findIndex((n) => n.id === currentNoteId);
     if (idx !== -1) allNotes[idx] = updated;
     renderTree();
+    if (previewActive) {
+      document.getElementById("notePreview").innerHTML = inhalt || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+    }
   } else {
     setSaveStatus("error", "Fehler");
     const err = res ? await res.json().catch(() => ({})) : {};

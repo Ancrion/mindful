@@ -107,6 +107,9 @@
                 <i class="fas fa-circle" style="font-size:6px;color:var(--text-secondary);vertical-align:middle"></i>
                 <span id="saveStatusText">Bereit</span>
               </span>
+              <button class="toolbar-btn" onclick="togglePreview()" id="previewToggle" title="Vorschau">
+                <i class="fas fa-eye"></i>
+              </button>
               <button class="toolbar-btn" onclick="saveNote()" title="Speichern (Strg+S)">
                 <i class="fas fa-save"></i>
               </button>
@@ -131,6 +134,7 @@
             oninput="onContentChange()"
             style="display:none"
           ></div>
+          <div class="note-preview" id="notePreview" style="display:none"></div>
         </div>
       <div class="global-timer" id="globalTimer" style="display:none">
         <i class="fas fa-clock"></i>
