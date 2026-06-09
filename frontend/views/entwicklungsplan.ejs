@@ -422,13 +422,15 @@ const messagesRouter = require("./routes/messages");
 app.use("/api/leaderboard", leaderboardRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/messages", messagesRouter);</script>
-<script type="text/plain" id="sascha-3"># Auf dem VPS ausführen:
-cd /home/ubuntu/mindful_uni
-pm2 start backend/app.js --name mindful-uni
-pm2 save
+<script type="text/plain" id="sascha-3"># Lokal starten:
+cd /home/jaro/mindful_github
+npm start
 
-# Port in backend/app.js ggf. ändern:
-const PORT = process.env.PORT || 3001;</script>
+# Oder mit auto-reload bei Änderungen:
+npm run dev
+
+# Port (in backend/server.js):
+const PORT = process.env.PORT || 3000;</script>
 <script type="text/plain" id="jaro-1">const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
@@ -1792,8 +1794,8 @@ git push --tags</script>
             desc:"Neue API-Router einbinden: leaderboard, users, messages per app.use('/api', ...).",
             commit:"git commit -m \"wire up leaderboard users and messages api routers\"" },
           { id:"sascha-3", file:"Server",
-            desc:"PM2-Prozess für mindful_uni: pm2 start backend/app.js --name mindful-uni. Port ggf. auf 3001 ändern.",
-            commit:"pm2 start backend/app.js --name mindful-uni" }
+            desc:"Lokaler Start: npm start → node backend/server.js. Port 3000. Entwicklungsmodus: npm run dev (nodemon).",
+            commit:"git commit -m \"configure local dev startup with nodemon\"" }
         ]
       },
       jaro: {
