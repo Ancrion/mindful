@@ -256,6 +256,13 @@ let _searchAbortController = null;
 let _searchItems = [];
 let _searchActiveIndex = -1;
 
+const _searchIconMap = {
+  todo: '<i class="tasks fas fa-check-circle"></i>',
+  notiz: '<i class="notes fas fa-sticky-note"></i>',
+  event: '<i class="events fas fa-calendar-alt"></i>',
+  dokument: '<i class="docs fas fa-file"></i>',
+};
+
 window.openSearch = function () {
   const overlay = document.getElementById("searchOverlay");
   overlay.classList.add("open");
@@ -265,7 +272,7 @@ window.openSearch = function () {
   _searchActiveIndex = -1;
   document.getElementById("searchResults").innerHTML = '<div class="search-empty">Suchbegriff eingeben…</div>';
   setTimeout(() => input.focus(), 50);
-  loadSuggestions();
+  _fetchSuggestions();
 };
 
 window.closeSearch = function (e) {
@@ -288,31 +295,24 @@ function _highlightText(text, query) {
   return escaped.replace(regex, '<mark class="search-highlight">$1</mark>');
 }
 
-function _buildItemHtml(item, q) {
-  const iconMap = {
-    todo: '<i class="tasks fas fa-check-circle"></i>',
-    notiz: '<i class="notes fas fa-sticky-note"></i>',
-    event: '<i class="events fas fa-calendar-alt"></i>',
-    dokument: '<i class="docs fas fa-file"></i>',
-  };
-  const icon = iconMap[item.typ] || '<i class="fas fa-file"></i>';
-  const title = q ? _highlightText(item.titel, q) : escHtml(item.titel);
-
-  let meta = "";
-  if (item.typ === "todo" && item.status) {
-    meta = escHtml(item.status);
-  } else if (item.typ === "event" && item.start_datum) {
+function _formatMeta(item) {
+  if (item.typ === "todo" && item.status) return escHtml(item.status);
+  if (item.typ === "event" && item.start_datum) {
     const d = new Date(item.start_datum);
-    meta = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
-  } else if (item.typ === "dokument") {
-    meta = item.dateiname ? escHtml(item.dateiname) : (item.dateityp || "Datei");
+    return `${String(d.getDate()).padStart(2,"0")}.${String(d.getMonth()+1).padStart(2,"0")}.${d.getFullYear()}`;
   }
+  if (item.typ === "dokument") return item.dateiname ? escHtml(item.dateiname) : (item.dateityp || "Datei");
+  return "";
+}
 
+function _buildItemHtml(item, q) {
+  const icon = _searchIconMap[item.typ] || '<i class="fas fa-file"></i>';
+  const title = q ? _highlightText(item.titel, q) : escHtml(item.titel);
+  const meta = _formatMeta(item);
   let snippet = "";
   if (item.snippet && item.snippet !== item.titel) {
     snippet = `<span class="si-snippet">${q ? _highlightText(item.snippet, q) : escHtml(item.snippet)}</span>`;
   }
-
   return { html: `<div class="search-item" data-index="${_searchItems.length}" onclick="navigateToResult(${_searchItems.length})">
     ${icon}
     <span class="si-title">${title}</span>
@@ -321,8 +321,30 @@ function _buildItemHtml(item, q) {
   </div>`, item };
 }
 
+function _renderSuggestions(data) {
+  _searchItems = [];
+  _searchActiveIndex = -1;
+  let html = '<div class="search-group"><div class="search-group-header"><i class="fas fa-clock"></i>Zuletzt verwendet</div>';
+  let count = 0;
+  ["todos", "notizen", "events", "dokumente"].forEach(key => {
+    (data[key] || []).forEach(item => {
+      const result = _buildItemHtml(item, "");
+      _searchItems.push(result.item);
+      html += result.html;
+      count++;
+    });
+  });
+  html += '</div>';
+  if (!count) {
+    document.getElementById("searchResults").innerHTML = '<div class="search-empty">Suchbegriff eingeben…</div>';
+    return;
+  }
+  document.getElementById("searchResults").innerHTML = html;
+  _searchActiveIndex = 0;
+  _updateActiveItem();
+}
+
 function _renderResults(data, q) {
-  const resultsEl = document.getElementById("searchResults");
   _searchItems = [];
   _searchActiveIndex = -1;
 
@@ -349,12 +371,12 @@ function _renderResults(data, q) {
     html += '</div>';
   });
 
+  const el = document.getElementById("searchResults");
   if (total === 0) {
-    resultsEl.innerHTML = '<div class="search-empty">Keine Ergebnisse gefunden</div>';
+    el.innerHTML = '<div class="search-empty">Keine Ergebnisse gefunden</div>';
     return;
   }
-
-  resultsEl.innerHTML = html;
+  el.innerHTML = html;
   _searchActiveIndex = 0;
   _updateActiveItem();
 }
@@ -367,19 +389,14 @@ function _updateActiveItem() {
   if (active) active.scrollIntoView({ block: "nearest" });
 }
 
-async function loadSuggestions() {
+async function _fetchSuggestions() {
   if (_searchAbortController) _searchAbortController.abort();
   _searchAbortController = new AbortController();
-
   const res = await authFetch(`${API_BASE}/search?q=`);
   if (!res || !res.ok) return;
   const data = await res.json();
   if (!data.suggestions) return;
-
-  const hasAny = data.todos.length || data.notizen.length || data.events.length || data.dokumente.length;
-  if (!hasAny) return;
-
-  _renderResults(data, "");
+  _renderSuggestions(data);
 }
 
 window.navigateToResult = function (index) {
@@ -387,16 +404,12 @@ window.navigateToResult = function (index) {
   const item = _searchItems[index];
   closeSearch();
   const paths = { todo: "/todo", notiz: "/notes", event: "/calendar", dokument: "/documents" };
-  const base = paths[item.typ] || "/";
-  window.location.href = item.id ? `${base}#${item.typ}-${item.id}` : base;
+  window.location.href = item.id ? `${paths[item.typ] || "/"}#${item.typ}-${item.id}` : (paths[item.typ] || "/");
 };
 
 async function performSearch(q) {
   const resultsEl = document.getElementById("searchResults");
-  if (!q.trim()) {
-    loadSuggestions();
-    return;
-  }
+  if (!q.trim()) { _fetchSuggestions(); return; }
 
   if (_searchAbortController) _searchAbortController.abort();
   _searchAbortController = new AbortController();
@@ -407,10 +420,8 @@ async function performSearch(q) {
     if (!signal.aborted) resultsEl.innerHTML = '<div class="search-empty">Fehler bei der Suche</div>';
     return;
   }
-
   const data = await res.json();
   if (signal.aborted) return;
-
   _renderResults(data, q);
 }
 
@@ -421,7 +432,6 @@ function escHtml(s) {
   return d.innerHTML;
 }
 
-// Keyboard shortcuts
 document.addEventListener("keydown", function (e) {
   if ((e.metaKey || e.ctrlKey) && e.key === "k") {
     e.preventDefault();
@@ -429,13 +439,10 @@ document.addEventListener("keydown", function (e) {
   }
   if (e.key === "Escape") {
     const overlay = document.getElementById("searchOverlay");
-    if (overlay.classList.contains("open")) {
-      closeSearch();
-    }
+    if (overlay.classList.contains("open")) closeSearch();
   }
 });
 
-// Search input with debounce
 document.addEventListener("input", function (e) {
   if (e.target.id === "searchInput") {
     clearTimeout(_searchTimeout);
@@ -443,27 +450,23 @@ document.addEventListener("input", function (e) {
   }
 });
 
-// Keyboard navigation within search results (arrow keys + enter)
 document.addEventListener("keydown", function (e) {
-  if (document.getElementById("searchOverlay").classList.contains("open")) {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (_searchItems.length > 0) {
-        _searchActiveIndex = (_searchActiveIndex + 1) % _searchItems.length;
-        _updateActiveItem();
-      }
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (_searchItems.length > 0) {
-        _searchActiveIndex = (_searchActiveIndex - 1 + _searchItems.length) % _searchItems.length;
-        _updateActiveItem();
-      }
-    } else if (e.key === "Enter") {
-      if (_searchItems.length > 0 && _searchActiveIndex >= 0) {
-        e.preventDefault();
-        navigateToResult(_searchActiveIndex);
-      }
+  if (!document.getElementById("searchOverlay").classList.contains("open")) return;
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (_searchItems.length) {
+      _searchActiveIndex = (_searchActiveIndex + 1) % _searchItems.length;
+      _updateActiveItem();
     }
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if (_searchItems.length) {
+      _searchActiveIndex = (_searchActiveIndex - 1 + _searchItems.length) % _searchItems.length;
+      _updateActiveItem();
+    }
+  } else if (e.key === "Enter" && _searchItems.length > 0 && _searchActiveIndex >= 0) {
+    e.preventDefault();
+    navigateToResult(_searchActiveIndex);
   }
 });
 

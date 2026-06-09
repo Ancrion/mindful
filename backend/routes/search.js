@@ -8,7 +8,7 @@ router.get("/", auth, (req, res) => {
     const q = (req.query.q || "").trim();
     const userId = req.user.id;
     const limit = 10;
-    const recentLimit = 5;
+    const recentLimit = 8;
 
     if (!q) {
       const recentTodos = db
