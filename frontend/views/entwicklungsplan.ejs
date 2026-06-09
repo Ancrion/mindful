@@ -396,9 +396,7 @@ module.exports = db;</script>
     FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL
   );
 `);</script>
-<script type="text/plain" id="sascha-1">// In backend/routes/index.js:
-
-router.get("/leaderboard", auth, (req, res) =>
+<script type="text/plain" id="sascha-1">router.get("/leaderboard", auth, (req, res) =>
   res.render("leaderboard", { currentPage: "leaderboard" }));
 router.get("/rangliste", auth, (req, res) =>
   res.render("leaderboard", { currentPage: "leaderboard" }));
@@ -414,9 +412,7 @@ router.get("/profil", auth, (req, res) =>
   res.render("profile", { currentPage: "profile" }));
 router.get("/entwicklungsplan", auth, (req, res) =>
   res.render("entwicklungsplan", { currentPage: "entwicklungsplan" }));</script>
-<script type="text/plain" id="sascha-2">// In backend/app.js (nach den anderen Routen):
-
-const leaderboardRouter = require("./routes/leaderboard");
+<script type="text/plain" id="sascha-2">const leaderboardRouter = require("./routes/leaderboard");
 const usersRouter = require("./routes/users");
 const messagesRouter = require("./routes/messages");
 
@@ -609,9 +605,7 @@ router.get("/unread", auth, (req, res) => {
 });
 
 module.exports = router;</script>
-<script type="text/plain" id="jaro-4">// Ersetze den gesamten PUT-Handler in kalender.js:
-
-router.put("/:id", auth, (req, res) => {
+<script type="text/plain" id="jaro-4">router.put("/:id", auth, (req, res) => {
   try {
     const sets = [];
     const params = [];
@@ -635,9 +629,7 @@ router.put("/:id", auth, (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });</script>
-<script type="text/plain" id="jaro-5">// Im PUT-Handler von todos.js:
-
-const { titel, beschreibung, status, erledigt, workspace_id, prioritaet, schritte } = req.body;
+<script type="text/plain" id="jaro-5">const { titel, beschreibung, status, erledigt, workspace_id, prioritaet, schritte } = req.body;
 const faellig = req.body.faellig !== undefined
   ? req.body.faellig
   : (req.body.due_date ?? null);
@@ -665,114 +657,362 @@ WHERE id=? AND user_id=?`).run(
   schritte ?? todo.schritte,
   req.params.id, req.user.id,
 );</script>
-<script type="text/plain" id="jaro-6">// In POST-Handler:
-const note = db.prepare(
-  `SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe
-   FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id
-   WHERE n.id = ?`
-).get(result.lastInsertRowid);
-res.status(201).json(note);
+<script type="text/plain" id="jaro-6">    const note = db
+      .prepare("SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id WHERE n.id = ?")
+      .get(result.lastInsertRowid);
 
-// In PUT-Handler (nach UPDATE):
-const note = db.prepare(
-  `SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe
-   FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id
-   WHERE n.id = ? AND n.user_id = ?`
-).get(req.params.id, req.user.id);
-res.json(note);</script>
-<script type="text/plain" id="jaro-7">// Such-Query fix (aktualisiert → erstellt):
-const recentNotes = db.prepare(
-  `SELECT id, titel, NULL AS snippet, 'notiz' AS typ
-   FROM notizen WHERE user_id = ?
-   ORDER BY COALESCE(aktualisiert, erstellt) DESC LIMIT ?`
-).all(userId, recentLimit);
+    res.status(201).json(note);
+});
 
-// 8 statt 10 Recent-Results
-const recentLimit = 8;
+router.put("/:id", auth, (req, res) => {
+  try {
+    const sets = [];
+    const params = [];
+    if (req.body.titel !== undefined) {
+      sets.push("titel=?");
+      params.push(req.body.titel);
+    }
+    if (req.body.inhalt !== undefined) {
+      sets.push("inhalt=?");
+      params.push(req.body.inhalt);
+    }
+    if (req.body.farbe !== undefined) {
+      sets.push("farbe=?");
+      params.push(req.body.farbe);
+    }
+    if (req.body.ordner_id !== undefined || req.body.ordnerId !== undefined) {
+      sets.push("ordner_id=?");
+      params.push(req.body.ordner_id ?? req.body.ordnerId ?? null);
+    }
+    if (req.body.workspace_id !== undefined) {
+      sets.push("workspace_id=?");
+      params.push(req.body.workspace_id || null);
+    }
+    sets.push("aktualisiert=datetime('now', 'localtime')");
+    params.push(req.params.id, req.user.id);
+    db.prepare(`UPDATE notizen SET ${sets.join(", ")} WHERE id=? AND user_id=?`).run(...params);
 
-// AbortController im Frontend:
-let searchController;
-function openSearch() {
-  if (searchController) searchController.abort();
-  searchController = new AbortController();
-  fetch(url, { signal: searchController.signal })
-    .then(/* ... */)
-    .catch(err => {
-      if (err.name !== 'AbortError') console.error(err);
-    });
-}</script>
-<script type="text/plain" id="jaro-8">// In notes.js:
+    const note = db
+      .prepare("SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id WHERE n.id = ? AND n.user_id = ?")
+      .get(req.params.id, req.user.id);
 
-// showEditor Funktion:
-let previewActive = false;
+    res.json(note);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});</script>
+<script type="text/plain" id="jaro-7">const express = require("express");
+const router = express.Router();
+const db = require("../database/db");
+const auth = require("../middleware/auth");
+
+router.get("/", auth, (req, res) => {
+  try {
+    const q = (req.query.q || "").trim();
+    const userId = req.user.id;
+    const limit = 10;
+    const recentLimit = 8;
+
+    if (!q) {
+      const recentTodos = db
+        .prepare("SELECT id, titel, status, NULL AS snippet, 'todo' AS typ FROM todos WHERE user_id = ? ORDER BY erstellt DESC LIMIT ?")
+        .all(userId, recentLimit);
+      const recentNotes = db
+        .prepare("SELECT id, titel, NULL AS snippet, 'notiz' AS typ FROM notizen WHERE user_id = ? ORDER BY COALESCE(aktualisiert, erstellt) DESC LIMIT ?")
+        .all(userId, recentLimit);
+      const recentEvents = db
+        .prepare("SELECT id, titel, start_datum, NULL AS snippet, 'event' AS typ FROM events WHERE user_id = ? ORDER BY id DESC LIMIT ?")
+        .all(userId, recentLimit);
+      const recentDocs = db
+        .prepare("SELECT id, titel, typ AS dateityp, NULL AS snippet, 'dokument' AS typ FROM dokumente WHERE user_id = ? ORDER BY id DESC LIMIT ?")
+        .all(userId, recentLimit);
+      return res.json({ todos: recentTodos, notizen: recentNotes, events: recentEvents, dokumente: recentDocs, suggestions: true });
+    }
+
+    const like = `%${q}%`;
+
+    const todos = db
+      .prepare("SELECT id, titel, status, SUBSTR(beschreibung, 1, 120) AS snippet, 'todo' AS typ FROM todos WHERE user_id = ? AND (titel LIKE ? OR beschreibung LIKE ?) LIMIT ?")
+      .all(userId, like, like, limit);
+
+    const notizen = db
+      .prepare("SELECT id, titel, SUBSTR(inhalt, 1, 120) AS snippet, 'notiz' AS typ FROM notizen WHERE user_id = ? AND (titel LIKE ? OR inhalt LIKE ?) LIMIT ?")
+      .all(userId, like, like, limit);
+
+    const events = db
+      .prepare("SELECT id, titel, start_datum, SUBSTR(beschreibung, 1, 120) AS snippet, 'event' AS typ FROM events WHERE user_id = ? AND (titel LIKE ? OR beschreibung LIKE ?) LIMIT ?")
+      .all(userId, like, like, limit);
+
+    const dokumente = db
+      .prepare("SELECT id, titel, typ AS dateityp, dateiname, 'dokument' AS typ FROM dokumente WHERE user_id = ? AND (titel LIKE ? OR dateiname LIKE ?) LIMIT ?")
+      .all(userId, like, like, limit);
+
+    res.json({ todos, notizen, events, dokumente, suggestions: false });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;</script>
+<script type="text/plain" id="jaro-8">let previewActive = false;
+
 function showEditor(show) {
   document.getElementById("editorEmpty").style.display = show ? "none" : "";
-  document.getElementById("noteContent").style.display =
-    show && !previewActive ? "" : "none";
-  document.getElementById("notePreview").style.display =
-    show && previewActive ? "" : "none";
+  document.getElementById("noteContent").style.display = show && !previewActive ? "" : "none";
+  document.getElementById("notePreview").style.display = show && previewActive ? "" : "none";
   document.getElementById("noteTitle").disabled = !show;
-  document.querySelector(".editor-main-card")
-    .classList.toggle("editor-disabled", !show);
+  document.querySelector(".editor-main-card").classList.toggle("editor-disabled", !show);
   if (!show) {
     previewActive = false;
     document.getElementById("previewToggle").classList.remove("active");
   }
 }
 
-// togglePreview Funktion:
-window.togglePreview = function() {
+window.togglePreview = function () {
   if (!currentNoteId) return;
   previewActive = !previewActive;
-  document.getElementById("previewToggle")
-    .classList.toggle("active", previewActive);
+  const preview = document.getElementById("notePreview");
+  const editor = document.getElementById("noteContent");
+  const btn = document.getElementById("previewToggle");
+  btn.classList.toggle("active", previewActive);
   if (previewActive) {
-    document.getElementById("notePreview").innerHTML =
-      document.getElementById("noteContent").innerHTML
-      || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
-    document.getElementById("noteContent").style.display = "none";
-    document.getElementById("notePreview").style.display = "";
+    preview.innerHTML = editor.innerHTML || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+    editor.style.display = "none";
+    preview.style.display = "";
   } else {
-    document.getElementById("noteContent").style.display = "";
-    document.getElementById("notePreview").style.display = "none";
+    editor.style.display = "";
+    preview.style.display = "none";
   }
 };
 
-// Error-Toast in saveNote:
-window.saveNote = async function() {
+window.saveNote = async function () {
   if (!currentNoteId) return;
-  // ... existing code ...
+
+  const titel = document.getElementById("noteTitle").value;
+  const inhalt = document.getElementById("noteContent").innerHTML;
+
+  setSaveStatus("saving", "Speichern\u2026");
+
+  const res = await authFetch(`${API_BASE}/notizen/${currentNoteId}`, {
+    method: "PUT",
+    body: JSON.stringify({ titel, inhalt }),
+  });
+
   if (res && res.ok) {
-    // existing success
+    isDirty = false;
+    setSaveStatus("saved", "Gespeichert");
+    const updated = await res.json();
+    const idx = allNotes.findIndex((n) => n.id === currentNoteId);
+    if (idx !== -1) allNotes[idx] = updated;
+    renderTree();
+    if (previewActive) {
+      document.getElementById("notePreview").innerHTML = inhalt || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+    }
   } else {
-    // NEU: Error-Toast
-    const err = res ? await res.json().catch(()=>({})) : {};
+    setSaveStatus("error", "Fehler");
+    const err = res ? await res.json().catch(() => ({})) : {};
     showToast(err.error || "Fehler beim Speichern", "error");
   }
 };</script>
-<script type="text/plain" id="jaro-9">// Such-Keyboard-Navigation in app.js:
-let searchIndex = -1;
-document.getElementById("searchInput").addEventListener("keydown", e => {
-  const items = document.querySelectorAll(".sr-item");
-  if (e.key === "ArrowDown") {
+<script type="text/plain" id="jaro-9">window.openSearch = function () {
+  const overlay = document.getElementById("searchOverlay");
+  overlay.classList.add("open");
+  const input = document.getElementById("searchInput");
+  input.value = "";
+  _searchItems = [];
+  _searchActiveIndex = -1;
+  document.getElementById("searchResults").innerHTML = '<div class="search-empty">Suchbegriff eingeben\u2026</div>';
+  setTimeout(() => input.focus(), 50);
+  _fetchSuggestions();
+};
+
+window.closeSearch = function (e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById("searchOverlay").classList.remove("open");
+  clearTimeout(_searchTimeout);
+  if (_searchAbortController) {
+    _searchAbortController.abort();
+    _searchAbortController = null;
+  }
+  _searchItems = [];
+  _searchActiveIndex = -1;
+};
+
+function _highlightText(text, query) {
+  if (!query || !text) return escHtml(text);
+  const escaped = escHtml(text);
+  const q = escHtml(query).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${q})`, "gi");
+  return escaped.replace(regex, '<mark class="search-highlight">$1</mark>');
+}
+
+function _formatMeta(item) {
+  if (item.typ === "todo" && item.status) return escHtml(item.status);
+  if (item.typ === "event" && item.start_datum) {
+    const d = new Date(item.start_datum);
+    return `${String(d.getDate()).padStart(2,"0")}.${String(d.getMonth()+1).padStart(2,"0")}.${d.getFullYear()}`;
+  }
+  if (item.typ === "dokument") return item.dateiname ? escHtml(item.dateiname) : (item.dateityp || "Datei");
+  return "";
+}
+
+function _buildItemHtml(item, q) {
+  const icon = _searchIconMap[item.typ] || '<i class="fas fa-file"></i>';
+  const title = q ? _highlightText(item.titel, q) : escHtml(item.titel);
+  const meta = _formatMeta(item);
+  let snippet = "";
+  if (item.snippet && item.snippet !== item.titel) {
+    snippet = `<span class="si-snippet">${q ? _highlightText(item.snippet, q) : escHtml(item.snippet)}</span>`;
+  }
+  return { html: `<div class="search-item" data-index="${_searchItems.length}" onclick="navigateToResult(${_searchItems.length})">
+    ${icon}
+    <span class="si-title">${title}</span>
+    ${meta ? `<span class="si-meta">${meta}</span>` : ""}
+    ${snippet}
+  </div>`, item };
+}
+
+function _renderSuggestions(data) {
+  _searchItems = [];
+  _searchActiveIndex = -1;
+  let html = '<div class="search-group"><div class="search-group-header"><i class="fas fa-clock"></i>Zuletzt verwendet</div>';
+  let count = 0;
+  ["todos", "notizen", "events", "dokumente"].forEach(key => {
+    (data[key] || []).forEach(item => {
+      const result = _buildItemHtml(item, "");
+      _searchItems.push(result.item);
+      html += result.html;
+      count++;
+    });
+  });
+  html += '</div>';
+  if (!count) {
+    document.getElementById("searchResults").innerHTML = '<div class="search-empty">Suchbegriff eingeben\u2026</div>';
+    return;
+  }
+  document.getElementById("searchResults").innerHTML = html;
+  _searchActiveIndex = 0;
+  _updateActiveItem();
+}
+
+function _renderResults(data, q) {
+  _searchItems = [];
+  _searchActiveIndex = -1;
+
+  const groups = [
+    { key: "todos", label: "Aufgaben", icon: "fa-check-circle" },
+    { key: "notizen", label: "Notizen", icon: "fa-sticky-note" },
+    { key: "events", label: "Termine", icon: "fa-calendar-alt" },
+    { key: "dokumente", label: "Dokumente", icon: "fa-file" },
+  ];
+
+  let html = "";
+  let total = 0;
+
+  groups.forEach(group => {
+    const items = data[group.key] || [];
+    if (items.length === 0) return;
+    total += items.length;
+    html += `<div class="search-group"><div class="search-group-header"><i class="fas ${group.icon}"></i>${group.label}</div>`;
+    items.forEach(item => {
+      const result = _buildItemHtml(item, q);
+      _searchItems.push(result.item);
+      html += result.html;
+    });
+    html += '</div>';
+  });
+
+  const el = document.getElementById("searchResults");
+  if (total === 0) {
+    el.innerHTML = '<div class="search-empty">Keine Ergebnisse gefunden</div>';
+    return;
+  }
+  el.innerHTML = html;
+  _searchActiveIndex = 0;
+  _updateActiveItem();
+}
+
+function _updateActiveItem() {
+  document.querySelectorAll(".search-item").forEach((el, i) => {
+    el.classList.toggle("active", i === _searchActiveIndex);
+  });
+  const active = document.querySelector(`.search-item[data-index="${_searchActiveIndex}"]`);
+  if (active) active.scrollIntoView({ block: "nearest" });
+}
+
+async function _fetchSuggestions() {
+  if (_searchAbortController) _searchAbortController.abort();
+  _searchAbortController = new AbortController();
+  const res = await authFetch(`${API_BASE}/search?q=`);
+  if (!res || !res.ok) return;
+  const data = await res.json();
+  if (!data.suggestions) return;
+  _renderSuggestions(data);
+}
+
+window.navigateToResult = function (index) {
+  if (index < 0 || index >= _searchItems.length) return;
+  const item = _searchItems[index];
+  closeSearch();
+  const paths = { todo: "/todo", notiz: "/notes", event: "/calendar", dokument: "/documents" };
+  window.location.href = item.id ? `${paths[item.typ] || "/"}#${item.typ}-${item.id}` : (paths[item.typ] || "/");
+};
+
+async function performSearch(q) {
+  const resultsEl = document.getElementById("searchResults");
+  if (!q.trim()) { _fetchSuggestions(); return; }
+
+  if (_searchAbortController) _searchAbortController.abort();
+  _searchAbortController = new AbortController();
+  const signal = _searchAbortController.signal;
+
+  const res = await authFetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`);
+  if (!res || !res.ok) {
+    if (!signal.aborted) resultsEl.innerHTML = '<div class="search-empty">Fehler bei der Suche</div>';
+    return;
+  }
+  const data = await res.json();
+  if (signal.aborted) return;
+  _renderResults(data, q);
+}
+
+document.addEventListener("keydown", function (e) {
+  if ((e.metaKey || e.ctrlKey) && e.key === "k") {
     e.preventDefault();
-    searchIndex = Math.min(searchIndex + 1, items.length - 1);
-    items.forEach((el,i) => el.classList.toggle("active", i===searchIndex));
-  } else if (e.key === "ArrowUp") {
-    e.preventDefault();
-    searchIndex = Math.max(searchIndex - 1, -1);
-    items.forEach((el,i) => el.classList.toggle("active", i===searchIndex));
-  } else if (e.key === "Enter" && searchIndex >= 0 && items[searchIndex]) {
-    items[searchIndex].click();
-  } else if (e.key === "Escape") {
-    closeSearch();
+    openSearch();
+  }
+  if (e.key === "Escape") {
+    const overlay = document.getElementById("searchOverlay");
+    if (overlay.classList.contains("open")) closeSearch();
   }
 });
 
-// Spotlight-Design:
-// search-overlay + search-modal sind im sidebar.ejs
-// Such-Icon, ESC-Hint, Input mit Icon
-// Recent Results anzeigen wenn Query leer</script>
+document.addEventListener("input", function (e) {
+  if (e.target.id === "searchInput") {
+    clearTimeout(_searchTimeout);
+    _searchTimeout = setTimeout(() => performSearch(e.target.value), 200);
+  }
+});
+
+document.addEventListener("keydown", function (e) {
+  if (!document.getElementById("searchOverlay").classList.contains("open")) return;
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (_searchItems.length) {
+      _searchActiveIndex = (_searchActiveIndex + 1) % _searchItems.length;
+      _updateActiveItem();
+    }
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if (_searchItems.length) {
+      _searchActiveIndex = (_searchActiveIndex - 1 + _searchItems.length) % _searchItems.length;
+      _updateActiveItem();
+    }
+  } else if (e.key === "Enter" && _searchItems.length > 0 && _searchActiveIndex >= 0) {
+    e.preventDefault();
+    navigateToResult(_searchActiveIndex);
+  }
+});</script>
 <script type="text/plain" id="jaro-10"># Dateien löschen:
 rm frontend/views/register.ejs
 rm frontend/views/register.js
@@ -804,44 +1044,69 @@ git tag phase-4-frontend-notizen
 git tag phase-5-frontend-community
 git tag phase-6-ui-ux
 git push --tags</script>
-<script type="text/plain" id="omar-1"><!-- Vollständige Datei frontend/views/leaderboard.ejs: -->
-<main class="leaderboard-page">
-  <header class="lb-header">
-    <div>
-      <div class="eyebrow">Community</div>
-      <h1>Rangliste</h1>
-      <p class="lb-subtitle">
-        Heute · <span id="totalUsers">0</span> Nutzer ·
-        <span id="totalTodos">0</span> Aufgaben
-      </p>
+<script type="text/plain" id="omar-1"><!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Rangliste</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%%- include('partials/sidebar') %>
+
+      <main class="leaderboard-page">
+        <header class="lb-header">
+          <div>
+            <div class="eyebrow">Community</div>
+            <h1>Rangliste</h1>
+            <p class="lb-subtitle">Heute · <span id="totalUsers">0</span> Nutzer · <span id="totalTodos">0</span> Aufgaben</p>
+          </div>
+        </header>
+
+        <div class="lb-tabs" id="lbTabs">
+          <button class="lb-tab active" onclick="switchTab('todosDone')">
+            <i class="fas fa-check-circle"></i> Aufgaben
+          </button>
+          <button class="lb-tab" onclick="switchTab('pomodoro')">
+            <i class="fas fa-clock"></i> Pomodoro
+          </button>
+          <button class="lb-tab" onclick="switchTab('tracked')">
+            <i class="fas fa-stopwatch"></i> Zeiterfassung
+          </button>
+        </div>
+
+        <div class="lb-table-wrap">
+          <table class="lb-table" id="lbTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th class="lb-col-value">Wert</th>
+              </tr>
+            </thead>
+            <tbody id="lbBody"></tbody>
+          </table>
+        </div>
+
+        <div class="lb-empty" id="lbEmpty" style="display:none">
+          <i class="fas fa-trophy"></i>
+          <p>Heute noch keine Einträge in dieser Kategorie</p>
+        </div>
+      </main>
     </div>
-  </header>
 
-  <div class="lb-tabs" id="lbTabs">
-    <button class="lb-tab active" onclick="switchTab('todosDone')">
-      <i class="fas fa-check-circle"></i> Aufgaben
-    </button>
-    <button class="lb-tab" onclick="switchTab('pomodoro')">
-      <i class="fas fa-clock"></i> Pomodoro
-    </button>
-    <button class="lb-tab" onclick="switchTab('tracked')">
-      <i class="fas fa-stopwatch"></i> Zeiterfassung
-    </button>
-  </div>
-
-  <div class="lb-table-wrap">
-    <table class="lb-table">
-      <thead><tr><th>#</th><th>Name</th><th>Wert</th></tr></thead>
-      <tbody id="lbBody"></tbody>
-    </table>
-  </div>
-
-  <div class="lb-empty" id="lbEmpty" style="display:none">
-    <i class="fas fa-trophy"></i>
-    <p>Heute noch keine Einträge</p>
-  </div>
-</main>
-<script src="/js/leaderboard.js"><\/script></script>
+    <script src="/js/app.js?v=<%%= Date.now() %>"><\/script>
+    <script src="/js/leaderboard.js?v=<%%= Date.now() %>"><\/script>
+  </body>
+</html></script>
 <script type="text/plain" id="omar-2">let lbData = null;
 let activeTab = "todosDone";
 
@@ -890,27 +1155,54 @@ function formatLBValue(tab, value) {
 }
 
 document.addEventListener("DOMContentLoaded", loadLeaderboard);</script>
-<script type="text/plain" id="omar-3"><!-- frontend/views/user_profile.ejs -->
-<main class="profile-page">
-  <div class="up-card" id="upCard">
-    <p class="up-loading">Lade Profil...</p>
-  </div>
-  <div class="up-actions" id="upActions" style="display:none">
-    <button class="primary-btn" id="upMessageBtn">
-      <i class="fas fa-envelope"></i> Nachricht senden
-    </button>
-  </div>
-  <div class="up-send" id="upSend" style="display:none">
-    <input id="upSubject" placeholder="Betreff" />
-    <textarea id="upBody" placeholder="Nachricht..."></textarea>
-    <div>
-      <button class="primary-btn" onclick="sendMessage()">Senden</button>
-      <button class="secondary-btn" onclick="cancelMessage()">Abbrechen</button>
+<script type="text/plain" id="omar-3"><!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Profil</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%%- include('partials/sidebar') %>
+
+      <main class="profile-page">
+        <div class="up-card" id="upCard">
+          <div class="up-loading">Lade Profil...</div>
+        </div>
+
+        <div class="up-actions" id="upActions" style="display:none">
+          <button class="primary-btn" id="upMessageBtn">
+            <i class="fas fa-envelope"></i> Nachricht senden
+          </button>
+        </div>
+
+        <div class="up-send" id="upSend" style="display:none">
+          <h3>Nachricht senden</h3>
+          <input type="text" id="upSubject" placeholder="Betreff" />
+          <textarea id="upBody" placeholder="Deine Nachricht..." rows="4"></textarea>
+          <div class="up-send-actions">
+            <button class="primary-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Senden</button>
+            <button class="secondary-btn" onclick="cancelMessage()">Abbrechen</button>
+          </div>
+        </div>
+      </main>
     </div>
-  </div>
-</main>
-<script>const PROFILE_USER_ID = <%%= userId %>;<\/script>
-<script src="/js/user_profile.js"><\/script></script>
+
+    <script src="/js/app.js?v=<%%= Date.now() %>"><\/script>
+    <script>
+      const PROFILE_USER_ID = <%%= userId %>;
+    <\/script>
+    <script src="/js/user_profile.js?v=<%%= Date.now() %>"><\/script>
+  </body>
+</html></script>
 <script type="text/plain" id="omar-4">async function loadProfile() {
   const res = await authFetch(
     `${API_BASE}/users/${PROFILE_USER_ID}/profile`
@@ -984,52 +1276,91 @@ function formatDuration(sec) {
 }
 document.getElementById("upMessageBtn")?.addEventListener("click",showSendForm);
 document.addEventListener("DOMContentLoaded", loadProfile);</script>
-<script type="text/plain" id="aisha-1"><!-- frontend/views/messages.ejs - Kernstruktur -->
-<main class="messages-page">
-  <header>
-    <div class="eyebrow">Community</div>
-    <h1>Nachrichten</h1>
-  </header>
+<script type="text/plain" id="aisha-1"><!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Nachrichten</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%%- include('partials/sidebar') %>
 
-  <div class="msg-tabs">
-    <button class="msg-tab active" onclick="switchMsgTab('inbox')">
-      Posteingang <span class="unread-badge" id="unreadBadge"></span>
-    </button>
-    <button class="msg-tab" onclick="switchMsgTab('sent')">Gesendet</button>
-    <button class="msg-compose-btn" onclick="showCompose()">
-      <i class="fas fa-pen"></i> Neue Nachricht
-    </button>
-  </div>
+      <main class="messages-page">
+        <header class="msg-header">
+          <div>
+            <div class="eyebrow">Community</div>
+            <h1>Nachrichten</h1>
+          </div>
+          <button class="msg-compose-btn" onclick="showCompose()">
+            <i class="fas fa-pen"></i> Neue Nachricht
+          </button>
+        </header>
 
-  <div class="msg-list" id="msgList"></div>
-  <div class="msg-detail" id="msgDetail" style="display:none">
-    <button onclick="closeDetail()">← Zurück</button>
-    <div id="msgDetailBody"></div>
-  </div>
+        <div class="msg-compose" id="msgCompose" style="display:none">
+          <div class="msg-compose-header">
+            <h3>Neue Nachricht</h3>
+            <button class="msg-close-btn" onclick="hideCompose()"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="msg-compose-body">
+            <div class="msg-field">
+              <label>Empfänger</label>
+              <div class="msg-user-select" id="msgUserSelect">
+                <input type="text" id="msgUserSearch" placeholder="Suchen..." oninput="filterUsers()" />
+                <div class="msg-user-dropdown" id="msgUserDropdown"></div>
+              </div>
+              <div class="msg-selected-user" id="msgSelectedUser" style="display:none">
+                <span id="msgSelectedName"></span>
+                <button onclick="clearRecipient()"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <div class="msg-field">
+              <label>Betreff</label>
+              <input type="text" id="msgSubject" placeholder="Betreff" />
+            </div>
+            <div class="msg-field">
+              <label>Nachricht</label>
+              <textarea id="msgBody" placeholder="Deine Nachricht..." rows="5"></textarea>
+            </div>
+            <div class="msg-compose-actions">
+              <button class="msg-compose-btn" onclick="sendCompose()"><i class="fas fa-paper-plane"></i> Senden</button>
+              <button class="msg-compose-btn msg-compose-btn-secondary" onclick="hideCompose()">Abbrechen</button>
+            </div>
+          </div>
+        </div>
 
-  <!-- Compose Modal -->
-  <div class="msg-compose" id="msgCompose" style="display:none">
-    <h3>Neue Nachricht</h3>
-    <div class="msg-user-select" id="msgUserSelect">
-      <input id="msgUserSearch" placeholder="Nach Nutzern suchen..."
-        oninput="filterUsers()" />
-      <div class="msg-user-dropdown" id="msgUserDropdown"></div>
+        <div class="msg-tabs">
+          <button class="msg-tab active" onclick="switchMsgTab('inbox')">
+            <i class="fas fa-inbox"></i> Posteingang <span class="msg-badge" id="unreadBadge"></span>
+          </button>
+          <button class="msg-tab" onclick="switchMsgTab('sent')">
+            <i class="fas fa-paper-plane"></i> Gesendet
+          </button>
+        </div>
+
+        <div class="msg-list" id="msgList">
+          <p class="msg-loading">Lade Nachrichten...</p>
+        </div>
+
+        <div class="msg-detail" id="msgDetail" style="display:none">
+          <button class="msg-back" onclick="closeDetail()"><i class="fas fa-arrow-left"></i> Zurück</button>
+          <div class="msg-detail-body" id="msgDetailBody"></div>
+        </div>
+      </main>
     </div>
-    <div class="msg-selected-user" id="msgSelectedUser" style="display:none">
-      <span id="msgSelectedName"></span>
-      <button onclick="clearRecipient()">×</button>
-    </div>
-    <input id="msgSubject" placeholder="Betreff" />
-    <textarea id="msgBody" placeholder="Nachricht..."></textarea>
-    <div class="msg-compose-actions">
-      <button class="msg-compose-btn" onclick="sendCompose()">
-        <i class="fas fa-paper-plane"></i> Senden</button>
-      <button class="msg-compose-btn msg-compose-btn-secondary"
-        onclick="hideCompose()">Abbrechen</button>
-    </div>
-  </div>
-</main>
-<script src="/js/messages.js"><\/script></script>
+
+    <script src="/js/app.js?v=<%%= Date.now() %>"><\/script>
+    <script src="/js/messages.js?v=<%%= Date.now() %>"><\/script>
+  </body>
+</html></script>
 <script type="text/plain" id="aisha-2">let messagesData = null;
 let currentMsgTab = "inbox";
 let allUsers = [];
@@ -1041,77 +1372,183 @@ async function loadMessages() {
     authFetch(`${API_BASE}/messages/sent`),
     authFetch(`${API_BASE}/messages/unread`),
   ]);
-  const inbox = inboxRes?.ok ? await inboxRes.json() : [];
-  const sent = sentRes?.ok ? await sentRes.json() : [];
-  const unread = unreadRes?.ok ? (await unreadRes.json()).count : 0;
+
+  const inbox = inboxRes && inboxRes.ok ? await inboxRes.json() : [];
+  const sent = sentRes && sentRes.ok ? await sentRes.json() : [];
+  const unread = unreadRes && unreadRes.ok ? (await unreadRes.json()).count : 0;
+
   messagesData = { inbox, sent };
   const badge = document.getElementById("unreadBadge");
   if (badge) {
     badge.textContent = unread > 0 ? unread : "";
     badge.style.display = unread > 0 ? "inline" : "none";
   }
+
   renderList(currentMsgTab);
 }
 
 async function loadUsers() {
   const res = await authFetch(`${API_BASE}/users`);
-  if (res?.ok) allUsers = await res.json();
+  if (res && res.ok) {
+    allUsers = await res.json();
+  }
 }
 
 function switchMsgTab(tab) {
   currentMsgTab = tab;
-  document.querySelectorAll(".msg-tab").forEach(t =>
-    t.classList.toggle("active", tab==="inbox"
-      ? t.textContent.includes("Posteingang")
-      : t.textContent.includes("Gesendet")));
+  document.querySelectorAll(".msg-tab").forEach((t) =>
+    t.classList.toggle("active", (tab === "inbox" && t.textContent.includes("Posteingang")) || (tab === "sent" && t.textContent.includes("Gesendet")))
+  );
   document.getElementById("msgDetail").style.display = "none";
   document.getElementById("msgList").style.display = "";
   renderList(tab);
 }
 
 function renderList(tab) {
-  const msgs = messagesData?.[tab] || [];
   const list = document.getElementById("msgList");
-  if (!msgs.length) {
-    list.innerHTML = '<p class="msg-empty">Keine Nachrichten</p>'; return;
+  const msgs = messagesData?.[tab] || [];
+
+  if (msgs.length === 0) {
+    list.innerHTML = '<p class="msg-empty">Keine Nachrichten</p>';
+    return;
   }
-  const other = tab === "inbox" ? "from_name" : "to_name";
-  list.innerHTML = msgs.map(m => `
-    <div class="msg-item ${m.read?"":"msg-unread"}"
-      onclick="openMsg(${m.id},'${tab}')">
-      <div class="msg-item-from">${escHtml(m[other])}</div>
-      <div class="msg-item-subject">${escHtml(m.subject)}</div>
-      <div class="msg-item-date">${formatDate(m.created_at)}</div>
-    </div>`).join("");
+
+  const otherField = tab === "inbox" ? "from_name" : "to_name";
+  list.innerHTML = msgs
+    .map(
+      (m) => `
+      <div class="msg-item ${m.read ? "" : "msg-unread"}" onclick="openMsg(${m.id}, '${tab}')">
+        <div class="msg-item-from">${escHtml(m[otherField])}</div>
+        <div class="msg-item-subject">${escHtml(m.subject)}</div>
+        <div class="msg-item-date">${formatDate(m.created_at)}</div>
+      </div>`,
+    )
+    .join("");
+}
+
+function openMsg(id, tab) {
+  const msgs = messagesData?.[tab] || [];
+  const msg = msgs.find((m) => m.id === id);
+  if (!msg) return;
+
+  if (tab === "inbox" && !msg.read) {
+    authFetch(`${API_BASE}/messages/${id}/read`, { method: "PUT" });
+    msg.read = 1;
+    loadMessages();
+  }
+
+  const otherField = tab === "inbox" ? "from_name" : "to_name";
+  document.getElementById("msgDetailBody").innerHTML = `
+    <div class="msg-detail-header">
+      <span class="msg-detail-from">${tab === "inbox" ? "Von" : "An"}: <strong>${escHtml(msg[otherField])}</strong></span>
+      <span class="msg-detail-date">${formatDate(msg.created_at)}</span>
+    </div>
+    <h3 class="msg-detail-subject">${escHtml(msg.subject)}</h3>
+    <div class="msg-detail-content">${escHtml(msg.body) || "<em>Kein Inhalt</em>"}</div>
+  `;
+
+  document.getElementById("msgList").style.display = "none";
+  document.getElementById("msgDetail").style.display = "block";
+}
+
+function closeDetail() {
+  document.getElementById("msgDetail").style.display = "none";
+  document.getElementById("msgList").style.display = "";
 }
 
 function showCompose() {
   document.getElementById("msgCompose").style.display = "block";
-  // ... reset fields
+  document.getElementById("msgUserSearch").value = "";
+  document.getElementById("msgSubject").value = "";
+  document.getElementById("msgBody").value = "";
+  selectedUserId = null;
+  document.getElementById("msgSelectedUser").style.display = "none";
+  document.getElementById("msgUserSelect").style.display = "";
+  renderUserList(allUsers);
+}
+
+function hideCompose() {
+  document.getElementById("msgCompose").style.display = "none";
+}
+
+function filterUsers() {
+  const q = document.getElementById("msgUserSearch").value.toLowerCase();
+  const filtered = allUsers.filter((u) => u.name.toLowerCase().includes(q));
+  renderUserList(filtered);
+}
+
+function renderUserList(users) {
+  const dd = document.getElementById("msgUserDropdown");
+  if (users.length === 0) {
+    const q = document.getElementById("msgUserSearch").value.trim();
+    dd.innerHTML = q ? '<div class="msg-user-opt disabled">Keine Nutzer gefunden</div>' : "";
+    return;
+  }
+  dd.innerHTML = users
+    .map(
+      (u) => `<div class="msg-user-opt" data-id="${u.id}" onclick="selectUser(${u.id}, '${escHtml(u.name)}')">${escHtml(u.name)}</div>`,
+    )
+    .join("");
+}
+
+function selectUser(id, name) {
+  selectedUserId = id;
+  document.getElementById("msgSelectedName").textContent = name;
+  document.getElementById("msgSelectedUser").style.display = "flex";
+  document.getElementById("msgUserSelect").style.display = "none";
+}
+
+function clearRecipient() {
+  selectedUserId = null;
+  document.getElementById("msgSelectedUser").style.display = "none";
+  document.getElementById("msgUserSelect").style.display = "";
+  document.getElementById("msgUserSearch").value = "";
+  document.getElementById("msgUserSearch").focus();
+  renderUserList(allUsers);
 }
 
 async function sendCompose() {
-  if (!selectedUserId) return showToast("Bitte wähle einen Empfänger","error");
+  if (!selectedUserId) {
+    showToast("Bitte wähle einen Empfänger", "error");
+    return;
+  }
   const subject = document.getElementById("msgSubject").value.trim();
-  if (!subject) return showToast("Bitte gib einen Betreff ein","error");
+  if (!subject) {
+    showToast("Bitte gib einen Betreff ein", "error");
+    return;
+  }
   const body = document.getElementById("msgBody").value.trim();
+
   const res = await authFetch(`${API_BASE}/messages`, {
-    method:"POST",
-    body: JSON.stringify({to_user_id:selectedUserId, subject, body}),
+    method: "POST",
+    body: JSON.stringify({ to_user_id: selectedUserId, subject, body }),
   });
-  if (res?.ok) { showToast("Nachricht gesendet","success"); hideCompose(); loadMessages(); }
-  else { const e=res?await res.json().catch(()=>({})):{}; showToast(e.error||"Fehler","error"); }
+
+  if (res && res.ok) {
+    showToast("Nachricht gesendet", "success");
+    hideCompose();
+    loadMessages();
+  } else {
+    const err = res ? await res.json().catch(() => ({})) : {};
+    showToast(err.error || "Fehler beim Senden", "error");
+  }
 }
 
 function formatDate(d) {
-  if(!d) return "";
-  return new Date(d).toLocaleDateString("de-DE",
-    {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+  if (!d) return "";
+  return new Date(d).toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-document.addEventListener("DOMContentLoaded", () => { loadMessages(); loadUsers(); });</script>
-<script type="text/plain" id="mo-1"><!-- notes.ejs - Editor Header mit Neue-Notiz-Button -->
-<header class="editor-header">
+document.addEventListener("DOMContentLoaded", () => {
+  loadMessages();
+  loadUsers();
+});</script>
+<script type="text/plain" id="mo-1"><header class="editor-header">
   <div>
     <p class="editor-subtitle" id="currentFolderName">&nbsp;</p>
   </div>
@@ -1248,15 +1685,13 @@ document.addEventListener("DOMContentLoaded", () => { loadMessages(); loadUsers(
 .up-stat { text-align: center; padding: 16px; background: var(--surface-2);
   border-radius: 10px; }
 .up-stat-value { display: block; font-size: 1.3rem; font-weight: 700; }</script>
-<script type="text/plain" id="mo-5"><!-- In sidebar.ejs innerhalb von <nav class="module-nav">:
-  Nach dem Pomodoro-Link: -->
-<a href="/leaderboard" class="module-link">
+<script type="text/plain" id="mo-5"><a href="/leaderboard" class="module-link <%%= currentPage === 'leaderboard' ? 'active' : '' %>">
   <i class="fas fa-trophy"></i> <span>Rangliste</span>
 </a>
-<a href="/messages" class="module-link">
+<a href="/messages" class="module-link <%%= currentPage === 'messages' ? 'active' : '' %>">
   <i class="fas fa-envelope"></i> <span>Nachrichten</span>
 </a>
-<a href="/entwicklungsplan" class="module-link" style="opacity:0.6;font-size:0.8rem">
+<a href="/entwicklungsplan" class="module-link <%%= currentPage === 'entwicklungsplan' ? 'active' : '' %>" style="opacity:0.6;font-size:0.8rem">
   <i class="fas fa-code-branch"></i> <span>Projektplan</span>
 </a></script>
 <script type="text/plain" id="yaman-1">.msg-compose-btn {
@@ -1278,8 +1713,7 @@ document.addEventListener("DOMContentLoaded", () => { loadMessages(); loadUsers(
   background: var(--surface-2); color: var(--text);
   border-color: var(--text-secondary); transform: none; box-shadow: none;
 }</script>
-<script type="text/plain" id="yaman-2"><!-- In messages.ejs, ersetze: -->
-<div class="msg-compose-actions">
+<script type="text/plain" id="yaman-2"><div class="msg-compose-actions">
   <button class="msg-compose-btn" onclick="sendCompose()">
     <i class="fas fa-paper-plane"></i> Senden
   </button>
@@ -1287,8 +1721,7 @@ document.addEventListener("DOMContentLoaded", () => { loadMessages(); loadUsers(
     Abbrechen
   </button>
 </div></script>
-<script type="text/plain" id="yaman-3">// In der renderUserList Funktion:
-function renderUserList(users) {
+<script type="text/plain" id="yaman-3">function renderUserList(users) {
   const dd = document.getElementById("msgUserDropdown");
   if (users.length === 0) {
     const q = document.getElementById("msgUserSearch").value.trim();
