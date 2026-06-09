@@ -43,6 +43,8 @@ db.exec(`
     titel        TEXT NOT NULL,
     beschreibung TEXT,
     status       TEXT DEFAULT 'offen',
+    prioritaet   TEXT DEFAULT 'mittel',
+    schritte     TEXT DEFAULT '[]',
     faellig      TEXT,
     erledigt     INTEGER DEFAULT 0,
     erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
@@ -73,21 +75,27 @@ db.exec(`
     wiederholung TEXT DEFAULT 'none',
     ganztag      INTEGER DEFAULT 0,
     erinnerung   TEXT DEFAULT 'keine',
+    workspace_id INTEGER,
     erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE SET NULL
   );
 
   -- 7. NOTIZEN
   CREATE TABLE IF NOT EXISTS notizen (
-    id       INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id  INTEGER NOT NULL,
-    titel    TEXT NOT NULL,
-    inhalt   TEXT,
-    farbe    TEXT DEFAULT '#FFFFFF',
-    todo_id  INTEGER,
-    event_id INTEGER,
-    erstellt TEXT DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL,
+    titel        TEXT NOT NULL,
+    inhalt       TEXT,
+    farbe        TEXT DEFAULT '#FFFFFF',
+    todo_id      INTEGER,
+    event_id     INTEGER,
+    ordner_id    INTEGER,
+    aktualisiert TEXT,
+    workspace_id INTEGER,
+    erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE SET NULL
   );
 
   -- 8. ORDNER
@@ -144,36 +152,31 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL
   );
+
+  -- 12. DASHBOARD-WIDGETS
+  CREATE TABLE IF NOT EXISTS dashboard_widgets (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id  INTEGER NOT NULL,
+    typ      TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    config   TEXT DEFAULT '{}',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 13. NACHRICHTEN
+  CREATE TABLE IF NOT EXISTS messages (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_user_id INTEGER NOT NULL,
+    to_user_id   INTEGER NOT NULL,
+    subject      TEXT NOT NULL,
+    body         TEXT,
+    read         INTEGER DEFAULT 0,
+    created_at   TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
 `);
 
-// Schema-Migrationen für bestehende Datenbanken
-const migrations = [
-  "ALTER TABLE notizen ADD COLUMN ordner_id INTEGER REFERENCES ordner(id)",
-  "ALTER TABLE notizen ADD COLUMN aktualisiert TEXT",
-  "ALTER TABLE events ADD COLUMN ort TEXT",
-  "ALTER TABLE events ADD COLUMN dauer INTEGER DEFAULT 60",
-  "ALTER TABLE events ADD COLUMN wiederholung TEXT DEFAULT 'none'",
-  "ALTER TABLE events ADD COLUMN ganztag INTEGER DEFAULT 0",
-  "ALTER TABLE events ADD COLUMN erinnerung TEXT DEFAULT 'keine'",
-  "ALTER TABLE ordner ADD COLUMN farbe TEXT DEFAULT 'color-sand'",
-  "ALTER TABLE todos ADD COLUMN prioritaet TEXT DEFAULT 'mittel'",
-  "ALTER TABLE users ADD COLUMN wallpaper TEXT DEFAULT NULL",
-  "ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT NULL",
-  "ALTER TABLE todos ADD COLUMN schritte TEXT DEFAULT '[]'",
-  "ALTER TABLE events ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
-  "ALTER TABLE notizen ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
-  "CREATE TABLE IF NOT EXISTS dashboard_widgets (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, typ TEXT NOT NULL, position INTEGER NOT NULL, config TEXT DEFAULT '{}', FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)",
-  "CREATE TABLE IF NOT EXISTS time_entries (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, todo_id INTEGER, start_time TEXT NOT NULL, end_time TEXT, duration_seconds INTEGER DEFAULT 0, description TEXT, created_at TEXT DEFAULT (datetime('now', 'localtime')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL)",
-  "CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, from_user_id INTEGER NOT NULL, to_user_id INTEGER NOT NULL, subject TEXT NOT NULL, body TEXT, read INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now', 'localtime')), FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE)",
-];
-for (const sql of migrations) {
-  try {
-    db.exec(sql);
-  } catch (_) {
-    // Spalte existiert bereits
-  }
-}
-
-console.log("✅ Datenbank bereit (mindful.db) ohne E-Mail-Pflicht");
+console.log("✅ Datenbank bereit (mindful.db)");
 
 module.exports = db;

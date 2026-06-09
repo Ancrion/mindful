@@ -228,36 +228,7 @@
     <!-- ═══════════════════════════════════════════════ -->
     <!-- CODE-SNIPPETS (via DOM, kein JS-Escaping nötig)  -->
     <!-- ═══════════════════════════════════════════════ -->
-<script type="text/plain" id="ilhan-1">// Schema-Migrationen für bestehende Datenbanken
-const migrations = [
-  "ALTER TABLE notizen ADD COLUMN ordner_id INTEGER REFERENCES ordner(id)",
-  "ALTER TABLE notizen ADD COLUMN aktualisiert TEXT",
-  "ALTER TABLE events ADD COLUMN ort TEXT",
-  "ALTER TABLE events ADD COLUMN dauer INTEGER DEFAULT 60",
-  "ALTER TABLE events ADD COLUMN wiederholung TEXT DEFAULT 'none'",
-  "ALTER TABLE events ADD COLUMN ganztag INTEGER DEFAULT 0",
-  "ALTER TABLE events ADD COLUMN erinnerung TEXT DEFAULT 'keine'",
-  "ALTER TABLE ordner ADD COLUMN farbe TEXT DEFAULT 'color-sand'",
-  "ALTER TABLE todos ADD COLUMN prioritaet TEXT DEFAULT 'mittel'",
-  "ALTER TABLE users ADD COLUMN wallpaper TEXT DEFAULT NULL",
-  "ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT NULL",
-  "ALTER TABLE todos ADD COLUMN schritte TEXT DEFAULT '[]'",
-  "ALTER TABLE events ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
-  "ALTER TABLE notizen ADD COLUMN workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL",
-  "CREATE TABLE IF NOT EXISTS dashboard_widgets (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, typ TEXT NOT NULL, position INTEGER NOT NULL, config TEXT DEFAULT '{}', FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)",
-  "CREATE TABLE IF NOT EXISTS time_entries (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, todo_id INTEGER, start_time TEXT NOT NULL, end_time TEXT, duration_seconds INTEGER DEFAULT 0, description TEXT, created_at TEXT DEFAULT (datetime('now', 'localtime')), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL)",
-  "CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, from_user_id INTEGER NOT NULL, to_user_id INTEGER NOT NULL, subject TEXT NOT NULL, body TEXT, read INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now', 'localtime')), FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE)",
-];
-for (const sql of migrations) {
-  try {
-    db.exec(sql);
-  } catch (_) {
-    // Spalte existiert bereits
-  }
-}
-console.log("✅ Datenbank bereit (mindful.db) ohne E-Mail-Pflicht");
-module.exports = db;</script>
-<script type="text/plain" id="ilhan-2">db.exec(`
+<script type="text/plain" id="ilhan-1">db.exec(`
   -- 1. BENUTZER (E-Mail entfernt)
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -294,6 +265,8 @@ module.exports = db;</script>
     titel        TEXT NOT NULL,
     beschreibung TEXT,
     status       TEXT DEFAULT 'offen',
+    prioritaet   TEXT DEFAULT 'mittel',
+    schritte     TEXT DEFAULT '[]',
     faellig      TEXT,
     erledigt     INTEGER DEFAULT 0,
     erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
@@ -324,21 +297,27 @@ module.exports = db;</script>
     wiederholung TEXT DEFAULT 'none',
     ganztag      INTEGER DEFAULT 0,
     erinnerung   TEXT DEFAULT 'keine',
+    workspace_id INTEGER,
     erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE SET NULL
   );
 
   -- 7. NOTIZEN
   CREATE TABLE IF NOT EXISTS notizen (
-    id       INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id  INTEGER NOT NULL,
-    titel    TEXT NOT NULL,
-    inhalt   TEXT,
-    farbe    TEXT DEFAULT '#FFFFFF',
-    todo_id  INTEGER,
-    event_id INTEGER,
-    erstellt TEXT DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL,
+    titel        TEXT NOT NULL,
+    inhalt       TEXT,
+    farbe        TEXT DEFAULT '#FFFFFF',
+    todo_id      INTEGER,
+    event_id     INTEGER,
+    ordner_id    INTEGER,
+    aktualisiert TEXT,
+    workspace_id INTEGER,
+    erstellt     TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE SET NULL
   );
 
   -- 8. ORDNER
@@ -395,7 +374,31 @@ module.exports = db;</script>
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE SET NULL
   );
-`);</script>
+
+  -- 12. DASHBOARD-WIDGETS
+  CREATE TABLE IF NOT EXISTS dashboard_widgets (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id  INTEGER NOT NULL,
+    typ      TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    config   TEXT DEFAULT '{}',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 13. NACHRICHTEN
+  CREATE TABLE IF NOT EXISTS messages (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_user_id INTEGER NOT NULL,
+    to_user_id   INTEGER NOT NULL,
+    subject      TEXT NOT NULL,
+    body         TEXT,
+    read         INTEGER DEFAULT 0,
+    created_at   TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+`);
+console.log("✅ Datenbank bereit (mindful.db)");</script>
 <script type="text/plain" id="sascha-1">router.get("/leaderboard", auth, (req, res) =>
   res.render("leaderboard", { currentPage: "leaderboard" }));
 router.get("/rangliste", auth, (req, res) =>
@@ -1756,7 +1759,7 @@ git push --tags</script>
     // ═══════════════════════════════════════════════
 
     const CODE_IDS = [
-      "ilhan-1","ilhan-2",
+      "ilhan-1",
       "sascha-1","sascha-2","sascha-3",
       "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12",
       "omar-1","omar-2","omar-3","omar-4",
@@ -1775,11 +1778,8 @@ git push --tags</script>
         label: "Ilhan", role: "Dateninfrastruktur", color: "#ef4444", initial: "IL",
         items: [
           { id:"ilhan-1", file:"backend/database/db.js",
-            desc:"messages-Tabelle via migrations-Array: CREATE TABLE IF NOT EXISTS mit from_user_id, to_user_id, subject, body, read, created_at + Foreign Keys. Migration-Pattern beachten.",
-            commit:"git commit -m \"add messages table schema with read flag and timestamps\"" },
-          { id:"ilhan-2", file:"backend/database/db.js",
-            desc:"db.exec()-Block mit 11 CREATE TABLE IF NOT EXISTS — SQLite legt fehlende Tabellen beim Start automatisch an. Vollständige Schema-Referenz.",
-            commit:"git commit -m \"initialize all base tables via db.exec on startup\"" }
+            desc:"db.exec()-Block mit 13 CREATE TABLE IF NOT EXISTS — users, sessions, workspaces, todos, kalender_kategorien, events, notizen, ordner, dokumente, pomodoro_sessions, time_entries, dashboard_widgets, messages. Alle Spalten inkl. prioritaet/schritte (todos), ordner_id/aktualisiert/workspace_id (notizen), workspace_id (events).",
+            commit:"git commit -m \"initialize all 13 tables via single db.exec on startup\"" }
         ]
       },
       sascha: {
