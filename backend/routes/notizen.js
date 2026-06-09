@@ -70,7 +70,7 @@ router.post("/", auth, (req, res) => {
       .run(req.user.id, titel || "Neue Notiz", inhalt || "", farbe || "#FFFFFF", ordner_id, workspace_id || null);
 
     const note = db
-      .prepare("SELECT * FROM notizen WHERE id = ?")
+      .prepare("SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id WHERE n.id = ?")
       .get(result.lastInsertRowid);
 
     res.status(201).json(note);
@@ -126,7 +126,7 @@ router.put("/:id", auth, (req, res) => {
     db.prepare(`UPDATE notizen SET ${sets.join(", ")} WHERE id=? AND user_id=?`).run(...params);
 
     const note = db
-      .prepare("SELECT * FROM notizen WHERE id = ? AND user_id = ?")
+      .prepare("SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id WHERE n.id = ? AND n.user_id = ?")
       .get(req.params.id, req.user.id);
 
     res.json(note);

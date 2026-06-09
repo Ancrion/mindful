@@ -553,6 +553,8 @@ window.saveNote = async function () {
     renderTree();
   } else {
     setSaveStatus("error", "Fehler");
+    const err = res ? await res.json().catch(() => ({})) : {};
+    showToast(err.error || "Fehler beim Speichern", "error");
   }
 };
 
