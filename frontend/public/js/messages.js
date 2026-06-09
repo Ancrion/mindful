@@ -117,7 +117,8 @@ function filterUsers() {
 function renderUserList(users) {
   const dd = document.getElementById("msgUserDropdown");
   if (users.length === 0) {
-    dd.innerHTML = '<div class="msg-user-opt disabled">Keine Nutzer gefunden</div>';
+    const q = document.getElementById("msgUserSearch").value.trim();
+    dd.innerHTML = q ? '<div class="msg-user-opt disabled">Keine Nutzer gefunden</div>' : "";
     return;
   }
   dd.innerHTML = users
