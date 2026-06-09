@@ -1418,12 +1418,12 @@ git push --tags</script>
         const icon = person.initial.length === 1
           ? person.initial
           : '<i class="fas fa-users" style="font-size:0.85rem"></i>';
-        header.innerHTML = \`
-          <div class="avatar" style="background:\${person.color}">\${icon}</div>
-          <h2>\${person.label}</h2>
-          <span class="section-role">\${person.role}</span>
-          <span class="section-count" id="count-\${key}">0/0</span>
-        \`;
+        header.innerHTML = `
+          <div class="avatar" style="background:${person.color}">${icon}</div>
+          <h2>${person.label}</h2>
+          <span class="section-role">${person.role}</span>
+          <span class="section-count" id="count-${key}">0/0</span>
+        `;
         section.appendChild(header);
 
         const tasksDiv = document.createElement('div');
@@ -1450,12 +1450,12 @@ git push --tags</script>
           const info = document.createElement('div');
           info.className = 'info';
           info.onclick = function() { showCode(item.id); };
-          info.innerHTML = \`
-            <div class="file">\${item.file}</div>
-            <div class="desc">\${item.desc}</div>
-            <div class="commit-msg">\${item.commit}</div>
+          info.innerHTML = `
+            <div class="file">${item.file}</div>
+            <div class="desc">${item.desc}</div>
+            <div class="commit-msg">${item.commit}</div>
             <span class="hint">👆 Code anzeigen</span>
-          \`;
+          `;
 
           task.appendChild(cb);
           task.appendChild(info);
