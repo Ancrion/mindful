@@ -22,7 +22,42 @@
             <div class="eyebrow">Community</div>
             <h1>Nachrichten</h1>
           </div>
+          <button class="primary-btn" onclick="showCompose()">
+            <i class="fas fa-pen"></i> Neue Nachricht
+          </button>
         </header>
+
+        <div class="msg-compose" id="msgCompose" style="display:none">
+          <div class="msg-compose-header">
+            <h3>Neue Nachricht</h3>
+            <button class="msg-close-btn" onclick="hideCompose()"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="msg-compose-body">
+            <div class="msg-field">
+              <label>Empfänger</label>
+              <div class="msg-user-select" id="msgUserSelect">
+                <input type="text" id="msgUserSearch" placeholder="Suchen..." oninput="filterUsers()" />
+                <div class="msg-user-dropdown" id="msgUserDropdown"></div>
+              </div>
+              <div class="msg-selected-user" id="msgSelectedUser" style="display:none">
+                <span id="msgSelectedName"></span>
+                <button onclick="clearRecipient()"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <div class="msg-field">
+              <label>Betreff</label>
+              <input type="text" id="msgSubject" placeholder="Betreff" />
+            </div>
+            <div class="msg-field">
+              <label>Nachricht</label>
+              <textarea id="msgBody" placeholder="Deine Nachricht..." rows="5"></textarea>
+            </div>
+            <div class="msg-compose-actions">
+              <button class="primary-btn" onclick="sendCompose()"><i class="fas fa-paper-plane"></i> Senden</button>
+              <button class="secondary-btn" onclick="hideCompose()">Abbrechen</button>
+            </div>
+          </div>
+        </div>
 
         <div class="msg-tabs">
           <button class="msg-tab active" onclick="switchMsgTab('inbox')">

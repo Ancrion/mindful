@@ -3,6 +3,17 @@ const router = express.Router();
 const db = require("../database/db");
 const auth = require("../middleware/auth");
 
+router.get("/", auth, (req, res) => {
+  try {
+    const users = db
+      .prepare("SELECT id, name FROM users ORDER BY name ASC")
+      .all();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get("/:id/profile", auth, (req, res) => {
   try {
     const userId = parseInt(req.params.id, 10);
