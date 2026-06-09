@@ -50,6 +50,7 @@ if (registerForm) {
     e.preventDefault();
 
     const name = document.getElementById("regName").value;
+    const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
 
     try {
@@ -57,7 +58,7 @@ if (registerForm) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await response.json();

@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!user) return;
   renderUserInfo(user);
   document.getElementById("profileName").value = user.name;
+  if (document.getElementById("profileEmail")) document.getElementById("profileEmail").value = user.email || "";
   loadWallpaperPreview();
   loadAvatarPreview();
   document.getElementById("wallpaperInput").addEventListener("change", uploadWallpaper);
@@ -23,6 +24,22 @@ async function updateName() {
   if (!res || !res.ok) return showMsg("Fehler beim Speichern.", "error");
   showMsg("Name erfolgreich gespeichert!", "success");
   renderUserInfo({ name });
+}
+
+async function updateEmail() {
+  const email = document.getElementById("profileEmail").value.trim();
+  if (!email || !email.includes("@"))
+    return showMsg("Bitte gib eine gültige E-Mail-Adresse ein.", "error");
+
+  const res = await authFetch("/api/auth/me/email", {
+    method: "PUT",
+    body: JSON.stringify({ email }),
+  });
+  if (!res || !res.ok) {
+    const data = await res?.json().catch(() => ({}));
+    return showMsg(data?.error || "Fehler beim Speichern.", "error");
+  }
+  showMsg("E-Mail erfolgreich gespeichert!", "success");
 }
 
 async function changePassword() {

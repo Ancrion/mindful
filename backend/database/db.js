@@ -7,10 +7,11 @@ db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
 db.exec(`
-  -- 1. BENUTZER (E-Mail entfernt)
+  -- 1. BENUTZER
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE DEFAULT NULL,
     passwort_hash TEXT NOT NULL,
     wallpaper TEXT DEFAULT NULL,
     avatar TEXT DEFAULT NULL,
@@ -174,6 +175,17 @@ db.exec(`
     created_at   TEXT DEFAULT (datetime('now', 'localtime')),
     FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 14. PASSWORT-RESET-TOKEN
+  CREATE TABLE IF NOT EXISTS password_resets (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL,
+    token      TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    used       INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 `);
 

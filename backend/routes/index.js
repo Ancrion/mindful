@@ -8,6 +8,8 @@ router.get("/", auth, (req, res) => {
 });
 router.get("/login", (req, res) => res.render("login", { currentPage: null }));
 router.get("/register", (req, res) => res.render("login", { currentPage: null }));
+router.get("/passwort-vergessen", (req, res) => res.render("forgot_password", { currentPage: null }));
+router.get("/reset-password/:token", (req, res) => res.render("reset_password", { currentPage: null, token: req.params.token }));
 router.get("/dashboard", auth, (req, res) => res.redirect("/"));
 router.get("/todo", auth, (req, res) => res.render("todo", { currentPage: "todo" }));
 router.get("/calendar", auth, (req, res) => res.render("calendar", { currentPage: "calendar" }));

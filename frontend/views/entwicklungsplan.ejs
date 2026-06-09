@@ -1040,6 +1040,113 @@ git tag phase-4-frontend-notizen
 git tag phase-5-frontend-community
 git tag phase-6-ui-ux
 git push --tags</script>
+<script type="text/plain" id="jaro-13">const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+
+let transporter = null;
+if (process.env.MAIL_USER && process.env.MAIL_PASS) {
+  transporter = nodemailer.createTransport({
+    host: process.env.MAIL_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.MAIL_PORT || "587"),
+    secure: process.env.MAIL_SECURE === "true",
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
+}
+
+router.get("/me", auth, (req, res) => {
+  const user = db.prepare("SELECT id, name, email, wallpaper, avatar FROM users WHERE id = ?").get(req.user.id);
+  if (!user) return res.status(404).json({ error: "Benutzer nicht gefunden" });
+  res.json(user);
+});
+
+router.put("/me/email", auth, async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !email.includes("@"))
+      return res.status(400).json({ error: "Ungültige E-Mail-Adresse" });
+    const existing = db.prepare("SELECT id FROM users WHERE email = ? AND id != ?").get(email, req.user.id);
+    if (existing)
+      return res.status(400).json({ error: "E-Mail wird bereits verwendet" });
+    db.prepare("UPDATE users SET email = ? WHERE id = ?").run(email, req.user.id);
+    res.json({ message: "E-Mail aktualisiert" });
+  } catch (err) {
+    console.error("Fehler beim E-Mail-Update:", err);
+    res.status(500).json({ error: "Serverfehler" });
+  }
+});
+
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "E-Mail erforderlich" });
+    if (!transporter) return res.status(500).json({ error: "SMTP nicht konfiguriert" });
+    const user = db.prepare("SELECT id, name FROM users WHERE email = ?").get(email);
+    if (!user) return res.json({ message: "Wenn die E-Mail existiert, wurde ein Reset-Link gesendet." });
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    db.prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)").run(user.id, token, expiresAt);
+    const resetUrl = `${req.protocol}://${req.get("host")}/reset-password/${token}`;
+    await transporter.sendMail({
+      from: process.env.MAIL_FROM || "noreply@mindful.app",
+      to: email,
+      subject: "Passwort zurücksetzen – Mindful",
+      html: `<p>Hallo ${user.name},<\/p><p>klicke auf den folgenden Link:<\/p><p><a href="${resetUrl}">${resetUrl}<\/a><\/p>`,
+    });
+    res.json({ message: "Wenn die E-Mail existiert, wurde ein Reset-Link gesendet." });
+  } catch (err) {
+    console.error("Fehler bei forgot-password:", err);
+    res.status(500).json({ error: "Serverfehler" });
+  }
+});
+
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: "Token und Passwort erforderlich" });
+    if (password.length < 6) return res.status(400).json({ error: "Passwort muss mind. 6 Zeichen lang sein" });
+    const row = db.prepare("SELECT * FROM password_resets WHERE token = ? AND used = 0 AND expires_at > datetime('now')").get(token);
+    if (!row) return res.status(400).json({ error: "Ungültiger oder abgelaufener Token" });
+    const hash = await bcrypt.hash(password, 10);
+    db.prepare("UPDATE users SET passwort_hash = ? WHERE id = ?").run(hash, row.user_id);
+    db.prepare("UPDATE password_resets SET used = 1 WHERE id = ?").run(row.id);
+    res.json({ message: "Passwort erfolgreich zurückgesetzt" });
+  } catch (err) {
+    console.error("Fehler bei reset-password:", err);
+    res.status(500).json({ error: "Serverfehler" });
+  }
+});</script>
+<script type="text/plain" id="jaro-14">          <div class="profile-card">
+            <div class="card-header">
+              <i class="fa-regular fa-envelope"></i>
+              <h2>E-Mail</h2>
+            </div>
+            <p class="card-desc">Wird für den Passwort-Reset benötigt.</p>
+            <div class="form-group">
+              <label>E-Mail-Adresse</label>
+              <div class="input-row">
+                <input type="email" id="profileEmail" placeholder="deine@email.de" />
+                <button class="primary-btn" onclick="updateEmail()">Speichern</button>
+              </div>
+            </div>
+          </div>
+
+async function updateEmail() {
+  const email = document.getElementById("profileEmail").value.trim();
+  if (!email || !email.includes("@"))
+    return showMsg("Bitte gib eine gültige E-Mail-Adresse ein.", "error");
+  const res = await authFetch("/api/auth/me/email", {
+    method: "PUT",
+    body: JSON.stringify({ email }),
+  });
+  if (!res || !res.ok) {
+    const data = await res?.json().catch(() => ({}));
+    return showMsg(data?.error || "Fehler beim Speichern.", "error");
+  }
+  showMsg("E-Mail erfolgreich gespeichert!", "success");
+}</script>
 <script type="text/plain" id="omar-1"><!doctype html>
 <html lang="de">
   <head>
@@ -1544,6 +1651,80 @@ document.addEventListener("DOMContentLoaded", () => {
   loadMessages();
   loadUsers();
 });</script>
+<script type="text/plain" id="aisha-3"><!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Passwort vergessen</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/login.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  </head>
+  <body>
+    <main class="auth-shell">
+      <section class="auth-showcase">
+        <div class="showcase-inner">
+          <div class="brand-mark">
+            <span class="brand-dot"></span>
+            <span class="brand-name">MINDFUL</span>
+          </div>
+          <div class="showcase-copy">
+            <h1>Passwort vergessen?</h1>
+            <p class="lead">Gib deine E-Mail-Adresse ein, wir schicken dir einen Link zum Zurücksetzen.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="auth-panel-wrap">
+        <div class="auth-panel">
+          <div class="auth-panel-head">
+            <h2>Passwort zurücksetzen</h2>
+            <p>Gib die E-Mail-Adresse ein, mit der du dich registriert hast.</p>
+          </div>
+
+          <form id="forgotForm" class="auth-form active">
+            <div class="form-group">
+              <label>E-Mail-Adresse</label>
+              <div class="input-shell">
+                <i class="fa-regular fa-envelope"></i>
+                <input type="email" id="forgotEmail" placeholder="deine@email.de" required />
+              </div>
+            </div>
+            <button type="submit" class="primary-btn">Link senden</button>
+            <div style="text-align:center;margin-top:16px">
+              <a href="/login" class="forgot-link">Zurück zum Login</a>
+            </div>
+          </form>
+
+          <div id="authMessage" class="auth-message"></div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      document.getElementById("forgotForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("forgotEmail").value;
+        const msgEl = document.getElementById("authMessage");
+        try {
+          const res = await fetch("/api/auth/forgot-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          const data = await res.json();
+          msgEl.textContent = data.message || data.error;
+          msgEl.className = "auth-message " + (res.ok ? "success" : "error");
+        } catch (err) {
+          msgEl.textContent = "Fehler bei der Anfrage";
+          msgEl.className = "auth-message error";
+        }
+      });
+    </script>
+  </body>
+</html></script>
 <script type="text/plain" id="mo-1"><header class="editor-header">
   <div>
     <p class="editor-subtitle" id="currentFolderName">&nbsp;</p>
@@ -1754,9 +1935,9 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14",
       "omar-1","omar-2","omar-3","omar-4",
-      "aisha-1","aisha-2",
+      "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
       "yaman-1","yaman-2","yaman-3","yaman-4",
       "team-1"
@@ -1771,8 +1952,8 @@ git push --tags</script>
         label: "Ilhan", role: "Dateninfrastruktur", color: "#ef4444", initial: "IL",
         items: [
           { id:"ilhan-1", file:"backend/database/db.js",
-            desc:"db.exec()-Block mit 13 CREATE TABLE IF NOT EXISTS — users, sessions, workspaces, todos, kalender_kategorien, events, notizen, ordner, dokumente, pomodoro_sessions, time_entries, dashboard_widgets, messages. Alle Spalten inkl. prioritaet/schritte (todos), ordner_id/aktualisiert/workspace_id (notizen), workspace_id (events).",
-            commit:"git commit -m \"initialize all 13 tables via single db.exec on startup\"" }
+            desc:"db.exec()-Block mit 14 CREATE TABLE IF NOT EXISTS — users (mit email-Spalte), sessions, workspaces, todos, kalender_kategorien, events, notizen, ordner, dokumente, pomodoro_sessions, time_entries, dashboard_widgets, messages, password_resets.",
+            commit:"git commit -m \"add email column to users and password_resets table for forgot-password flow\"" }
         ]
       },
       sascha: {
@@ -1824,7 +2005,13 @@ git push --tags</script>
             commit:"git commit -m \"initial commit: mindful dashboard base project\"" },
           { id:"jaro-12", file:"Remote GitLab",
             desc:"git remote add origin <gitlab-url> && git push -u origin master.",
-            commit:"git push -u origin master" }
+            commit:"git push -u origin master" },
+          { id:"jaro-13", file:"backend/routes/auth-routes.js",
+            desc:"POST /api/auth/forgot-password + POST /api/auth/reset-password + nodemailer-Transporter + PUT /api/auth/me/email. E-Mail in GET /me aufgenommen.",
+            commit:"git commit -m \"add forgot/reset password routes with nodemailer and email field in profile\"" },
+          { id:"jaro-14", file:"frontend/views/profile.ejs + profile.js",
+            desc:"E-Mail-Sektion im Profil: anzeigen + speichern. updateEmail()-Funktion in profile.js.",
+            commit:"git commit -m \"add email display and edit section to profile page\"" }
         ]
       },
       omar: {
@@ -1852,7 +2039,10 @@ git push --tags</script>
             commit:"git commit -m \"create messages page with inbox sent tabs and compose modal\"" },
           { id:"aisha-2", file:"frontend/public/js/messages.js (NEU)",
             desc:"Inbox/Sent laden, rendern, Compose mit User-Suche, Senden, ungelesene-Anzeige.",
-            commit:"git commit -m \"add messages frontend with inbox sent compose and user search\"" }
+            commit:"git commit -m \"add messages frontend with inbox sent compose and user search\"" },
+          { id:"aisha-3", file:"frontend/views/forgot_password.ejs + reset_password.ejs + login.ejs",
+            desc:"forgot_password.ejs (E-Mail-Formular), reset_password.ejs (Token + neues Passwort), login.ejs: E-Mail-Feld im Register-Formular + 'Passwort vergessen?'-Link login.js: E-Mail an /api/auth/register senden.",
+            commit:"git commit -m \"add forgot/reset password views and email field to registration\"" }
         ]
       },
       mo: {

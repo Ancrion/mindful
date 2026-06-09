@@ -2,11 +2,26 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const db = require("../database/db");
 const auth = require("../middleware/auth");
+
+let transporter = null;
+if (process.env.MAIL_USER && process.env.MAIL_PASS) {
+  transporter = nodemailer.createTransport({
+    host: process.env.MAIL_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.MAIL_PORT || "587"),
+    secure: process.env.MAIL_SECURE === "true",
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
+}
 
 const wallpaperDir = path.join(__dirname, "../uploads/wallpapers");
 if (!fs.existsSync(wallpaperDir)) fs.mkdirSync(wallpaperDir, { recursive: true });
@@ -52,7 +67,7 @@ const wallpaperUpload = multer({
  */
 router.post("/register", async (req, res) => {
   try {
-    const { name, password } = req.body;
+    const { name, password, email } = req.body;
 
     if (!name || !password) {
       return res
@@ -68,13 +83,22 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Benutzer existiert bereits" });
     }
 
+    if (email) {
+      const existingEmail = db
+        .prepare("SELECT id FROM users WHERE email = ?")
+        .get(email);
+      if (existingEmail) {
+        return res.status(400).json({ error: "E-Mail wird bereits verwendet" });
+      }
+    }
+
     // Hash das Passwort
     const passwort_hash = await bcrypt.hash(password, 10);
 
     // Erstelle neuen Benutzer
     const result = db
-      .prepare("INSERT INTO users (name, passwort_hash) VALUES (?, ?)")
-      .run(name, passwort_hash);
+      .prepare("INSERT INTO users (name, email, passwort_hash) VALUES (?, ?, ?)")
+      .run(name, email || null, passwort_hash);
 
     res.status(201).json({
       message: "Benutzer erfolgreich registriert",
@@ -188,9 +212,27 @@ const avatarUpload = multer({
 });
 
 router.get("/me", auth, (req, res) => {
-  const user = db.prepare("SELECT id, name, wallpaper, avatar FROM users WHERE id = ?").get(req.user.id);
+  const user = db.prepare("SELECT id, name, email, wallpaper, avatar FROM users WHERE id = ?").get(req.user.id);
   if (!user) return res.status(404).json({ error: "Benutzer nicht gefunden" });
   res.json(user);
+});
+
+router.put("/me/email", auth, async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !email.includes("@"))
+      return res.status(400).json({ error: "Ungültige E-Mail-Adresse" });
+
+    const existing = db.prepare("SELECT id FROM users WHERE email = ? AND id != ?").get(email, req.user.id);
+    if (existing)
+      return res.status(400).json({ error: "E-Mail wird bereits verwendet" });
+
+    db.prepare("UPDATE users SET email = ? WHERE id = ?").run(email, req.user.id);
+    res.json({ message: "E-Mail aktualisiert" });
+  } catch (err) {
+    console.error("Fehler beim E-Mail-Update:", err);
+    res.status(500).json({ error: "Serverfehler" });
+  }
 });
 
 router.put("/me", auth, async (req, res) => {
@@ -321,6 +363,59 @@ router.delete("/avatar", auth, (req, res) => {
   } catch (err) {
     console.error("Fehler beim Entfernen des Profilbilds:", err);
     res.status(500).json({ error: "Fehler" });
+  }
+});
+
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "E-Mail erforderlich" });
+    if (!transporter) return res.status(500).json({ error: "SMTP nicht konfiguriert – E-Mail-Konto im .env hinterlegen" });
+
+    const user = db.prepare("SELECT id, name FROM users WHERE email = ?").get(email);
+    if (!user) return res.json({ message: "Wenn die E-Mail existiert, wurde ein Reset-Link gesendet." });
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 h
+
+    db.prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)").run(user.id, token, expiresAt);
+
+    const resetUrl = `${req.protocol}://${req.get("host")}/reset-password/${token}`;
+
+    await transporter.sendMail({
+      from: process.env.MAIL_FROM || "noreply@mindful.app",
+      to: email,
+      subject: "Passwort zurücksetzen – Mindful",
+      html: `<p>Hallo ${user.name},</p>
+<p>klicke auf den folgenden Link, um dein Passwort zurückzusetzen (gültig 1 Stunde):</p>
+<p><a href="${resetUrl}">${resetUrl}</a></p>
+<p>Wenn du das nicht angefordert hast, ignoriere diese E-Mail.</p>`,
+    });
+
+    res.json({ message: "Wenn die E-Mail existiert, wurde ein Reset-Link gesendet." });
+  } catch (err) {
+    console.error("Fehler bei forgot-password:", err);
+    res.status(500).json({ error: "Serverfehler" });
+  }
+});
+
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: "Token und Passwort erforderlich" });
+    if (password.length < 6) return res.status(400).json({ error: "Passwort muss mind. 6 Zeichen lang sein" });
+
+    const row = db.prepare("SELECT * FROM password_resets WHERE token = ? AND used = 0 AND expires_at > datetime('now')").get(token);
+    if (!row) return res.status(400).json({ error: "Ungültiger oder abgelaufener Token" });
+
+    const hash = await bcrypt.hash(password, 10);
+    db.prepare("UPDATE users SET passwort_hash = ? WHERE id = ?").run(hash, row.user_id);
+    db.prepare("UPDATE password_resets SET used = 1 WHERE id = ?").run(row.id);
+
+    res.json({ message: "Passwort erfolgreich zurückgesetzt" });
+  } catch (err) {
+    console.error("Fehler bei reset-password:", err);
+    res.status(500).json({ error: "Serverfehler" });
   }
 });
 
