@@ -19,23 +19,19 @@
       .plan-summary {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 12px;
-        margin-bottom: 36px;
+        gap: 12px; margin-bottom: 36px;
       }
       .plan-stat {
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 16px 20px;
-        text-align: center;
+        border-radius: 12px; padding: 16px 20px; text-align: center;
       }
       .plan-stat strong { display: block; font-size: 1.6rem; }
       .plan-stat span { font-size: 0.78rem; color: var(--text-secondary); }
 
       .plan-section { margin-bottom: 36px; }
       .plan-section-header {
-        display: flex; align-items: center; gap: 14px;
-        margin-bottom: 12px;
+        display: flex; align-items: center; gap: 14px; margin-bottom: 12px;
       }
       .plan-section-header .avatar {
         width: 32px; height: 32px; border-radius: 50%;
@@ -49,49 +45,50 @@
       .plan-section-header .section-count {
         margin-left: auto;
         font-size: 0.72rem; color: var(--text-secondary);
-        background: var(--surface-2);
-        padding: 2px 10px;
-        border-radius: 20px;
+        background: var(--surface-2); padding: 2px 10px; border-radius: 20px;
       }
 
       .plan-task {
         background: var(--surface);
         border: 1px solid var(--border);
         border-left: 4px solid var(--border);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin-bottom: 6px;
+        border-radius: 10px; padding: 0; margin-bottom: 6px;
         display: grid;
         grid-template-columns: 32px 1fr;
-        gap: 12px;
-        align-items: start;
-        font-size: 0.85rem;
+        gap: 0; align-items: start; font-size: 0.85rem;
         transition: border-color 0.15s, opacity 0.2s, transform 0.2s;
-        cursor: pointer;
-        order: 0;
+        order: 0; overflow: hidden;
       }
       .plan-task:hover { border-color: var(--accent); }
       .plan-task.status-done {
-        border-left-color: #10b981;
-        opacity: 0.55;
+        border-left-color: #10b981; opacity: 0.6;
       }
-      .plan-task.status-done:hover { opacity: 0.75; }
+      .plan-task.status-done:hover { opacity: 0.8; }
 
       .plan-task .cb-wrap {
-        width: 24px; height: 24px; border-radius: 7px;
+        width: 32px; min-height: 100%;
+        display: flex; align-items: flex-start; justify-content: center;
+        padding: 14px 0 0;
+        cursor: pointer; flex-shrink: 0;
+        background: transparent; border: none;
+        box-sizing: border-box;
+      }
+      .plan-task .cb-wrap .cb-box {
+        width: 20px; height: 20px; border-radius: 6px;
         border: 2px solid var(--border);
         background: var(--surface);
         display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; margin-top: 1px;
-        transition: all 0.15s;
-        font-size: 0.65rem;
-        color: transparent;
+        transition: all 0.15s; font-size: 0.6rem;
+        color: transparent; flex-shrink: 0;
       }
-      .plan-task.status-done .cb-wrap {
-        background: #10b981; border-color: #10b981;
-        color: #fff;
+      .plan-task.status-done .cb-box {
+        background: #10b981; border-color: #10b981; color: #fff;
       }
 
+      .plan-task .info {
+        padding: 14px 18px 14px 10px; cursor: pointer;
+        min-width: 0;
+      }
       .plan-task .info .file {
         font-family: var(--font-mono, monospace);
         font-size: 0.78rem; color: var(--accent); margin-bottom: 3px;
@@ -99,27 +96,88 @@
       .plan-task .info .desc { color: var(--text-secondary); line-height: 1.4; }
       .plan-task .info .commit-msg {
         margin-top: 5px;
-        font-family: var(--font-mono, monospace);
-        font-size: 0.72rem;
-        background: var(--surface-2);
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 6px;
-        color: var(--text-secondary);
+        font-family: var(--font-mono, monospace); font-size: 0.72rem;
+        background: var(--surface-2); display: inline-block;
+        padding: 2px 8px; border-radius: 6px; color: var(--text-secondary);
       }
 
       .plan-tasks { display: flex; flex-direction: column; }
 
       .plan-footer {
-        margin-top: 40px;
-        padding: 20px 24px;
+        margin-top: 40px; padding: 20px 24px;
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 12px; font-size: 0.85rem;
+        color: var(--text-secondary); line-height: 1.6;
+      }
+
+      .plan-task .info .hint {
+        display: inline-block; margin-top: 6px; font-size: 0.7rem;
+        color: var(--accent); font-weight: 500;
+      }
+
+      /* ─── CODE MODAL ─── */
+      .code-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+        z-index: 9999; display: none;
+        align-items: center; justify-content: center;
+        padding: 20px;
+      }
+      .code-overlay.open { display: flex; }
+      .code-modal {
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 12px;
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        line-height: 1.6;
+        border-radius: 14px;
+        max-width: 780px; width: 100%;
+        max-height: 85vh;
+        display: flex; flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        overflow: hidden;
       }
+      .code-modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .code-modal-header h3 {
+        margin: 0; font-size: 1rem; font-weight: 600;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .code-modal-close {
+        background: none; border: none; color: var(--text-secondary);
+        font-size: 1.2rem; cursor: pointer; padding: 4px 8px; border-radius: 6px;
+        flex-shrink: 0;
+      }
+      .code-modal-close:hover { background: var(--surface-2); color: var(--text); }
+      .code-modal-body {
+        padding: 16px 20px; overflow-y: auto; flex: 1;
+      }
+      .code-modal-body pre {
+        background: #1e1e2e; color: #cdd6f4; border-radius: 10px;
+        padding: 16px 18px; font-size: 0.78rem; line-height: 1.6;
+        overflow-x: auto; white-space: pre; tab-size: 2;
+        margin: 0;
+        font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      }
+      .code-modal-body pre .cm-comment { color: #6c7086; }
+      .code-modal-body pre .cm-keyword { color: #cba6f7; }
+      .code-modal-body pre .cm-string { color: #a6e3a1; }
+      .code-modal-body pre .cm-func { color: #89b4fa; }
+      .code-modal-body pre .cm-var { color: #fab387; }
+      .code-modal-body pre .cm-op { color: #89dceb; }
+      .code-modal-body pre .cm-num { color: #fab387; }
+      .code-modal-body pre .cm-tag { color: #f38ba8; }
+      .code-modal-body pre .cm-attr { color: #a6e3a1; }
+      .code-modal-footer {
+        padding: 12px 20px;
+        border-top: 1px solid var(--border);
+        display: flex; gap: 8px; justify-content: flex-end;
+      }
+      .code-modal-footer .copy-btn {
+        padding: 6px 16px; border-radius: 8px; border: 1px solid var(--border);
+        background: var(--surface-2); color: var(--text); font-size: 0.8rem;
+        cursor: pointer; font-weight: 500;
+      }
+      .code-modal-footer .copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
     </style>
   </head>
   <body>
@@ -131,7 +189,7 @@
           <div class="eyebrow">Entwicklungsprozess</div>
           <h1>Projektplan</h1>
           <p class="plan-subtitle">
-            Aufgaben pro Person – Checkbox klicken zum Abhaken. Erledigte Aufgaben wandern nach unten.
+            Checkbox = erledigt/offen · Auf Task klicken = Code anzeigen · Erledigte Tasks wandern nach unten
           </p>
         </header>
 
@@ -141,374 +199,1124 @@
           <div class="plan-stat"><strong id="statOpen">0</strong><span>offen</span></div>
         </div>
 
-        <!-- ══════ ILHAN ══════ -->
-        <div class="plan-section">
-          <div class="plan-section-header">
-            <div class="avatar" style="background:#ef4444">IL</div>
-            <h2>Ilhan</h2>
-            <span class="section-role">Dateninfrastruktur</span>
-            <span class="section-count" id="count-ilhan">0/0</span>
-          </div>
-          <div class="plan-tasks" data-person="ilhan">
-            <div class="plan-task" data-id="ilhan-1" onclick="toggle('ilhan-1')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/database/db.js</div>
-                <div class="desc"><code>messages</code>-Tabelle anlegen: <code>id</code>, <code>from_user_id</code>, <code>to_user_id</code>, <code>subject</code>, <code>body</code>, <code>read</code>, <code>created_at</code>. Migration am Ende der Datei einfügen.</div>
-                <div class="commit-msg">git commit -m "add messages table schema with read flag and timestamps"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="ilhan-2" onclick="toggle('ilhan-2')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/database/db.js</div>
-                <div class="desc">Auto-Create für alle Tabellen: <code>notes</code>, <code>todos</code>, <code>pomodoro_sessions</code>, <code>tracked_time</code>, <code>messages</code> – prüfen ob vorhanden, ggf. erstellen.</div>
-                <div class="commit-msg">git commit -m "ensure all tables auto-create on startup"</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════ SASCHA ══════ -->
-        <div class="plan-section">
-          <div class="plan-section-header">
-            <div class="avatar" style="background:#4c91ff">SA</div>
-            <h2>Sascha</h2>
-            <span class="section-role">Backend · Dateninfrastruktur</span>
-            <span class="section-count" id="count-sascha">0/0</span>
-          </div>
-          <div class="plan-tasks" data-person="sascha">
-            <div class="plan-task" data-id="sascha-1" onclick="toggle('sascha-1')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/routes/index.js</div>
-                <div class="desc">View-Routen: <code>/leaderboard</code>, <code>/rangliste</code>, <code>/user/:id</code>, <code>/messages</code>, <code>/nachrichten</code>, <code>/profile</code>, <code>/profil</code>, <code>/entwicklungsplan</code> mit <code>auth</code>-Middleware.</div>
-                <div class="commit-msg">git commit -m "add view routes for leaderboard user messages profile and plan pages"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="sascha-2" onclick="toggle('sascha-2')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/app.js</div>
-                <div class="desc">Neue Router (<code>leaderboard.js</code>, <code>users.js</code>, <code>messages.js</code>) per <code>app.use('/api', ...)</code> einbinden.</div>
-                <div class="commit-msg">git commit -m "wire up leaderboard users and messages api routers"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="sascha-3" onclick="toggle('sascha-3')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">Server-Deployment</div>
-                <div class="desc">PM2-Prozess für <code>mindful_uni</code>: <code>pm2 start backend/app.js --name mindful-uni</code>. Port ggf. auf 3001 ändern.</div>
-                <div class="commit-msg">pm2 start backend/app.js --name mindful-uni</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════ JARO ══════ -->
-        <div class="plan-section">
-          <div class="plan-section-header">
-            <div class="avatar" style="background:#10b981">JA</div>
-            <h2>Jaro</h2>
-            <span class="section-role">Backend</span>
-            <span class="section-count" id="count-jaro">0/0</span>
-          </div>
-          <div class="plan-tasks" data-person="jaro">
-            <div class="plan-task" data-id="jaro-1" onclick="toggle('jaro-1')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/routes/leaderboard.js (neu)</div>
-                <div class="desc"><code>GET /api/leaderboard</code>. Zählt pro Benutzer: erledigte Todos (heute), Pomodoro-Sitzungen (heute), getrackte Zeit (heute). Gibt sortiertes Array mit <code>user_id</code>, <code>name</code>, <code>initial</code>, <code>value</code>.</div>
-                <div class="commit-msg">git commit -m "add leaderboard api returning all users per category"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-2" onclick="toggle('jaro-2')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/routes/users.js (neu)</div>
-                <div class="desc"><code>GET /api/users</code> (alle Nutzer) und <code>GET /api/users/:id</code> (Profil + Stats).</div>
-                <div class="commit-msg">git commit -m "add user list and profile api for community features"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-3" onclick="toggle('jaro-3')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/routes/messages.js (neu)</div>
-                <div class="desc"><code>POST /api/messages/send</code>, <code>GET /api/messages/inbox</code>, <code>GET /api/messages/sent</code>, <code>PUT /api/messages/:id/read</code>, <code>GET /api/messages/unread-count</code>.</div>
-                <div class="commit-msg">git commit -m "add messaging api with send inbox sent read endpoints"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-4" onclick="toggle('jaro-4')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/routes/kalender.js</div>
-                <div class="desc">Fix: Dynamischer SET-Build bei PUT. Ersetzt hartcodierte Spaltenliste durch dynamische Generierung.</div>
-                <div class="commit-msg">git commit -m "fix calendar put to dynamically build SET clause for partial updates"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-5" onclick="toggle('jaro-5')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/routes/todos.js</div>
-                <div class="desc">Fix: <code>workspace_id</code> leeren String → <code>null</code>. <code>faellig</code> zurücksetzen. <code>erledigt</code> auto Unix-Timestamp. Quote-Escaping.</div>
-                <div class="commit-msg">git commit -m "fix todos: workspace null, faellig clear, erledigt auto-timestamp, quote escaping"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-6" onclick="toggle('jaro-6')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/routes/notizen.js</div>
-                <div class="desc">Fix: Bei POST/PUT <code>LEFT JOIN workspace</code> zurückgeben für workspace-Id und -Farbe.</div>
-                <div class="commit-msg">git commit -m "fix notes post/put to return workspace join data"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-7" onclick="toggle('jaro-7')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">backend/routes/search.js</div>
-                <div class="desc">Fix: Query verwendet <code>erstellt</code> statt <code>aktualisiert</code>. 8 Recent-Results. AbortController. Spotlight-Design.</div>
-                <div class="commit-msg">git commit -m "fix search: correct column, 8 recents, abort controller, spotlight design"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-8" onclick="toggle('jaro-8')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/js/notes.js</div>
-                <div class="desc">Error-Toast in <code>saveNote()</code>-else. <code>showEditor()</code>-Toggle. Live-Preview. Toolbar deaktivieren (<code>.editor-disabled</code>).</div>
-                <div class="commit-msg">git commit -m "add error toast, showEditor toggle, live preview, disabled toolbar to notes"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-9" onclick="toggle('jaro-9')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/js/app.js (search)</div>
-                <div class="desc">Search-UI: Keyboard-Navigation (Pfeiltasten, Enter, Escape), Spotlight-Modal, Dokumente + Snippets, Strg+K.</div>
-                <div class="commit-msg">git commit -m "add keyboard nav, document results, and spotlight modal to search"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-10" onclick="toggle('jaro-10')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/views/register.ejs + register.js + register.css + dashboard.ejs</div>
-                <div class="desc">Dead Code entfernen: nicht mehr verwendete Dateien gelöscht.</div>
-                <div class="commit-msg">git commit -m "remove dead code: register ejs/js/css and dashboard ejs"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-11" onclick="toggle('jaro-11')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">Neues Verzeichnis</div>
-                <div class="desc"><code>/home/ubuntu/mindful_uni</code> anlegen, Code kopieren, <code>git init && git add -A && git commit -m "initial commit"</code>.</div>
-                <div class="commit-msg">git commit -m "initial commit: mindful dashboard base project"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="jaro-12" onclick="toggle('jaro-12')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">Remote GitLab</div>
-                <div class="desc"><code>git remote add origin &lt;gitlab-url&gt; && git push -u origin master</code>.</div>
-                <div class="commit-msg">git push -u origin master</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════ OMAR ══════ -->
-        <div class="plan-section">
-          <div class="plan-section-header">
-            <div class="avatar" style="background:#f59e0b">OM</div>
-            <h2>Omar</h2>
-            <span class="section-role">Frontend</span>
-            <span class="section-count" id="count-omar">0/0</span>
-          </div>
-          <div class="plan-tasks" data-person="omar">
-            <div class="plan-task" data-id="omar-1" onclick="toggle('omar-1')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/views/leaderboard.ejs (neu)</div>
-                <div class="desc">Rangliste mit Tab-Navigation (Aufgaben / Pomodoro / Zeiterfassung), Tabelle mit Platz #, Name, Wert. Gold/Silber/Bronze.</div>
-                <div class="commit-msg">git commit -m "create leaderboard page with category tabs and ranking table"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="omar-2" onclick="toggle('omar-2')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/js/leaderboard.js (neu)</div>
-                <div class="desc">Daten von <code>/api/leaderboard</code> laden, Tabs rendern, Medaillen, leerer Zustand.</div>
-                <div class="commit-msg">git commit -m "add leaderboard frontend with tab switching and medal styling"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="omar-3" onclick="toggle('omar-3')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/views/user_profile.ejs (neu)</div>
-                <div class="desc">Öffentliches Profil: Avatar, Name, Stati, "Nachricht senden"-Button.</div>
-                <div class="commit-msg">git commit -m "create public user profile page with stats and message button"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="omar-4" onclick="toggle('omar-4')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/js/user_profile.js (neu)</div>
-                <div class="desc">Profil von <code>/api/users/:id</code> laden. "Nachricht senden" leitet zu /messages.</div>
-                <div class="commit-msg">git commit -m "add user profile frontend with data loading and send message"</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════ AISHA ══════ -->
-        <div class="plan-section">
-          <div class="plan-section-header">
-            <div class="avatar" style="background:#cf79ff">AI</div>
-            <h2>Aisha</h2>
-            <span class="section-role">Frontend</span>
-            <span class="section-count" id="count-aisha">0/0</span>
-          </div>
-          <div class="plan-tasks" data-person="aisha">
-            <div class="plan-task" data-id="aisha-1" onclick="toggle('aisha-1')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/views/messages.ejs (neu)</div>
-                <div class="desc">Posteingang/Gesendet-Tabs, Nachrichtenliste, Detailansicht, Compose-Formular mit User-Suche.</div>
-                <div class="commit-msg">git commit -m "create messages page with inbox sent tabs and compose modal"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="aisha-2" onclick="toggle('aisha-2')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/js/messages.js (neu)</div>
-                <div class="desc">Inbox/Sent laden, rendern, Compose mit User-Suche, Senden/Abbrechen, ungelesene-Anzeige.</div>
-                <div class="commit-msg">git commit -m "add messages frontend with inbox sent compose and user search"</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════ MO ══════ -->
-        <div class="plan-section">
-          <div class="plan-section-header">
-            <div class="avatar" style="background:#f97316">MO</div>
-            <h2>Mo</h2>
-            <span class="section-role">UI/UX</span>
-            <span class="section-count" id="count-mo">0/0</span>
-          </div>
-          <div class="plan-tasks" data-person="mo">
-            <div class="plan-task" data-id="mo-1" onclick="toggle('mo-1')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/views/notes.ejs</div>
-                <div class="desc">"Neue Notiz"-Button im Editor-Header. Leeren-Zustand (Empty State). Live-Preview-Toggle (Augen-Symbol). Toolbar ausgrauen wenn keine Notiz offen.</div>
-                <div class="commit-msg">git commit -m "add new note button, empty state, live preview to notes page"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="mo-2" onclick="toggle('mo-2')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/css/notes.css</div>
-                <div class="desc">CSS für Empty State, deaktivierte Toolbar (<code>.editor-disabled</code>), Live-Preview.</div>
-                <div class="commit-msg">git commit -m "add notes css for empty state, disabled toolbar, and live preview"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="mo-3" onclick="toggle('mo-3')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/css/style.css</div>
-                <div class="desc">Button-Styles primär/sekundär für Notes-Toolbar.</div>
-                <div class="commit-msg">git commit -m "add primary and secondary button styles for notes toolbar"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="mo-4" onclick="toggle('mo-4')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/css/style.css</div>
-                <div class="desc">Leaderboard-Styles (Tabs, Tabelle, Medaillen). User-Profil-Styles. Messages-Styles (Tabs, Liste, Compose-Modal).</div>
-                <div class="commit-msg">git commit -m "style leaderboard, profile, and messages pages"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="mo-5" onclick="toggle('mo-5')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/views/partials/sidebar.ejs</div>
-                <div class="desc">Links für Rangliste (<code>/leaderboard</code>) und Nachrichten (<code>/messages</code>) in der Navigation. Entwicklungsplan-Link (<code>/entwicklungsplan</code>) dezent.</div>
-                <div class="commit-msg">git commit -m "add rangliste, nachrichten, and entwicklungsplan links to sidebar"</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════ YAMAN ══════ -->
-        <div class="plan-section">
-          <div class="plan-section-header">
-            <div class="avatar" style="background:#8B5CF6">YA</div>
-            <h2>Yaman</h2>
-            <span class="section-role">UI/UX</span>
-            <span class="section-count" id="count-yaman">0/0</span>
-          </div>
-          <div class="plan-tasks" data-person="yaman">
-            <div class="plan-task" data-id="yaman-1" onclick="toggle('yaman-1')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/css/style.css (msg-compose)</div>
-                <div class="desc"><code>.msg-compose-btn</code> + <code>.msg-compose-btn-secondary</code> für Senden/Abbrechen.</div>
-                <div class="commit-msg">git commit -m "style senden/abbrechen buttons to match msg-compose-btn design"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="yaman-2" onclick="toggle('yaman-2')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/views/messages.ejs</div>
-                <div class="desc">Senden/Abbrechen-Buttons auf <code>.msg-compose-btn</code>/<code>.msg-compose-btn-secondary</code> umgestellt.</div>
-                <div class="commit-msg">git commit -m "update compose buttons to use msg-compose-btn classes"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="yaman-3" onclick="toggle('yaman-3')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/public/js/messages.js</div>
-                <div class="desc">"Keine Nutzer gefunden" nur wenn Suchfeld nicht leer. User-Search-Verhalten optimiert.</div>
-                <div class="commit-msg">git commit -m "only show 'keine nutzer gefunden' when search input is non-empty"</div>
-              </div>
-            </div>
-            <div class="plan-task" data-id="yaman-4" onclick="toggle('yaman-4')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">frontend/views/entwicklungsplan.ejs</div>
-                <div class="desc">Diese Seite: Projektplan mit Checkboxen, Personen-Sektionen, sortiert, localStorage.</div>
-                <div class="commit-msg">git commit -m "create entwicklungsplan page with per-person tasks and checkboxes"</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════ GEMEINSAME PHASEN ══════ -->
-        <div class="plan-section">
-          <div class="plan-section-header">
-            <div class="avatar" style="background:#6b7280"><i class="fas fa-users" style="font-size:0.85rem"></i></div>
-            <h2>Gemeinsame Meilensteine</h2>
-            <span class="section-role">Alle</span>
-            <span class="section-count" id="count-team">0/0</span>
-          </div>
-          <div class="plan-tasks" data-person="team">
-            <div class="plan-task" data-id="team-1" onclick="toggle('team-1')">
-              <div class="cb-wrap"><i class="fas fa-check"></i></div>
-              <div class="info">
-                <div class="file">GitLab-Workflow</div>
-                <div class="desc">Jeder committed seine Tasks in der richtigen Reihenfolge auf dem Uni GitLab mit den vorgegebenen Commit-Nachrichten. Nach jeder Phase Tag setzen: <code>git tag phase-...</code>.</div>
-                <div class="commit-msg">git tag phase-1 ... phase-2 ...</div>
-              </div>
-            </div>
-          </div>
+        <div id="planContainer">
+          <!-- Wird von JS gerendert -->
         </div>
 
         <div class="plan-footer">
-          <strong>So funktioniert's:</strong> Jede Person hat ihren eigenen Bereich. Checkbox klicken = Task erledigt. Erledigte Tasks wandern automatisch nach unten. Status bleibt im Browser gespeichert (localStorage). Wenn ich neue Features oder Bugfixes baue, füge ich hier automatisch neue Tasks als "offen" hinzu.
+          <strong>So funktioniert's:</strong> Jede Person hat ihren Bereich. Checkbox klicken = erledigt (wandert runter). Auf die Task-Beschreibung klicken = den einzufügenden Code in einem Modal ansehen. Copy-Button zum Kopieren. Status bleibt im Browser (localStorage). Wenn ich neue Features baue, kommen hier neue Tasks dazu.
         </div>
       </main>
     </div>
 
+    <!-- ─── CODE MODAL ─── -->
+    <div class="code-overlay" id="codeOverlay" onclick="if(event.target===this)closeCodeModal()">
+      <div class="code-modal">
+        <div class="code-modal-header">
+          <h3 id="codeModalTitle">Code</h3>
+          <button class="code-modal-close" onclick="closeCodeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="code-modal-body">
+          <pre id="codeModalPre"></pre>
+        </div>
+        <div class="code-modal-footer">
+          <button class="copy-btn" onclick="copyCode()"><i class="fas fa-copy"></i> Kopieren</button>
+        </div>
+      </div>
+    </div>
+
     <script>
+    // ═══════════════════════════════════════════════
+    // TASK-DATEN + CODE
+    // ═══════════════════════════════════════════════
+
+    const TASKS = {
+      ilhan: {
+        label: "Ilhan", role: "Dateninfrastruktur", color: "#ef4444", initial: "IL",
+        items: [
+          { id:"ilhan-1", file:"backend/database/db.js",
+            desc:"messages-Tabelle anlegen: id, from_user_id, to_user_id, subject, body, read, created_at. Migration am Ende der Datei.",
+            commit:"git commit -m \"add messages table schema with read flag and timestamps\"",
+            code:`// Am Ende von backend/database/db.js:
+
+db.exec(\`
+  CREATE TABLE IF NOT EXISTS messages (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_user_id INTEGER NOT NULL,
+    to_user_id   INTEGER NOT NULL,
+    subject      TEXT NOT NULL,
+    body         TEXT DEFAULT '',
+    read         INTEGER DEFAULT 0,
+    created_at   TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (from_user_id) REFERENCES users(id),
+    FOREIGN KEY (to_user_id)   REFERENCES users(id)
+  )
+\`);
+console.log("✓ messages table ready");` },
+          { id:"ilhan-2", file:"backend/database/db.js",
+            desc:"Auto-Create für alle Tabellen: notes, todos, pomodoro_sessions, tracked_time, messages. Prüfen ob vorhanden, ggf. erstellen.",
+            commit:"git commit -m \"ensure all tables auto-create on startup\"",
+            code:`// Nach allen CREATE TABLEs in db.js:
+
+const TABLES = ['users','notes','todos','events','pomodoro_sessions',
+                'time_entries','workspaces','ordner','dokumente','messages'];
+
+const existing = db.prepare(
+  "SELECT name FROM sqlite_master WHERE type='table'"
+).all().map(r => r.name);
+
+TABLES.forEach(t => {
+  if (!existing.includes(t)) {
+    console.warn('Fehlende Tabelle:' + t);
+  }
+});
+console.log('Table check complete.');` }
+        ]
+      },
+      sascha: {
+        label: "Sascha", role: "Backend · Dateninfrastruktur", color: "#4c91ff", initial: "SA",
+        items: [
+          { id:"sascha-1", file:"backend/routes/index.js",
+            desc:"View-Routen für /leaderboard, /rangliste, /user/:id, /messages, /nachrichten, /profile, /profil, /entwicklungsplan mit auth-Middleware.",
+            commit:"git commit -m \"add view routes for leaderboard user messages profile and plan pages\"",
+            code:`// In backend/routes/index.js:
+
+router.get("/leaderboard", auth, (req, res) =>
+  res.render("leaderboard", { currentPage: "leaderboard" }));
+router.get("/rangliste", auth, (req, res) =>
+  res.render("leaderboard", { currentPage: "leaderboard" }));
+router.get("/user/:id", auth, (req, res) =>
+  res.render("user_profile", { currentPage: "leaderboard", userId: req.params.id }));
+router.get("/messages", auth, (req, res) =>
+  res.render("messages", { currentPage: "messages" }));
+router.get("/nachrichten", auth, (req, res) =>
+  res.render("messages", { currentPage: "messages" }));
+router.get("/profile", auth, (req, res) =>
+  res.render("profile", { currentPage: "profile" }));
+router.get("/profil", auth, (req, res) =>
+  res.render("profile", { currentPage: "profile" }));
+router.get("/entwicklungsplan", auth, (req, res) =>
+  res.render("entwicklungsplan", { currentPage: "entwicklungsplan" }));` },
+          { id:"sascha-2", file:"backend/app.js",
+            desc:"Neue API-Router einbinden: leaderboard, users, messages per app.use('/api', ...).",
+            commit:"git commit -m \"wire up leaderboard users and messages api routers\"",
+            code:`// In backend/app.js (nach den anderen Routen):
+
+const leaderboardRouter = require("./routes/leaderboard");
+const usersRouter = require("./routes/users");
+const messagesRouter = require("./routes/messages");
+
+app.use("/api/leaderboard", leaderboardRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/messages", messagesRouter);` },
+          { id:"sascha-3", file:"Server",
+            desc:"PM2-Prozess für mindful_uni: pm2 start backend/app.js --name mindful-uni. Port ggf. auf 3001 ändern.",
+            commit:"pm2 start backend/app.js --name mindful-uni",
+            code:`# Auf dem VPS ausführen:
+cd /home/ubuntu/mindful_uni
+pm2 start backend/app.js --name mindful-uni
+pm2 save
+
+# Port in backend/app.js ggf. ändern:
+const PORT = process.env.PORT || 3001;` }
+        ]
+      },
+      jaro: {
+        label: "Jaro", role: "Backend", color: "#10b981", initial: "JA",
+        items: [
+          { id:"jaro-1", file:"backend/routes/leaderboard.js (NEU)",
+            desc:"GET /api/leaderboard. Zählt pro User: erledigte Todos (heute), Pomodoro (heute), getrackte Zeit (heute).",
+            commit:"git commit -m \"add leaderboard api returning all users per category\"",
+            code:`const express = require("express");
+const router = express.Router();
+const db = require("../database/db");
+const auth = require("../middleware/auth");
+
+function todayStr() {
+  return new Date().toLocaleDateString("en-CA");
+}
+
+router.get("/", auth, (req, res) => {
+  try {
+    const today = todayStr();
+
+    const todosDone = db.prepare(
+      \`SELECT u.id, u.name, COUNT(*) AS value
+       FROM todos t JOIN users u ON t.user_id = u.id
+       WHERE t.status = 'erledigt' AND date(t.erledigt,'unixepoch') = ?
+       GROUP BY u.id ORDER BY value DESC\`
+    ).all(today);
+
+    const pomodoro = db.prepare(
+      \`SELECT u.id, u.name, COALESCE(SUM(p.duration_seconds),0) AS value
+       FROM pomodoro_sessions p JOIN users u ON p.user_id = u.id
+       WHERE date(p.completed_at) = ?
+       GROUP BY u.id ORDER BY value DESC\`
+    ).all(today);
+
+    const tracked = db.prepare(
+      \`SELECT u.id, u.name, COALESCE(SUM(te.duration_seconds),0) AS value
+       FROM time_entries te JOIN users u ON te.user_id = u.id
+       WHERE date(te.created_at) = ?
+       GROUP BY u.id ORDER BY value DESC\`
+    ).all(today);
+
+    const totalTodos = db.prepare(
+      \`SELECT COUNT(*) AS c FROM todos\`
+    ).get().c;
+    const totalUsers = db.prepare(
+      \`SELECT COUNT(*) AS c FROM users\`
+    ).get().c;
+
+    res.json({ todosDone, pomodoro, tracked, totalTodos, totalUsers });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;` },
+          { id:"jaro-2", file:"backend/routes/users.js (NEU)",
+            desc:"GET /api/users (alle Nutzer) und GET /api/users/:id/profile (Profil + Stats).",
+            commit:"git commit -m \"add user list and profile api for community features\"",
+            code:`const express = require("express");
+const router = express.Router();
+const db = require("../database/db");
+const auth = require("../middleware/auth");
+
+router.get("/", auth, (req, res) => {
+  try {
+    const users = db.prepare(
+      "SELECT id, name FROM users ORDER BY name ASC"
+    ).all();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/:id/profile", auth, (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    if (!userId) return res.status(400)
+      .json({ error: "Ungültige ID" });
+
+    const user = db.prepare(
+      "SELECT id, name, avatar, created_at FROM users WHERE id = ?"
+    ).get(userId);
+    if (!user) return res.status(404)
+      .json({ error: "Benutzer nicht gefunden" });
+
+    const todosDone = db.prepare(
+      "SELECT COUNT(*) AS value FROM todos WHERE user_id=? AND status='erledigt'"
+    ).get(userId).value;
+    const totalTodos = db.prepare(
+      "SELECT COUNT(*) AS value FROM todos WHERE user_id=?"
+    ).get(userId).value;
+    const pomodoroTotal = db.prepare(
+      "SELECT COALESCE(SUM(duration_seconds),0) AS value FROM pomodoro_sessions WHERE user_id=?"
+    ).get(userId).value;
+    const trackedTotal = db.prepare(
+      "SELECT COALESCE(SUM(duration_seconds),0) AS value FROM time_entries WHERE user_id=?"
+    ).get(userId).value;
+
+    res.json({
+      user,
+      stats: { todosDone, totalTodos, pomodoroTotal, trackedTotal }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;` },
+          { id:"jaro-3", file:"backend/routes/messages.js (NEU)",
+            desc:"POST /api/messages (send), GET /inbox, GET /sent, PUT /:id/read, GET /unread-count.",
+            commit:"git commit -m \"add messaging api with send inbox sent read endpoints\"",
+            code:`const express = require("express");
+const router = express.Router();
+const db = require("../database/db");
+const auth = require("../middleware/auth");
+
+router.post("/", auth, (req, res) => {
+  try {
+    const { to_user_id, subject, body } = req.body;
+    if (!to_user_id || !subject)
+      return res.status(400)
+        .json({ error: "Empfänger und Betreff erforderlich" });
+    const recipient = db.prepare(
+      "SELECT id FROM users WHERE id = ?"
+    ).get(to_user_id);
+    if (!recipient)
+      return res.status(404)
+        .json({ error: "Empfänger nicht gefunden" });
+    if (to_user_id === req.user.id)
+      return res.status(400)
+        .json({ error: "Du kannst keine Nachricht an dich selbst senden" });
+    db.prepare(
+      "INSERT INTO messages (from_user_id,to_user_id,subject,body) VALUES (?,?,?,?)"
+    ).run(req.user.id, to_user_id, subject, body || "");
+    res.status(201).json({ message: "Nachricht gesendet" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/inbox", auth, (req, res) => {
+  try {
+    const msgs = db.prepare(
+      \`SELECT m.id,m.subject,m.body,m.read,m.created_at,
+              u.id AS from_id, u.name AS from_name
+       FROM messages m JOIN users u ON m.from_user_id = u.id
+       WHERE m.to_user_id = ? ORDER BY m.created_at DESC\`
+    ).all(req.user.id);
+    res.json(msgs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/sent", auth, (req, res) => {
+  try {
+    const msgs = db.prepare(
+      \`SELECT m.id,m.subject,m.body,m.read,m.created_at,
+              u.id AS to_id, u.name AS to_name
+       FROM messages m JOIN users u ON m.to_user_id = u.id
+       WHERE m.from_user_id = ? ORDER BY m.created_at DESC\`
+    ).all(req.user.id);
+    res.json(msgs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put("/:id/read", auth, (req, res) => {
+  try {
+    db.prepare(
+      "UPDATE messages SET read=1 WHERE id=? AND to_user_id=?"
+    ).run(req.params.id, req.user.id);
+    res.json({ message: "Als gelesen markiert" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/unread", auth, (req, res) => {
+  try {
+    const c = db.prepare(
+      "SELECT COUNT(*) AS c FROM messages WHERE to_user_id=? AND read=0"
+    ).get(req.user.id).c;
+    res.json({ count: c });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;` },
+          { id:"jaro-4", file:"backend/routes/kalender.js",
+            desc:"Fix: Dynamischer SET-Build bei PUT, damit nur übergebene Felder aktualisiert werden.",
+            commit:"git commit -m \"fix calendar put to dynamically build SET clause for partial updates\"",
+            code:`// Ersetze den gesamten PUT-Handler in kalender.js:
+
+router.put("/:id", auth, (req, res) => {
+  try {
+    const sets = [];
+    const params = [];
+    if (req.body.titel !== undefined)       { sets.push("titel=?");       params.push(req.body.titel); }
+    if (req.body.beschreibung !== undefined){ sets.push("beschreibung=?");params.push(req.body.beschreibung); }
+    if (req.body.start_datum !== undefined) { sets.push("start_datum=?"); params.push(req.body.start_datum); }
+    if (req.body.end_datum !== undefined)   { sets.push("end_datum=?");   params.push(req.body.end_datum); }
+    if (req.body.farbe !== undefined)       { sets.push("farbe=?");       params.push(req.body.farbe); }
+    if (req.body.ort !== undefined)         { sets.push("ort=?");         params.push(req.body.ort); }
+    if (req.body.dauer !== undefined)       { sets.push("dauer=?");       params.push(req.body.dauer); }
+    if (req.body.wiederholung !== undefined){ sets.push("wiederholung=?");params.push(req.body.wiederholung); }
+    if (req.body.ganztag !== undefined)     { sets.push("ganztag=?");     params.push(req.body.ganztag ? 1 : 0); }
+    if (req.body.erinnerung !== undefined)  { sets.push("erinnerung=?");  params.push(req.body.erinnerung); }
+    if (req.body.workspace_id !== undefined){ sets.push("workspace_id=?");params.push(req.body.workspace_id||null); }
+    params.push(req.params.id, req.user.id);
+    db.prepare(
+      \`UPDATE events SET \${sets.join(", ")} WHERE id=? AND user_id=?\`
+    ).run(...params);
+    res.json({ message: "Event geupdated" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});` },
+          { id:"jaro-5", file:"backend/routes/todos.js",
+            desc:"Fix: workspace_id leerer String → null. faellig zurücksetzen. erledigt auto Unix-Timestamp bei Status 'erledigt'. Quote-Escaping.",
+            commit:"git commit -m \"fix todos: workspace null, faellig clear, erledigt auto-timestamp, quote escaping\"",
+            code:`// Im PUT-Handler von todos.js:
+
+const { titel, beschreibung, status, erledigt, workspace_id, prioritaet, schritte } = req.body;
+const faellig = req.body.faellig !== undefined
+  ? req.body.faellig
+  : (req.body.due_date ?? null);
+
+const todo = db.prepare(
+  "SELECT * FROM todos WHERE id = ? AND user_id = ?"
+).get(req.params.id, req.user.id);
+if (!todo) return res.status(404).json({ error: "Todo nicht gefunden" });
+
+const erledigtValue = status === "erledigt" && todo.status !== "erledigt"
+  ? Math.floor(Date.now() / 1000)
+  : (status === "offen" ? null : (erledigt ?? todo.erledigt));
+
+db.prepare(\`UPDATE todos SET
+  titel=?, beschreibung=?, faellig=?, status=?, erledigt=?,
+  workspace_id=?, prioritaet=?, schritte=?
+WHERE id=? AND user_id=?\`).run(
+  titel ?? todo.titel,
+  beschreibung ?? todo.beschreibung,
+  faellig,
+  status ?? todo.status,
+  erledigtValue,
+  workspace_id ?? todo.workspace_id,
+  prioritaet ?? todo.prioritaet,
+  schritte ?? todo.schritte,
+  req.params.id, req.user.id,
+);` },
+          { id:"jaro-6", file:"backend/routes/notizen.js",
+            desc:"Fix: Bei POST/PUT LEFT JOIN workspace zurückgeben, damit das Frontend workspace-Id und -Farbe sofort hat.",
+            commit:"git commit -m \"fix notes post/put to return workspace join data\"",
+            code:`// In POST-Handler:
+const note = db.prepare(
+  \`SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe
+   FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id
+   WHERE n.id = ?\`
+).get(result.lastInsertRowid);
+res.status(201).json(note);
+
+// In PUT-Handler (nach UPDATE):
+const note = db.prepare(
+  \`SELECT n.*, w.name AS workspace_name, w.farbe AS workspace_farbe
+   FROM notizen n LEFT JOIN workspaces w ON n.workspace_id = w.id
+   WHERE n.id = ? AND n.user_id = ?\`
+).get(req.params.id, req.user.id);
+res.json(note);` },
+          { id:"jaro-7", file:"backend/routes/search.js",
+            desc:"Fix: Query verwendet erstellt statt aktualisiert. 8 Recent-Results. AbortController. Spotlight-Design.",
+            commit:"git commit -m \"fix search: correct column, 8 recents, abort controller, spotlight design\"",
+            code:`// Such-Query fix (aktualisiert → erstellt):
+const recentNotes = db.prepare(
+  \`SELECT id, titel, NULL AS snippet, 'notiz' AS typ
+   FROM notizen WHERE user_id = ?
+   ORDER BY COALESCE(aktualisiert, erstellt) DESC LIMIT ?\`
+).all(userId, recentLimit);
+
+// 8 statt 10 Recent-Results
+const recentLimit = 8;
+
+// AbortController im Frontend:
+let searchController;
+function openSearch() {
+  if (searchController) searchController.abort();
+  searchController = new AbortController();
+  fetch(url, { signal: searchController.signal })
+    .then(/* ... */)
+    .catch(err => {
+      if (err.name !== 'AbortError') console.error(err);
+    });
+}` },
+          { id:"jaro-8", file:"frontend/public/js/notes.js",
+            desc:"Error-Toast in saveNote()-Else. showEditor()-Toggle. Live-Preview. Toolbar deaktivieren (.editor-disabled).",
+            commit:"git commit -m \"add error toast, showEditor toggle, live preview, disabled toolbar to notes\"",
+            code:`// In notes.js:
+
+// showEditor Funktion:
+let previewActive = false;
+function showEditor(show) {
+  document.getElementById("editorEmpty").style.display = show ? "none" : "";
+  document.getElementById("noteContent").style.display =
+    show && !previewActive ? "" : "none";
+  document.getElementById("notePreview").style.display =
+    show && previewActive ? "" : "none";
+  document.getElementById("noteTitle").disabled = !show;
+  document.querySelector(".editor-main-card")
+    .classList.toggle("editor-disabled", !show);
+  if (!show) {
+    previewActive = false;
+    document.getElementById("previewToggle").classList.remove("active");
+  }
+}
+
+// togglePreview Funktion:
+window.togglePreview = function() {
+  if (!currentNoteId) return;
+  previewActive = !previewActive;
+  document.getElementById("previewToggle")
+    .classList.toggle("active", previewActive);
+  if (previewActive) {
+    document.getElementById("notePreview").innerHTML =
+      document.getElementById("noteContent").innerHTML
+      || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+    document.getElementById("noteContent").style.display = "none";
+    document.getElementById("notePreview").style.display = "";
+  } else {
+    document.getElementById("noteContent").style.display = "";
+    document.getElementById("notePreview").style.display = "none";
+  }
+};
+
+// Error-Toast in saveNote:
+window.saveNote = async function() {
+  if (!currentNoteId) return;
+  // ... existing code ...
+  if (res && res.ok) {
+    // existing success
+  } else {
+    // NEU: Error-Toast
+    const err = res ? await res.json().catch(()=>({})) : {};
+    showToast(err.error || "Fehler beim Speichern", "error");
+  }
+};` },
+          { id:"jaro-9", file:"frontend/public/js/app.js (Suche)",
+            desc:"Keyboard-Navigation (Pfeiltasten, Enter, Escape). Spotlight-Modal. Dokumente + Snippets. Strg+K.",
+            commit:"git commit -m \"add keyboard nav, document results, and spotlight modal to search\"",
+            code:`// Such-Keyboard-Navigation in app.js:
+let searchIndex = -1;
+document.getElementById("searchInput").addEventListener("keydown", e => {
+  const items = document.querySelectorAll(".sr-item");
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    searchIndex = Math.min(searchIndex + 1, items.length - 1);
+    items.forEach((el,i) => el.classList.toggle("active", i===searchIndex));
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    searchIndex = Math.max(searchIndex - 1, -1);
+    items.forEach((el,i) => el.classList.toggle("active", i===searchIndex));
+  } else if (e.key === "Enter" && searchIndex >= 0 && items[searchIndex]) {
+    items[searchIndex].click();
+  } else if (e.key === "Escape") {
+    closeSearch();
+  }
+});
+
+// Spotlight-Design:
+// search-overlay + search-modal sind im sidebar.ejs
+// Such-Icon, ESC-Hint, Input mit Icon
+// Recent Results anzeigen wenn Query leer` },
+          { id:"jaro-10", file:"frontend/views/register.ejs + register.js + register.css + dashboard.ejs",
+            desc:"Dead Code entfernen: register.ejs, register.js, register.css, dashboard.ejs gelöscht.",
+            commit:"git commit -m \"remove dead code: register ejs/js/css and dashboard ejs\"",
+            code:`# Dateien löschen:
+rm frontend/views/register.ejs
+rm frontend/views/register.js
+rm frontend/views/register.css
+rm frontend/views/dashboard.ejs
+
+# Prüfen ob in app.js noch Verweise sind:
+git grep "register" backend/app.js
+git grep "dashboard" backend/routes/index.js` },
+          { id:"jaro-11", file:"Neues Verzeichnis",
+            desc:"/home/ubuntu/mindful_uni anlegen, Code kopieren, git init, initial commit.",
+            commit:"git commit -m \"initial commit: mindful dashboard base project\"",
+            code:`# Auf dem Server:
+mkdir -p /home/ubuntu/mindful_uni
+cp -r /home/ubuntu/mindful_github/* /home/ubuntu/mindful_uni/
+cp -r /home/ubuntu/mindful_github/.* /home/ubuntu/mindful_uni/ 2>/dev/null
+rm -rf /home/ubuntu/mindful_uni/.git
+
+cd /home/ubuntu/mindful_uni
+git init
+git add -A
+git commit -m "initial commit: mindful dashboard base project"` },
+          { id:"jaro-12", file:"Remote GitLab",
+            desc:"git remote add origin <gitlab-url> && git push -u origin master.",
+            commit:"git push -u origin master",
+            code:`# Auf dem Server im mindful_uni Verzeichnis:
+git remote add origin git@gitlab.uni-...:gruppe/mindful.git
+git push -u origin master
+
+# Nach jeder Phase Tag setzen:
+git tag phase-1-dateninfra
+git tag phase-2-backend-api
+git tag phase-3-bugfixes
+git tag phase-4-frontend-notizen
+git tag phase-5-frontend-community
+git tag phase-6-ui-ux
+git push --tags` }
+        ]
+      },
+      omar: {
+        label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
+        items: [
+          { id:"omar-1", file:"frontend/views/leaderboard.ejs (NEU)",
+            desc:"Rangliste mit Tab-Navigation (Aufgaben/Pomodoro/Zeiterfassung), Tabelle, Medaillen.",
+            commit:"git commit -m \"create leaderboard page with category tabs and ranking table\"",
+            code:`<!-- Vollständige Datei frontend/views/leaderboard.ejs: -->
+<main class="leaderboard-page">
+  <header class="lb-header">
+    <div>
+      <div class="eyebrow">Community</div>
+      <h1>Rangliste</h1>
+      <p class="lb-subtitle">
+        Heute · <span id="totalUsers">0</span> Nutzer ·
+        <span id="totalTodos">0</span> Aufgaben
+      </p>
+    </div>
+  </header>
+
+  <div class="lb-tabs" id="lbTabs">
+    <button class="lb-tab active" onclick="switchTab('todosDone')">
+      <i class="fas fa-check-circle"></i> Aufgaben
+    </button>
+    <button class="lb-tab" onclick="switchTab('pomodoro')">
+      <i class="fas fa-clock"></i> Pomodoro
+    </button>
+    <button class="lb-tab" onclick="switchTab('tracked')">
+      <i class="fas fa-stopwatch"></i> Zeiterfassung
+    </button>
+  </div>
+
+  <div class="lb-table-wrap">
+    <table class="lb-table">
+      <thead><tr><th>#</th><th>Name</th><th>Wert</th></tr></thead>
+      <tbody id="lbBody"></tbody>
+    </table>
+  </div>
+
+  <div class="lb-empty" id="lbEmpty" style="display:none">
+    <i class="fas fa-trophy"></i>
+    <p>Heute noch keine Einträge</p>
+  </div>
+</main>
+<script src="/js/leaderboard.js"></script>` },
+          { id:"omar-2", file:"frontend/public/js/leaderboard.js (NEU)",
+            desc:"Daten von /api/leaderboard laden, Tabs rendern, Medaillen, leerer Zustand.",
+            commit:"git commit -m \"add leaderboard frontend with tab switching and medal styling\"",
+            code:`let lbData = null;
+let activeTab = "todosDone";
+
+async function loadLeaderboard() {
+  const res = await authFetch(\`\${API_BASE}/leaderboard\`);
+  if (!res || !res.ok) return;
+  lbData = await res.json();
+  document.getElementById("totalUsers").textContent = lbData.totalUsers;
+  document.getElementById("totalTodos").textContent = lbData.totalTodos;
+  renderTab(activeTab);
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll(".lb-tab").forEach(t =>
+    t.classList.toggle("active", t.onclick.toString().includes(tab)));
+  renderTab(tab);
+}
+
+function renderTab(tab) {
+  const entries = lbData?.[tab] || [];
+  const tbody = document.getElementById("lbBody");
+  const empty = document.getElementById("lbEmpty");
+  if (entries.length === 0) {
+    tbody.innerHTML = "";
+    empty.style.display = "block"; return;
+  }
+  empty.style.display = "none";
+  const medal = ["lb-gold","lb-silver","lb-bronze"];
+  tbody.innerHTML = entries.map((e,i) => \`
+    <tr class="lb-row \${medal[i]||""}">
+      <td class="lb-rank">\${i+1}</td>
+      <td><a href="/user/\${e.id}" class="lb-user-link">\${escHtml(e.name)}</a></td>
+      <td class="lb-col-value">\${formatLBValue(tab, e.value)}</td>
+    </tr>\`).join("");
+}
+
+function formatLBValue(tab, value) {
+  if (!value || value === 0) return "0";
+  if (tab === "todosDone") return \`\${value}\`;
+  const min = Math.round(value / 60);
+  if (min < 60) return \`\${min} Min\`;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m ? \`\${h}h \${m}m\` : \`\${h}h\`;
+}
+
+document.addEventListener("DOMContentLoaded", loadLeaderboard);` },
+          { id:"omar-3", file:"frontend/views/user_profile.ejs (NEU)",
+            desc:"Öffentliches Profil: Avatar, Name, Stati, 'Nachricht senden'-Button.",
+            commit:"git commit -m \"create public user profile page with stats and message button\"",
+            code:`<!-- frontend/views/user_profile.ejs -->
+<main class="profile-page">
+  <div class="up-card" id="upCard">
+    <p class="up-loading">Lade Profil...</p>
+  </div>
+  <div class="up-actions" id="upActions" style="display:none">
+    <button class="primary-btn" id="upMessageBtn">
+      <i class="fas fa-envelope"></i> Nachricht senden
+    </button>
+  </div>
+  <div class="up-send" id="upSend" style="display:none">
+    <input id="upSubject" placeholder="Betreff" />
+    <textarea id="upBody" placeholder="Nachricht..."></textarea>
+    <div>
+      <button class="primary-btn" onclick="sendMessage()">Senden</button>
+      <button class="secondary-btn" onclick="cancelMessage()">Abbrechen</button>
+    </div>
+  </div>
+</main>
+<script>const PROFILE_USER_ID = <%= userId %>;</script>
+<script src="/js/user_profile.js"></script>` },
+          { id:"omar-4", file:"frontend/public/js/user_profile.js (NEU)",
+            desc:"Profil von /api/users/:id/profile laden. 'Nachricht senden' leitet weiter.",
+            commit:"git commit -m \"add user profile frontend with data loading and send message\"",
+            code:`async function loadProfile() {
+  const res = await authFetch(
+    \`\${API_BASE}/users/\${PROFILE_USER_ID}/profile\`
+  );
+  if (!res || !res.ok) {
+    document.getElementById("upCard").innerHTML =
+      '<p style="color:var(--text-secondary)">Benutzer nicht gefunden</p>';
+    return;
+  }
+  const data = await res.json();
+  const u = data.user;
+  const s = data.stats;
+  const initial = (u.name || "?").charAt(0).toUpperCase();
+  const avatarHtml = u.avatar
+    ? '<img src="'+u.avatar+'" class="up-avatar-img" />'
+    : '<span class="up-avatar-initial">'+initial+'</span>';
+  document.getElementById("upCard").innerHTML = \`
+    <div class="up-hero">
+      <div class="up-avatar">\${avatarHtml}</div>
+      <div class="up-info">
+        <h2>\${escHtml(u.name)}</h2>
+        <p class="up-joined">Mitglied seit
+          \${new Date(u.created_at).toLocaleDateString("de-DE")}</p>
+      </div>
+    </div>
+    <div class="up-stats">
+      <div class="up-stat">
+        <span class="up-stat-value">\${s.totalTodos}</span>
+        <span class="up-stat-label">Aufgaben</span>
+      </div>
+      <div class="up-stat">
+        <span class="up-stat-value">\${s.todosDone}</span>
+        <span class="up-stat-label">Erledigt</span>
+      </div>
+      <div class="up-stat">
+        <span class="up-stat-value">\${formatDuration(s.pomodoroTotal)}</span>
+        <span class="up-stat-label">Pomodoro</span>
+      </div>
+      <div class="up-stat">
+        <span class="up-stat-value">\${formatDuration(s.trackedTotal)}</span>
+        <span class="up-stat-label">Zeit</span>
+      </div>
+    </div>\`;
+  document.getElementById("upActions").style.display = "";
+}
+function showSendForm() {
+  document.getElementById("upSend").style.display = "block";
+  document.getElementById("upActions").style.display = "none";
+}
+function cancelMessage() {
+  document.getElementById("upSend").style.display = "none";
+  document.getElementById("upActions").style.display = "";
+}
+async function sendMessage() {
+  const subject = document.getElementById("upSubject").value.trim();
+  const body = document.getElementById("upBody").value.trim();
+  if (!subject) return;
+  const res = await authFetch(\`\${API_BASE}/messages\`, {
+    method: "POST",
+    body: JSON.stringify({ to_user_id: PROFILE_USER_ID, subject, body }),
+  });
+  if (res && res.ok) { showToast("Nachricht gesendet","success"); cancelMessage(); }
+  else { const e=res?await res.json().catch(()=>({})):{}; showToast(e.error||"Fehler","error"); }
+}
+function formatDuration(sec) {
+  if(!sec||sec===0) return "0";
+  const min=Math.round(sec/60);
+  if(min<60) return min+"m";
+  const h=Math.floor(min/60), m=min%60;
+  return m ? h+"h "+m+"m" : h+"h";
+}
+document.getElementById("upMessageBtn")?.addEventListener("click",showSendForm);
+document.addEventListener("DOMContentLoaded", loadProfile);` }
+        ]
+      },
+      aisha: {
+        label: "Aisha", role: "Frontend", color: "#cf79ff", initial: "AI",
+        items: [
+          { id:"aisha-1", file:"frontend/views/messages.ejs (NEU)",
+            desc:"Posteingang/Gesendet-Tabs, Nachrichtenliste, Detailansicht, Compose mit User-Suche.",
+            commit:"git commit -m \"create messages page with inbox sent tabs and compose modal\"",
+            code:`<!-- frontend/views/messages.ejs - Kernstruktur -->
+<main class="messages-page">
+  <header>
+    <div class="eyebrow">Community</div>
+    <h1>Nachrichten</h1>
+  </header>
+
+  <div class="msg-tabs">
+    <button class="msg-tab active" onclick="switchMsgTab('inbox')">
+      Posteingang <span class="unread-badge" id="unreadBadge"></span>
+    </button>
+    <button class="msg-tab" onclick="switchMsgTab('sent')">Gesendet</button>
+    <button class="msg-compose-btn" onclick="showCompose()">
+      <i class="fas fa-pen"></i> Neue Nachricht
+    </button>
+  </div>
+
+  <div class="msg-list" id="msgList"></div>
+  <div class="msg-detail" id="msgDetail" style="display:none">
+    <button onclick="closeDetail()">← Zurück</button>
+    <div id="msgDetailBody"></div>
+  </div>
+
+  <!-- Compose Modal -->
+  <div class="msg-compose" id="msgCompose" style="display:none">
+    <h3>Neue Nachricht</h3>
+    <div class="msg-user-select" id="msgUserSelect">
+      <input id="msgUserSearch" placeholder="Nach Nutzern suchen..."
+        oninput="filterUsers()" />
+      <div class="msg-user-dropdown" id="msgUserDropdown"></div>
+    </div>
+    <div class="msg-selected-user" id="msgSelectedUser" style="display:none">
+      <span id="msgSelectedName"></span>
+      <button onclick="clearRecipient()">×</button>
+    </div>
+    <input id="msgSubject" placeholder="Betreff" />
+    <textarea id="msgBody" placeholder="Nachricht..."></textarea>
+    <div class="msg-compose-actions">
+      <button class="msg-compose-btn" onclick="sendCompose()">
+        <i class="fas fa-paper-plane"></i> Senden</button>
+      <button class="msg-compose-btn msg-compose-btn-secondary"
+        onclick="hideCompose()">Abbrechen</button>
+    </div>
+  </div>
+</main>
+<script src="/js/messages.js"></script>` },
+          { id:"aisha-2", file:"frontend/public/js/messages.js (NEU)",
+            desc:"Inbox/Sent laden, rendern, Compose mit User-Suche, Senden, ungelesene-Anzeige.",
+            commit:"git commit -m \"add messages frontend with inbox sent compose and user search\"",
+            code:`let messagesData = null;
+let currentMsgTab = "inbox";
+let allUsers = [];
+let selectedUserId = null;
+
+async function loadMessages() {
+  const [inboxRes, sentRes, unreadRes] = await Promise.all([
+    authFetch(\`\${API_BASE}/messages/inbox\`),
+    authFetch(\`\${API_BASE}/messages/sent\`),
+    authFetch(\`\${API_BASE}/messages/unread\`),
+  ]);
+  const inbox = inboxRes?.ok ? await inboxRes.json() : [];
+  const sent = sentRes?.ok ? await sentRes.json() : [];
+  const unread = unreadRes?.ok ? (await unreadRes.json()).count : 0;
+  messagesData = { inbox, sent };
+  const badge = document.getElementById("unreadBadge");
+  if (badge) {
+    badge.textContent = unread > 0 ? unread : "";
+    badge.style.display = unread > 0 ? "inline" : "none";
+  }
+  renderList(currentMsgTab);
+}
+
+async function loadUsers() {
+  const res = await authFetch(\`\${API_BASE}/users\`);
+  if (res?.ok) allUsers = await res.json();
+}
+
+function switchMsgTab(tab) {
+  currentMsgTab = tab;
+  document.querySelectorAll(".msg-tab").forEach(t =>
+    t.classList.toggle("active", tab==="inbox"
+      ? t.textContent.includes("Posteingang")
+      : t.textContent.includes("Gesendet")));
+  document.getElementById("msgDetail").style.display = "none";
+  document.getElementById("msgList").style.display = "";
+  renderList(tab);
+}
+
+function renderList(tab) {
+  const msgs = messagesData?.[tab] || [];
+  const list = document.getElementById("msgList");
+  if (!msgs.length) {
+    list.innerHTML = '<p class="msg-empty">Keine Nachrichten</p>'; return;
+  }
+  const other = tab === "inbox" ? "from_name" : "to_name";
+  list.innerHTML = msgs.map(m => \`
+    <div class="msg-item \${m.read?"":"msg-unread"}"
+      onclick="openMsg(\${m.id},'\${tab}')">
+      <div class="msg-item-from">\${escHtml(m[other])}</div>
+      <div class="msg-item-subject">\${escHtml(m.subject)}</div>
+      <div class="msg-item-date">\${formatDate(m.created_at)}</div>
+    </div>\`).join("");
+}
+
+function showCompose() {
+  document.getElementById("msgCompose").style.display = "block";
+  // ... reset fields
+}
+
+async function sendCompose() {
+  if (!selectedUserId) return showToast("Bitte wähle einen Empfänger","error");
+  const subject = document.getElementById("msgSubject").value.trim();
+  if (!subject) return showToast("Bitte gib einen Betreff ein","error");
+  const body = document.getElementById("msgBody").value.trim();
+  const res = await authFetch(\`\${API_BASE}/messages\`, {
+    method:"POST",
+    body: JSON.stringify({to_user_id:selectedUserId, subject, body}),
+  });
+  if (res?.ok) { showToast("Nachricht gesendet","success"); hideCompose(); loadMessages(); }
+  else { const e=res?await res.json().catch(()=>({})):{}; showToast(e.error||"Fehler","error"); }
+}
+
+function formatDate(d) {
+  if(!d) return "";
+  return new Date(d).toLocaleDateString("de-DE",
+    {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+}
+
+document.addEventListener("DOMContentLoaded", () => { loadMessages(); loadUsers(); });` }
+        ]
+      },
+      mo: {
+        label: "Mo", role: "UI/UX", color: "#f97316", initial: "MO",
+        items: [
+          { id:"mo-1", file:"frontend/views/notes.ejs",
+            desc:"'Neue Notiz'-Button im Editor-Header. Empty State. Live-Preview-Toggle (Auge). Toolbar ausgrauen.",
+            commit:"git commit -m \"add new note button, empty state, live preview to notes page\"",
+            code:`<!-- notes.ejs - Editor Header mit Neue-Notiz-Button -->
+<header class="editor-header">
+  <div>
+    <p class="editor-subtitle" id="currentFolderName">&nbsp;</p>
+  </div>
+  <button class="primary-btn" onclick="createNewNote()" title="Neue Notiz">
+    <i class="fas fa-plus"></i> Neue Notiz
+  </button>
+</header>
+
+<!-- Empty State -->
+<div class="editor-empty" id="editorEmpty">
+  <div class="editor-empty-icon"><i class="far fa-file-alt"></i></div>
+  <h3>Keine Notiz geöffnet</h3>
+  <p>Wähle eine Notiz aus dem Ordnerbaum oder erstelle eine neue.</p>
+  <button class="primary-btn" onclick="createNewNote()">
+    <i class="fas fa-plus"></i> Neue Notiz
+  </button>
+</div>
+
+<!-- toolbar-row mit Preview-Button -->
+<span class="toolbar-actions">
+  <button class="toolbar-btn" onclick="togglePreview()"
+    id="previewToggle" title="Vorschau">
+    <i class="fas fa-eye"></i>
+  </button>
+  <button class="toolbar-btn" onclick="saveNote()" title="Speichern">
+    <i class="fas fa-save"></i>
+  </button>
+</span>
+
+<!-- Live Preview Container -->
+<div class="note-preview" id="notePreview" style="display:none"></div>` },
+          { id:"mo-2", file:"frontend/public/css/notes.css",
+            desc:"CSS für Empty State, .editor-disabled, Live-Preview.",
+            commit:"git commit -m \"add notes css for empty state, disabled toolbar, and live preview\"",
+            code:`/* Empty State */
+.editor-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; padding: 40px; text-align: center;
+  color: var(--text-secondary);
+}
+.editor-empty-icon { font-size: 48px; color: var(--border); margin-bottom: 4px; }
+.editor-empty h3 { font-size: 18px; font-weight: 600; color: var(--text); margin: 0; }
+.editor-empty p {
+  font-size: 14px; color: var(--text-secondary);
+  margin: 0 0 8px; max-width: 320px; line-height: 1.5;
+}
+
+/* Disabled Toolbar */
+.editor-disabled .toolbar-format button,
+.editor-disabled .toolbar-actions button {
+  opacity: 0.35; pointer-events: none;
+}
+
+/* Live Preview */
+.note-preview {
+  flex: 1; padding: 28px 32px; overflow-y: auto;
+  line-height: 1.8; font-size: 16px; color: var(--text);
+}
+.note-preview h1 { font-size: 26px; font-weight: 700; margin: 20px 0 10px; }
+.note-preview h2 { font-size: 22px; font-weight: 600; margin: 18px 0 8px; }
+.note-preview h3 { font-size: 18px; font-weight: 600; margin: 16px 0 6px; }
+.note-preview p { margin: 0 0 12px; }
+.note-preview ul, .note-preview ol { padding-left: 24px; margin: 8px 0; }
+.note-preview blockquote {
+  border-left: 3px solid var(--accent); margin: 12px 0;
+  padding: 8px 16px; background: var(--surface-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-secondary);
+}` },
+          { id:"mo-3", file:"frontend/public/css/style.css",
+            desc:"Primäre/Sekundäre Button-Styles für Notes-Toolbar.",
+            commit:"git commit -m \"add primary and secondary button styles for notes toolbar\"",
+            code:`/* Primary Button */
+.primary-btn {
+  background: var(--accent); color: #fff; border: 1px solid var(--accent);
+  padding: 8px 18px; border-radius: 10px; font-size: 0.85rem;
+  font-weight: 500; cursor: pointer; display: inline-flex;
+  align-items: center; gap: 6px; transition: all 0.15s;
+}
+.primary-btn:hover {
+  background: var(--accent-hover); border-color: var(--accent-hover);
+  transform: translateY(-1px); box-shadow: var(--shadow-sm);
+}
+
+/* Secondary Button */
+.secondary-btn {
+  background: var(--surface); color: var(--text-secondary);
+  border: 1px solid var(--border); padding: 8px 18px; border-radius: 10px;
+  font-size: 0.85rem; font-weight: 500; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all 0.15s;
+}
+.secondary-btn:hover {
+  background: var(--surface-2); color: var(--text);
+  border-color: var(--text-secondary);
+}
+.secondary-btn.danger { color: #ef4444; border-color: #fca5a5; }
+.secondary-btn.danger:hover { background: rgba(239,68,68,0.08); }` },
+          { id:"mo-4", file:"frontend/public/css/style.css",
+            desc:"Leaderboard-Styles (Tabs, Tabelle, Medaillen). User-Profil. Messages (Tabs, Liste, Compose-Modal).",
+            commit:"git commit -m \"style leaderboard, profile, and messages pages\"",
+            code:`/* Leaderboard Tabs */
+.lb-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.lb-tab {
+  padding: 8px 18px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-secondary); cursor: pointer;
+  font-size: 0.85rem; font-weight: 500; transition: all 0.15s;
+}
+.lb-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.lb-tab:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+
+/* Leaderboard Table */
+.lb-table { width: 100%; border-collapse: collapse; }
+.lb-table th { text-align: left; padding: 10px 14px; font-size: 0.78rem;
+  color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.lb-row td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.lb-gold td:first-child { color: #f59e0b; font-weight: 700; }
+.lb-silver td:first-child { color: #94a3b8; font-weight: 700; }
+.lb-bronze td:first-child { color: #cd7f32; font-weight: 700; }
+
+/* Messages */
+.msg-tabs { display: flex; gap: 8px; align-items: center;
+  border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.msg-tab { padding: 8px 18px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-secondary); cursor: pointer; }
+.msg-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.msg-compose-btn { /* siehe Yaman */ }
+.msg-item { padding: 12px 16px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--border); margin-bottom: 6px;
+  display: grid; grid-template-columns: 1fr 2fr auto; gap: 12px; }
+.msg-item:hover { border-color: var(--accent); }
+.msg-unread { border-left: 3px solid var(--accent); font-weight: 600; }
+
+/* Profil */
+.up-card { background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px; }
+.up-hero { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
+.up-avatar { width: 64px; height: 64px; border-radius: 50%;
+  background: var(--surface-2); display: flex; align-items: center;
+  justify-content: center; font-size: 1.5rem; font-weight: 700; color: var(--text-secondary); }
+.up-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+.up-stat { text-align: center; padding: 16px; background: var(--surface-2);
+  border-radius: 10px; }
+.up-stat-value { display: block; font-size: 1.3rem; font-weight: 700; }` },
+          { id:"mo-5", file:"frontend/views/partials/sidebar.ejs",
+            desc:"Links für Rangliste, Nachrichten und Entwicklungsplan in der Navigation.",
+            commit:"git commit -m \"add rangliste, nachrichten, and entwicklungsplan links to sidebar\"",
+            code:`<!-- In sidebar.ejs innerhalb von <nav class="module-nav">:
+  Nach dem Pomodoro-Link: -->
+<a href="/leaderboard" class="module-link">
+  <i class="fas fa-trophy"></i> <span>Rangliste</span>
+</a>
+<a href="/messages" class="module-link">
+  <i class="fas fa-envelope"></i> <span>Nachrichten</span>
+</a>
+<a href="/entwicklungsplan" class="module-link" style="opacity:0.6;font-size:0.8rem">
+  <i class="fas fa-code-branch"></i> <span>Projektplan</span>
+</a>` }
+        ]
+      },
+      yaman: {
+        label: "Yaman", role: "UI/UX", color: "#8B5CF6", initial: "YA",
+        items: [
+          { id:"yaman-1", file:"frontend/public/css/style.css",
+            desc:".msg-compose-btn + .msg-compose-btn-secondary für Senden/Abbrechen.",
+            commit:"git commit -m \"style senden/abbrechen buttons to match msg-compose-btn design\"",
+            code:`.msg-compose-btn {
+  background: var(--accent); color: #fff; border: 1px solid var(--accent);
+  padding: 8px 18px; border-radius: 10px; font-size: 0.85rem;
+  font-weight: 500; cursor: pointer; display: inline-flex;
+  align-items: center; gap: 6px; transition: all 0.15s;
+  margin-left: auto;
+}
+.msg-compose-btn:hover {
+  background: var(--accent-hover); border-color: var(--accent-hover);
+  transform: translateY(-1px); box-shadow: var(--shadow-sm);
+}
+.msg-compose-btn-secondary {
+  background: var(--surface); color: var(--text-secondary);
+  border-color: var(--border); margin-left: 0;
+}
+.msg-compose-btn-secondary:hover {
+  background: var(--surface-2); color: var(--text);
+  border-color: var(--text-secondary); transform: none; box-shadow: none;
+}` },
+          { id:"yaman-2", file:"frontend/views/messages.ejs",
+            desc:"Senden/Abbrechen-Buttons auf msg-compose-btn-Klassen umgestellt.",
+            commit:"git commit -m \"update compose buttons to use msg-compose-btn classes\"",
+            code:`<!-- In messages.ejs, ersetze: -->
+<div class="msg-compose-actions">
+  <button class="msg-compose-btn" onclick="sendCompose()">
+    <i class="fas fa-paper-plane"></i> Senden
+  </button>
+  <button class="msg-compose-btn msg-compose-btn-secondary" onclick="hideCompose()">
+    Abbrechen
+  </button>
+</div>` },
+          { id:"yaman-3", file:"frontend/public/js/messages.js",
+            desc:"'Keine Nutzer gefunden' nur wenn Suchfeld nicht leer.",
+            commit:"git commit -m \"only show 'keine nutzer gefunden' when search input is non-empty\"",
+            code:`// In der renderUserList Funktion:
+function renderUserList(users) {
+  const dd = document.getElementById("msgUserDropdown");
+  if (users.length === 0) {
+    const q = document.getElementById("msgUserSearch").value.trim();
+    dd.innerHTML = q
+      ? '<div class="msg-user-opt disabled">Keine Nutzer gefunden</div>'
+      : "";
+    return;
+  }
+  dd.innerHTML = users.map(u =>
+    \`<div class="msg-user-opt" data-id="\${u.id}"
+      onclick="selectUser(\${u.id},'\${escHtml(u.name)}')">\${escHtml(u.name)}</div>\`
+  ).join("");
+}` },
+          { id:"yaman-4", file:"frontend/views/entwicklungsplan.ejs",
+            desc:"Diese Seite: Projektplan mit Checkboxen, Personen-Sektionen, Code-Viewer, localStorage.",
+            commit:"git commit -m \"create entwicklungsplan page with per-person tasks and code viewer\"",
+            code:"// ⬅ Du bist bereits auf dieser Seite. Der gesamte Code ist die Datei entwicklungsplan.ejs" }
+        ]
+      },
+      team: {
+        label: "Gemeinsame Meilensteine", role: "Alle", color: "#6b7280", initial: "\uf0c0",
+        items: [
+          { id:"team-1", file:"GitLab-Workflow",
+            desc:"Jeder committed seine Tasks in der richtigen Reihenfolge mit den vorgegebenen Commit-Nachrichten. Nach jeder Phase Tag setzen.",
+            commit:"git tag phase-1 && git push --tags",
+            code:"# Workflow:\n# 1. Jeder arbeitet in seinem Bereich\n# 2. Commits mit den vorgegebenen Nachrichten\n# 3. Nach jeder Phase einen Git-Tag setzen:\ngit tag phase-1-dateninfra\ngit tag phase-2-backend-api\ngit tag phase-3-bugfixes\ngit tag phase-4-frontend-notizen\ngit tag phase-5-frontend-community\ngit tag phase-6-ui-ux\ngit tag phase-7-setup\ngit push --tags" }
+        ]
+      }
+    };
+
+    // ═══════════════════════════════════════════════
+    // RENDER & LOGIK
+    // ═══════════════════════════════════════════════
+
     const STORAGE_KEY = 'mindful_plan_status';
+    let _currentCodeId = null;
 
     function loadMap() {
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
@@ -522,39 +1330,119 @@
       m[id] = m[id] === 'done' ? 'open' : 'done';
       saveMap(m);
       renderAll();
+      event.stopPropagation();
     }
+
+    function showCode(taskId) {
+      for (const person of Object.values(TASKS)) {
+        for (const item of person.items) {
+          if (item.id === taskId) {
+            _currentCodeId = taskId;
+            document.getElementById('codeModalTitle').textContent =
+              item.file + ' — ' + item.commit;
+            document.getElementById('codeModalPre').textContent = item.code;
+            document.getElementById('codeOverlay').classList.add('open');
+            return;
+          }
+        }
+      }
+    }
+
+    function closeCodeModal() {
+      document.getElementById('codeOverlay').classList.remove('open');
+    }
+
+    function copyCode() {
+      const pre = document.getElementById('codeModalPre');
+      navigator.clipboard.writeText(pre.textContent).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.innerHTML = '<i class="fas fa-check"></i> Kopiert!';
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fas fa-copy"></i> Kopieren';
+        }, 2000);
+      }).catch(() => {
+        showToast('Kopieren fehlgeschlagen', 'error');
+      });
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeCodeModal();
+    });
 
     function renderAll() {
       const m = loadMap();
-      document.querySelectorAll('.plan-tasks').forEach(container => {
-        const tasks = [...container.querySelectorAll('.plan-task')];
-        let done = 0, total = 0;
-        tasks.forEach(t => {
-          const id = t.dataset.id;
-          const status = m[id] === 'done' ? 'done' : 'open';
-          t.className = 'plan-task status-' + status;
-          total++;
-          if (status === 'done') done++;
-        });
-        // sort: open first, done last
-        tasks.sort((a, b) => {
-          const aDone = m[a.dataset.id] === 'done' ? 1 : 0;
-          const bDone = m[b.dataset.id] === 'done' ? 1 : 0;
+      const container = document.getElementById('planContainer');
+      container.innerHTML = '';
+      let total = 0, doneCount = 0;
+
+      for (const [key, person] of Object.entries(TASKS)) {
+        const section = document.createElement('div');
+        section.className = 'plan-section';
+
+        const header = document.createElement('div');
+        header.className = 'plan-section-header';
+        const icon = person.initial.length === 1
+          ? person.initial
+          : '<i class="fas fa-users" style="font-size:0.85rem"></i>';
+        header.innerHTML = \`
+          <div class="avatar" style="background:\${person.color}">\${icon}</div>
+          <h2>\${person.label}</h2>
+          <span class="section-role">\${person.role}</span>
+          <span class="section-count" id="count-\${key}">0/0</span>
+        \`;
+        section.appendChild(header);
+
+        const tasksDiv = document.createElement('div');
+        tasksDiv.className = 'plan-tasks';
+
+        const sorted = [...person.items].sort((a, b) => {
+          const aDone = m[a.id] === 'done' ? 1 : 0;
+          const bDone = m[b.id] === 'done' ? 1 : 0;
           return aDone - bDone;
         });
-        tasks.forEach(t => container.appendChild(t));
-        // update count
-        const person = container.dataset.person;
-        const el = document.getElementById('count-' + person);
-        if (el) el.textContent = done + '/' + total;
-      });
-      // totals
-      const allIds = [...document.querySelectorAll('.plan-task')].map(t => t.dataset.id);
-      const total = allIds.length;
-      const done = allIds.filter(id => m[id] === 'done').length;
+
+        let pDone = 0;
+        sorted.forEach(item => {
+          const status = m[item.id] === 'done' ? 'done' : 'open';
+          const task = document.createElement('div');
+          task.className = 'plan-task status-' + status;
+          task.dataset.id = item.id;
+
+          const cb = document.createElement('div');
+          cb.className = 'cb-wrap';
+          cb.onclick = function(e) { toggle(item.id); e.stopPropagation(); };
+          cb.innerHTML = '<div class="cb-box"><i class="fas fa-check"></i></div>';
+
+          const info = document.createElement('div');
+          info.className = 'info';
+          info.onclick = function() { showCode(item.id); };
+          info.innerHTML = \`
+            <div class="file">\${item.file}</div>
+            <div class="desc">\${item.desc}</div>
+            <div class="commit-msg">\${item.commit}</div>
+            <span class="hint">👆 Code anzeigen</span>
+          \`;
+
+          task.appendChild(cb);
+          task.appendChild(info);
+          tasksDiv.appendChild(task);
+          total++;
+          if (status === 'done') { doneCount++; pDone++; }
+        });
+
+        section.appendChild(tasksDiv);
+        container.appendChild(section);
+
+        // update per-person count after rendering
+        setTimeout(() => {
+          const el = document.getElementById('count-' + key);
+          if (el) el.textContent = pDone + '/' + person.items.length;
+        }, 0);
+      }
+
       document.getElementById('statTotal').textContent = total;
-      document.getElementById('statDone').textContent = done;
-      document.getElementById('statOpen').textContent = total - done;
+      document.getElementById('statDone').textContent = doneCount;
+      document.getElementById('statOpen').textContent = total - doneCount;
     }
 
     document.addEventListener('DOMContentLoaded', renderAll);
