@@ -117,6 +117,10 @@ router.put("/:id", auth, (req, res) => {
       .get(req.params.id, req.user.id);
     if (!todo) return res.status(404).json({ error: "Todo nicht gefunden" });
 
+    const erledigtValue = status === "erledigt" && todo.status !== "erledigt"
+      ? Math.floor(Date.now() / 1000)
+      : (status === "offen" ? null : (erledigt ?? todo.erledigt));
+
     db.prepare(
       `UPDATE todos SET 
         titel = ?, beschreibung = ?, faellig = ?, status = ?, erledigt = ?, workspace_id = ?, prioritaet = ?, schritte = ? 
@@ -126,7 +130,7 @@ router.put("/:id", auth, (req, res) => {
       beschreibung ?? todo.beschreibung,
       faellig,
       status ?? todo.status,
-      erledigt ?? todo.erledigt,
+      erledigtValue,
       workspace_id ?? todo.workspace_id,
       prioritaet ?? todo.prioritaet,
       schritte ?? todo.schritte,

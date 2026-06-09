@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Leaderboard</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="leaderboard-page">
+        <header class="lb-header">
+          <div>
+            <div class="eyebrow">Community</div>
+            <h1>Leaderboard</h1>
+            <p class="lb-subtitle" id="lbSubtitle">Heute</p>
+          </div>
+          <div class="lb-stats" id="lbStats">
+            <span class="lb-stat"><i class="fas fa-users"></i> <span id="totalUsers">0</span> Nutzer</span>
+            <span class="lb-stat"><i class="fas fa-tasks"></i> <span id="totalTodos">0</span> Aufgaben</span>
+          </div>
+        </header>
+
+        <div class="lb-grid" id="lbGrid">
+          <div class="lb-card" data-category="todosDone">
+            <div class="lb-card-header">
+              <i class="fas fa-check-circle lb-card-icon"></i>
+              <h2>Erledigte Aufgaben</h2>
+            </div>
+            <div class="lb-card-body" id="lbTodosDone">
+              <p class="lb-empty">Lade Daten...</p>
+            </div>
+          </div>
+
+          <div class="lb-card" data-category="pomodoro">
+            <div class="lb-card-header">
+              <i class="fas fa-clock lb-card-icon"></i>
+              <h2>Pomodoro-Zeit</h2>
+            </div>
+            <div class="lb-card-body" id="lbPomodoro">
+              <p class="lb-empty">Lade Daten...</p>
+            </div>
+          </div>
+
+          <div class="lb-card" data-category="tracked">
+            <div class="lb-card-header">
+              <i class="fas fa-stopwatch lb-card-icon"></i>
+              <h2>Zeiterfassung</h2>
+            </div>
+            <div class="lb-card-body" id="lbTracked">
+              <p class="lb-empty">Lade Daten...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lb-refresh" onclick="loadLeaderboard()" title="Aktualisieren">
+          <i class="fas fa-sync-alt"></i> Aktualisieren
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/leaderboard.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

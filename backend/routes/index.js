@@ -19,6 +19,8 @@ router.get("/tracking", auth, (req, res) => res.render("tracking", { currentPage
 router.get("/zeiterfassung", auth, (req, res) => res.render("tracking", { currentPage: "tracking" }));
 router.get("/documents", auth, (req, res) => res.render("documents", { currentPage: "documents" }));
 router.get("/dokumente", auth, (req, res) => res.render("documents", { currentPage: "documents" }));
+router.get("/leaderboard", auth, (req, res) => res.render("leaderboard", { currentPage: "leaderboard" }));
+router.get("/rangliste", auth, (req, res) => res.render("leaderboard", { currentPage: "leaderboard" }));
 router.get("/profile", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 

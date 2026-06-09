@@ -15,6 +15,7 @@ const pomodoroRoutes = require("./pomodoro");
 const zeitRoutes = require("./zeit");
 const searchRoutes = require("./search");
 const dashboardWidgetRoutes = require("./dashboard_widgets");
+const leaderboardRoutes = require("./leaderboard");
 
 // Auth Routes (öffentlich - kein auth erforderlich)
 router.use("/auth", authRoutes);
@@ -31,6 +32,7 @@ router.use("/pomodoro", auth, pomodoroRoutes);
 router.use("/zeit", auth, zeitRoutes);
 router.use("/search", auth, searchRoutes);
 router.use("/dashboard/widgets", auth, dashboardWidgetRoutes);
+router.use("/leaderboard", auth, leaderboardRoutes);
 
 // Health Check
 router.get("/health", (req, res) => {
