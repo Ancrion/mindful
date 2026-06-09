@@ -26,6 +26,7 @@ router.get("/messages", auth, (req, res) => res.render("messages", { currentPage
 router.get("/nachrichten", auth, (req, res) => res.render("messages", { currentPage: "messages" }));
 router.get("/profile", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
+router.get("/entwicklungsplan", auth, (req, res) => res.render("entwicklungsplan", { currentPage: "entwicklungsplan" }));
 
 // ─── HEALTH CHECK ───
 router.get("/health", (req, res) => {
