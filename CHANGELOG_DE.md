@@ -22,45 +22,41 @@
   - Lösung: `.dragging` Klasse wird jetzt auch im Grid-Drop-Handler entfernt
   - Widgets sind nach Drop wieder vollständig sichtbar
 
-- **Improved: Intuitiveres Drag-Over-Verhalten**:
-  - Problem: Widgets sprangen nach unten-links, wenn man sie von der linken Seite des Targets zog
-  - Ursache: Placeholder-Platzierung berücksichtigte nur X-Position (horizontal), nicht Y-Position (vertikal)
-  - Lösung: Neue Logik nutzt relative Position (relX, relY) im Target-Element
-  - Placeholder wird NACH Target eingefügt, nur wenn Cursor auf rechter/unterer Hälfte ist
-  - UX: Intuitiveres Verschieben, besonders bei Widgets am Ende der Reihe
-
-- **Simplified: Drag-Drop zurück zu normalem Grid-Flow**:
-  - Problem: `position: absolute` Ansatz machte Drag kompliziert - Element war weit weg vom Mauszeiger
-  - Lösung: Zurück zu einfachem Grid-Flow - Widget bleibt sichtbar mit `opacity: 0.6`, Placeholder nimmt seinen Platz ein
-  - Das Widget wird beim Drag in der Hand des Mauszeiger bewegt (natives HTML5 Drag-and-Drop Verhalten)
-  - Placeholder springt zu neuen Positionen beim Drag über andere Widgets
-  - Grid-Layout bleibt stabil, weil Placeholder den Platz reserviert
-  - UX: Intuitiv und normal - "Ich halte das Widget in der Hand und ziehe es zu einem anderen Platz"
+- **Final: Einfaches, sauberes Drag-and-Drop ohne Placeholder**:
+  - Problem: Blaue Placeholder-Box verdrängte rechte Widgets, Logik wurde zu komplex
+  - Lösung: Radikale Vereinfachung - KEIN Placeholder mehr!
+  - `_onDragStart()`: Nur Element mit `.dragging` Klasse markieren
+  - `_onDragOver()`: Target speichern + berechnen ob vor/nach eingefügt wird (relX, relY)
+  - `_onDrop()`: Element an richtige Position im Grid einfügen, API aufrufen
+  - Kein DOM-Manipulation mit Placeholder, kein `position: absolute`, kein Platz-Reservieren
+  - Grid bleibt IMMER stabil, nichts wird verdrängt
+  - UX: Normal und intuitiv - Zieh das Widget einfach auf ein anderes!
 
 - **Sauberer Code**:
   - Entfernt redundante `_onDrop()` Funktion auf Card-Level
   - Nur noch Ein Drop-Handler (auf Grid) statt mehrere
+  - Nur noch eine `_drag` Variable mit `{ element, dropTarget, insertBefore }`
   - Debug-Logs aufgeräumt (nur wichtige Fehler-Logs bleiben)
 
 - **Getestete Funktionalität**:
-  - ✅ Widget ist in der Hand des Mauszeiger während Drag (natives Drag-and-Drop Verhalten)
-  - ✅ Placeholder wird aktualisiert beim Drag über andere Widgets
-  - ✅ Drop wird korrekt erkannt und verarbeitet
-  - ✅ Widgets sind nach Drop sichtbar (nicht mehr ausgegraut)
+  - ✅ Widget ist in der Hand des Mauszeiger während Drag
+  - ✅ Drag über andere Widgets funktioniert
+  - ✅ Drop wird erkannt und Widget wird eingefügt
+  - ✅ Widgets sind nach Drop sichtbar und normal
   - ✅ Neue Reihenfolge wird zur API gesendet
   - ✅ Server speichert Änderung (`{ok: true}`)
-  - ✅ Verschieben von vorletztem zu letztem Widget funktioniert intuitiv
-  - ✅ Grid-Layout bleibt stabil, Nachbarn springen nicht
+  - ✅ Grid bleibt IMMER stabil, NICHTS wird verdrängt
   - ✅ Normale, intuitive Bedienung
+  - ✅ Einfacher Code, keine Komplexität
 
 ### Technische Details:
 - `_initGridDragDrop(grid)` registriert Grid-Level `dragover` und `drop` Handler
-- `.widget-card.dragging` hat `opacity: 0.6`, `transform: scale(0.98)` - Element bleibt im Grid-Flow
-- Placeholder wird beim Drag-Start eingefügt, nimmt den Platz des Widgets ein
-- Card-Level `dragover` handler: Nutzt relative Position `(e.clientX - rect.left) / rect.width` und `(e.clientY - rect.top) / rect.height`
+- `.widget-card.dragging` hat `opacity: 0.6`, `transform: scale(0.98)`
+- **KEIN Placeholder** - keine DOM-Manipulation während Drag
+- Card-Level `dragover` handler: Berechnet relX, relY, speichert Target und insertBefore
 - Insertion-Logik: `insertBefore = relX < 0.5 || relY < 0.3` (linke/obere Hälfte)
-- Grid-Level `drop` handler: Entfernt Placeholder, fügt Element ein, aktualisiert Order via API
-- Einfach und stabil: Kein `position: absolute`, keine komplexen Inline-Styles
+- Grid-Level `drop` handler: Fügt Element ein, aktualisiert Order via API
+- Minimal und stabil: Nur das Nötigste!
 
 ### 📝 Commits
 
@@ -68,8 +64,9 @@
 🔗 [`5ad238c`](https://github.com/Ancrion/mindful/commit/5ad238c) - chore: Clean up debug logs and remove redundant _onDrop function
 🔗 [`f768261`](https://github.com/Ancrion/mindful/commit/f768261) - fix: Remove dragging class on drop to prevent widgets from staying opaque
 🔗 [`f46886a`](https://github.com/Ancrion/mindful/commit/f46886a) - improve: Better drag-over positioning using X and Y relative position to prevent widgets jumping
-🔗 [`636acf6`](https://github.com/Ancrion/mindful/commit/636acf6) - fix: Remove dragged widget from grid flow with position absolute to prevent neighbor jumping
 🔗 [`0e4031c`](https://github.com/Ancrion/mindful/commit/0e4031c) - fix: Simplify drag implementation - remove absolute positioning, keep normal grid flow
+🔗 [`958dc10`](https://github.com/Ancrion/mindful/commit/958dc10) - fix: Make placeholder absolute positioned so it doesn't affect grid layout
+🔗 [`b82a829`](https://github.com/Ancrion/mindful/commit/b82a829) - refactor: Simplify to basic drag-and-drop without placeholder
 
 ---
 

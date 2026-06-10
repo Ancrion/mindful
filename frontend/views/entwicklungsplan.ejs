@@ -3054,7 +3054,10 @@ git push --tags</script>
             commit:"636acf6", hash:"https://github.com/Ancrion/mindful/commit/636acf6" },
           { id:"jaro-48", file:"frontend/public/css/dashboard.css + frontend/public/js/index.js",
             desc:"DRAG-DROP SIMPLIFICATION v1.7.8: ① Refactor: Entfernt position: absolute Ansatz weil Widget weit weg vom Mauszeiger war, ② Neue Strategie: Einfacher Grid-Flow, Widget bleibt sichtbar mit opacity 0.6, Placeholder nimmt seinen Platz, ③ Entfernt: position: relative vom Grid, komplexe Inline-Styles (left/top/width/height), ④ Vereinfachte _onDragStart ohne Position-Berechnung, ⑤ UX: Normal und intuitiv - Widget in der Hand, Placeholder zeigt neuen Platz",
-            commit:"0e4031c", hash:"https://github.com/Ancrion/mindful/commit/0e4031c" }
+            commit:"0e4031c", hash:"https://github.com/Ancrion/mindful/commit/0e4031c" },
+          { id:"jaro-49", file:"frontend/public/css/dashboard.css + frontend/public/js/index.js",
+            desc:"FINAL: DRAG-DROP OHNE PLACEHOLDER v1.7.8: ① Radikale Vereinfachung: KEIN Placeholder mehr!, ② Problem: Blaue Box verdrängte rechte Widgets, Logik zu komplex, ③ Lösung: Nur Element mit .dragging markieren, kein DOM-Manipulation, ④ _onDragOver speichert dropTarget + insertBefore (relX/relY), ⑤ _onDrop fügt Element ein + API, ⑥ Grid IMMER stabil, nichts verdrängt, ⑦ Normal + intuitiv",
+            commit:"b82a829", hash:"https://github.com/Ancrion/mindful/commit/b82a829" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
