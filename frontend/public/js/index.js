@@ -298,6 +298,7 @@ function _getPostRender(widget) {
 // ─── Drag & Drop ───
 let _dragId = null;
 let _placeholderEl = null;
+let _draggedCard = null;
 
 function _reflowAll() {
   const grid = document.getElementById("widgetGrid");
@@ -327,30 +328,59 @@ function _reflowAll() {
 
 function _onDragStart(e) {
   _dragId = this.dataset.widgetId;
+  _draggedCard = this;
   this.classList.add("dragging");
   e.dataTransfer.effectAllowed = "move";
   e.dataTransfer.setData("text/plain", _dragId);
-  _placeholderEl = document.createElement("div");
-  _placeholderEl.className = `widget-placeholder widget-s${this.dataset.widgetSize}`;
-  this.parentNode.insertBefore(_placeholderEl, this.nextSibling);
+  
+  // Create placeholder with slight delay for smoother animation
+  setTimeout(() => {
+    if (_dragId) { // check drag is still active
+      _placeholderEl = document.createElement("div");
+      _placeholderEl.className = `widget-placeholder widget-s${this.dataset.widgetSize}`;
+      this.parentNode.insertBefore(_placeholderEl, this.nextSibling);
+    }
+  }, 50);
 }
 
 function _onDragEnd() {
   this.classList.remove("dragging");
   document.querySelectorAll(".widget-card.drag-over").forEach((el) => el.classList.remove("drag-over"));
-  if (_placeholderEl) { _placeholderEl.remove(); _placeholderEl = null; }
+  if (_placeholderEl) { 
+    _placeholderEl.style.opacity = "0";
+    setTimeout(() => {
+      if (_placeholderEl) { _placeholderEl.remove(); _placeholderEl = null; }
+    }, 250);
+  }
   _dragId = null;
+  _draggedCard = null;
 }
 
 function _onDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
+  
+  // Only process if not dragging over self
+  if (this.dataset.widgetId === _dragId) return;
+  
   document.querySelectorAll(".widget-card.drag-over").forEach((el) => {
     if (el !== this) el.classList.remove("drag-over");
   });
   this.classList.add("drag-over");
-  if (_placeholderEl) {
-    this.parentNode.insertBefore(_placeholderEl, this);
+  
+  if (_placeholderEl && _draggedCard) {
+    // Smooth placeholder movement
+    const rect = this.getBoundingClientRect();
+    const gridRect = this.parentNode.getBoundingClientRect();
+    const cursorX = e.clientX;
+    const elemMidX = rect.left + rect.width / 2;
+    
+    // Insert placeholder before or after based on cursor position
+    if (cursorX < elemMidX) {
+      this.parentNode.insertBefore(_placeholderEl, this);
+    } else {
+      this.parentNode.insertBefore(_placeholderEl, this.nextSibling);
+    }
   }
 }
 
@@ -389,7 +419,7 @@ function _onDrop(e) {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ order }),
-  });
+  }).catch(err => console.error("Widget reorder failed:", err));
 
   // Update local positions
   for (const o of order) {

@@ -94,7 +94,7 @@ body.dark .widget-manage-btn:hover {
   border: 1px solid var(--card-border);
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  transition: box-shadow 0.2s, opacity 0.3s, transform 0.2s, grid-column 0.25s ease;
+  transition: box-shadow 0.3s ease, opacity 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
   overflow: hidden;
   position: relative;
   display: flex;
@@ -106,7 +106,13 @@ body.dark .widget-manage-btn:hover {
   border-radius: 14px;
   background: var(--accent-alpha, rgba(110, 138, 184, 0.08));
   min-height: 100px;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
+  animation: placeholder-pulse 2s ease-in-out infinite;
+}
+
+@keyframes placeholder-pulse {
+  0%, 100% { background: var(--accent-alpha, rgba(110, 138, 184, 0.08)); }
+  50% { background: var(--accent-alpha, rgba(110, 138, 184, 0.15)); }
 }
 
 .widget-placeholder.widget-s1 { grid-column: span 1; }
@@ -121,19 +127,21 @@ body.dark .widget-manage-btn:hover {
 .widget-card.widget-s4 { grid-column: span 4; }
 
 .widget-card.dragging {
-  opacity: 0.4;
-  transform: scale(0.97);
+  opacity: 0.5;
+  transform: scale(0.95);
   z-index: 1000;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
 }
 
 .widget-card.drag-over {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-alpha, rgba(110, 138, 184, 0.3));
-  transform: scale(1.02);
+  box-shadow: 0 0 0 3px var(--accent-alpha, rgba(110, 138, 184, 0.3)), 0 8px 16px rgba(0,0,0,0.1);
+  transform: scale(1);
 }
 
 .widget-card.resizing {
   user-select: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
 .widget-card .widget-header {
