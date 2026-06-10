@@ -3027,7 +3027,10 @@ git push --tags</script>
             commit:"38c96a1", hash:"https://github.com/Ancrion/mindful/commit/38c96a1" },
           { id:"jaro-39", file:"frontend/public/css/dashboard.css",
             desc:"KALENDER FÜLLT CARD-HÖHE v1.7.6: ① .cal-widget display:flex + height:100% → dehnt sich, ② .cal-head + .cal-days flex-shrink:0, ③ .cal-wgrid flex:1 + grid-auto-rows:1fr → Reihen verteilen Höhe gleichmäßig, ④ .cal-wev-list flex:1 → Day-View auch gestreckt, ⑤ .cal-wev-empty flex + center → Text mittig",
-            commit:"45f002f", hash:"https://github.com/Ancrion/mindful/commit/45f002f" }
+            commit:"45f002f", hash:"https://github.com/Ancrion/mindful/commit/45f002f" },
+          { id:"jaro-40", file:"frontend/public/js/index.js + frontend/public/css/dashboard.css",
+            desc:"DRAG-DROP SMOOTH + REFLOW v1.7.6: ① grid-auto-flow:dense entfernt → DOM-Reihenfolge = visuelle Ordnung, ② _reflowAll() statt _autoFitWidget() → scannt ALLE Widgets, ③ Shrink-vor-Wrap: Widget wird verkleinert bevor es umbricht → keine Lücken, ④ _reflowAll() auch nach Resize + Tastatur, ⑤ Widgets passen sich aneinander an",
+            commit:"94bf4f2", hash:"https://github.com/Ancrion/mindful/commit/94bf4f2" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",

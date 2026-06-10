@@ -16,9 +16,19 @@
 - **Monat/Woche/Tag alle gestreckt**: Week-View (1 Reihe) wird volle Höhe, Day-View (`.cal-wev-list`) ebenfalls flex:1
 - **Leerer-Status zentriert**: `.cal-wev-empty` mit flex + align-items:center → "Keine Termine" schwebt mittig
 
+### 🐛 Bugfixes
+
+- **Widget Drag-and-Drop repariert + optimiert**: 
+  - `grid-auto-flow: dense` entfernt → Widgets fließen in DOM-Reihenfolge, kein wildes Umspringen mehr
+  - `_reflowAll()` ersetzt `_autoFitWidget()` → scannt ALLE Widgets, nicht nur das gezogene
+  - **Shrink-vor-Wrap-Strategie**: Widget wird verkleinert BEVOR es in die nächste Zeile umbricht → keine Lücken im Raster
+  - `_reflowAll()` wird jetzt auch nach Resize und Tastatur-Navigation aufgerufen
+  - Widgets passen sich automatisch aneinander an ("aneinander anpassen")
+
 ### 📝 Commits
 
 🔗 [`45f002f`](https://github.com/Ancrion/mindful/commit/45f002f) - feat: Make calendar widget fill card height with flex:1 + grid-auto-rows:1fr
+🔗 [`94bf4f2`](https://github.com/Ancrion/mindful/commit/94bf4f2) - fix: Smooth drag-drop without gaps – remove dense, reflow all widgets on every mutation
 
 ---
 
