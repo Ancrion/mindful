@@ -1,4 +1,4 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.2
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.3
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
@@ -28,6 +28,22 @@
 ### 📝 Commits
 
 🔗 [`c14d332`](https://github.com/Ancrion/mindful/commit/c14d332) - feat: Flexible widget grid with auto-fit on drag-drop and equal row heights
+
+---
+
+## 🚀 v1.7.3 - Kalender Widget Ansichtswahl in Kopfzeile + Datum-Fix
+
+**Veröffentlichung**: 10.06.2026
+
+### ✨ Verbesserungen
+
+- **Ansichtswahl in Kopfzeile**: Die Buttons Monat/Woche/Tag sind jetzt direkt in der `.cal-head-row` neben dem Datum und den Navigationspfeilen – kompakter und intuitiver
+- **Doppeltes Datum entfernt**: In der Tag-Ansicht wird das Datum nur noch einmal angezeigt (in der Kopfzeile mit Wochentag, z. B. "Dienstag, 10. Juni 2026") – keine separate `.cal-wday-head`-Zeile mehr
+- **Schmaleres Layout**: `.cal-head` padding reduziert, kompaktere View-Buttons mit Border + uppercase
+
+### 📝 Commits
+
+🔗 [`b3ff9bf`](https://github.com/Ancrion/mindful/commit/b3ff9bf) - feat: Move calendar view switcher to head-row and remove duplicate date in day view
 
 ---
 
@@ -709,7 +725,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Versionen** | 16 |
+| **Versionen** | 17 |
 | **Commits** | 75+ |
 | **Features hinzugefügt** | 100+ |
 | **Bugs behoben** | 35+ |
