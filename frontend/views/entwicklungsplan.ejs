@@ -2387,7 +2387,7 @@ git push --tags</script>
             desc:"Kalender-Drag & Drop: initEventDrag() mit HTML5 DnD. Week/Day: vertikale Zeitposition aus Y-Koordinate (1px=1min, 5-Minuten-Snapping). Day-übergreifend via data-date. Month: zwischen Datumszellen mit Zeit-Erhalt. Resize-Handle-Konflikt via .ev-resize-handle-Check verhindert. _isDragging-Flag unterdrückt Klick nach Drag. CSS: .ev-dragging (opacity) + .ev-drop-target (blau).",
             commit:"git commit -m \"add drag and drop for calendar events (week/day/month views)\"" },
           { id:"jaro-18", file:"frontend/views/partials/sidebar.ejs + style.css",
-            desc:"Sidebar-Bottom: Optionen-Link (Zahnrad → /profile) + Abmelden-Button (logout()). .module-bottom mit border-top-Trennung, inherit von .module-link. Altes Abmelden-<small> aus .user-info entfernt. Fix: sidebar height:100vh + .module-top overflow-y:auto → Buttons bleiben immer am Viewport-Boden.",
+            desc:"Sidebar-Bottom: Optionen-Link (Zahnrad → /profile) + Abmelden-Button (logout()). .module-bottom mit border-top-Trennung, inherit von .module-link. Altes Abmelden-<small> aus .user-info entfernt. Fix: height:100vh wieder rückgängig → Sidebar scrollt normal mit der Seite mit.",
             commit:"git commit -m \"add options and logout buttons to sidebar bottom\"" }
         ]
       },
@@ -2475,7 +2475,7 @@ git push --tags</script>
             desc:"Rechtsklick-Kontextmenü für Todos und Workspaces (Sidebar + Todo-Dropdown). Bugfix: Sidebar-Baum wurde auf Todo-Seite nie gerendert (loadWorkspaces-Konflikt). DnD in Sidebar + Todo-Dropdown. Drop auf 'Alle' = root. 'Zu root machen'-Option.",
             commit:'git commit -m "fix workspace DnD visual + add root drop zone + make-root context menu option"' },
           { id:"team-5", file:"Kalender-DnD & Sidebar-Buttons",
-            desc:"HTML5-DnD für Kalender-Events: Week/Day vertical repositioning (Y→Uhrzeit, 5-Min-Snapping), cross-day (data-date), Month cross-cell (Datum, Zeit erhalten). Resize-Handle-Konflikt verhindert. Click-suppression via _isDragging-Flag. Sidebar unten: Optionen (Zahnrad → /profile) + Abmelden (logout()) mit border-top-Trennung. Fix: sidebar height:100vh + .module-top overflow-y:auto → Buttons kleben am Viewport-Boden.",
+            desc:"HTML5-DnD für Kalender-Events: Week/Day vertical repositioning (Y→Uhrzeit, 5-Min-Snapping), cross-day (data-date), Month cross-cell (Datum, Zeit erhalten). Resize-Handle-Konflikt verhindert. Click-suppression via _isDragging-Flag. Sidebar unten: Optionen (Zahnrad → /profile) + Abmelden (logout()) mit border-top-Trennung. Fix: height:100vh revertiert → Sidebar scrollt mit der Seite.",
             commit:'git commit -m "add drag and drop for calendar events (week/day/month views) + sidebar bottom options/logout buttons"' }
         ]
       }
