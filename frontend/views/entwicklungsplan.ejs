@@ -3069,7 +3069,10 @@ git push --tags</script>
             commit:"5106255", hash:"https://github.com/Ancrion/mindful/commit/5106255" },
           { id:"jaro-53", file:"frontend/public/css/dashboard.css + frontend/public/js/index.js",
             desc:"VISUAL DRAG-DROP FEEDBACK + CODE CLEANUP v1.7.8: ① Debug-Logs vollständig entfernt (onDragStart, onDragEnd, onDragOver, drop), ② Neues .dragging: opacity 0.5, scale 0.95, accent border + tiefer shadow, ③ Neues .drag-over: scale 1.02 + 3px accent glow, ④ Smooth transitions 0.25s auf allen Properties, ⑤ Alte CSS-Duplikate aufgeräumt",
-            commit:"9f64d54", hash:"https://github.com/Ancrion/mindful/commit/9f64d54" }
+            commit:"9f64d54", hash:"https://github.com/Ancrion/mindful/commit/9f64d54" },
+          { id:"jaro-54", file:"frontend/public/js/index.js",
+            desc:"FLIP ANIMATION BEIM WIDGET-TAUSCH v1.7.8: ① FLIP Technik: First (rectMap VOR DOM-Änderung per Map<Element, Rect>) → Last (Position nach insertBefore+reflowAll) → Invert (transition:none + transform:translate) → Play (transition:"" + transform:""), ② Perfekt smooth 0.25s Animation, ③ 60fps via double requestAnimationFrame, ④ Kompatibel mit _reflowAll()",
+            commit:"fc47729", hash:"https://github.com/Ancrion/mindful/commit/fc47729" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",

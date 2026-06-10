@@ -55,6 +55,12 @@
   - `.drag-over`: accent border + 3px glow + scale 1.02 (hervorheben)
   - Smooth Transitions (0.25s) auf opacity, transform, box-shadow, border-color
 
+- **FLIP Animation beim Widget-Tausch**:
+  - Widgets gleiten SMOOTH von alter zu neuer Position beim Tausch
+  - FLIP Technik: First (alte Position speichern) → Last (neue Position) → Invert (transform: translate) → Play (transform entfernen mit transition)
+  - Benutzt `requestAnimationFrame` für flüssige 60fps Animation
+  - Funktioniert mit `_reflowAll()` (Größenänderungen sind eingeschlossen)
+
 - **Code bereinigt**: Debug-Logs entfernt, klare Struktur
 
 - **Sauberer Code**:
@@ -98,6 +104,7 @@
 🔗 [`18a8d6b`](https://github.com/Ancrion/mindful/commit/18a8d6b) - fix: Remove relY < 0.3 override for insertBefore, calculate rect before element.remove()
 🔗 [`5106255`](https://github.com/Ancrion/mindful/commit/5106255) - fix: Swap-based drag-drop logic - always swap dragged with target position
 🔗 [`9f64d54`](https://github.com/Ancrion/mindful/commit/9f64d54) - refactor: Remove debug logs, enhance visual drag-drop feedback with scale + border effects
+🔗 [`fc47729`](https://github.com/Ancrion/mindful/commit/fc47729) - feat: Add FLIP animation for smooth widget swap transitions
 
 ---
 
