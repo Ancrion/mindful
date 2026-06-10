@@ -48,11 +48,15 @@ try {
   // Spalte existiert bereits
 }
 
-// Migration: Set 'jaro' as admin (for backward compatibility)
+// Migration: Set first user as admin (for backward compatibility)
 try {
-  db.prepare("UPDATE users SET is_admin = 1 WHERE name = ?").run("jaro");
+  const adminExists = db.prepare("SELECT COUNT(*) as count FROM users WHERE is_admin = 1").get();
+  if (adminExists.count === 0) {
+    // Setze den ältesten User als Admin
+    db.prepare("UPDATE users SET is_admin = 1 WHERE id = (SELECT MIN(id) FROM users)").run();
+  }
 } catch (e) {
-  // User doesn't exist yet
+  // No users yet or error
 }
 
 db.exec(`
