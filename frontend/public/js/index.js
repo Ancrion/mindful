@@ -358,7 +358,12 @@ function _onDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
   
-  if (!_drag) return;
+  if (!_drag) {
+    console.log("⚠️ No drag state");
+    return;
+  }
+  
+  console.log("🔄 Dragover:", this.dataset.widgetId);
   
   const target = this;
   const { element, placeholder } = _drag;
@@ -384,9 +389,13 @@ function _onDragOver(e) {
 }
 
 function _onDrop(e) {
+  console.log("🔻 Drop event on:", this.dataset.widgetId);
   e.preventDefault();
   
-  if (!_drag) return;
+  if (!_drag) {
+    console.log("⚠️ No drag state in drop");
+    return;
+  }
   
   const { element, placeholder } = _drag;
   const grid = document.getElementById("widgetGrid");
