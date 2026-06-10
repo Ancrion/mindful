@@ -1,0 +1,532 @@
+/**
+ * ╔═══════════════════════════════════════════════════════════════════════╗
+ * ║                    LAYOUT COMPONENTS v2.0                            ║
+ * ║              Responsive Grid, Container, Sidebar Layouts             ║
+ * ╚═══════════════════════════════════════════════════════════════════════╝
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   1. CONTAINER SYSTEM
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.container {
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.container-sm {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.container-md {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.container-lg {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Container: Fluid
+   ───────────────────────────────────────────────────────────── */
+
+.container-fluid {
+  width: 100%;
+  padding: 0 var(--space-4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   2. GRID SYSTEM - 12-Column Responsive Grid
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.grid {
+  display: grid;
+  gap: var(--space-6);
+  width: 100%;
+}
+
+/* Default: 12 columns on desktop */
+.grid {
+  grid-template-columns: repeat(12, 1fr);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
+/* Grid column classes */
+.col-1 { grid-column: span 1; }
+.col-2 { grid-column: span 2; }
+.col-3 { grid-column: span 3; }
+.col-4 { grid-column: span 4; }
+.col-5 { grid-column: span 5; }
+.col-6 { grid-column: span 6; }
+.col-7 { grid-column: span 7; }
+.col-8 { grid-column: span 8; }
+.col-9 { grid-column: span 9; }
+.col-10 { grid-column: span 10; }
+.col-11 { grid-column: span 11; }
+.col-12 { grid-column: span 12; }
+
+/* Responsive column classes */
+@media (max-width: 1024px) {
+  .col-lg-1 { grid-column: span 1; }
+  .col-lg-2 { grid-column: span 2; }
+  .col-lg-3 { grid-column: span 3; }
+  .col-lg-4 { grid-column: span 4; }
+  .col-lg-6 { grid-column: span 6; }
+  .col-lg-8 { grid-column: span 8; }
+  .col-lg-12 { grid-column: span 12; }
+}
+
+@media (max-width: 768px) {
+  .col-md-1 { grid-column: span 1; }
+  .col-md-2 { grid-column: span 2; }
+  .col-md-3 { grid-column: span 3; }
+  .col-md-6 { grid-column: span 6; }
+  .col-md-12 { grid-column: span 12; }
+}
+
+@media (max-width: 640px) {
+  .col-sm-1 { grid-column: span 1; }
+  .col-sm-2 { grid-column: span 2; }
+  .col-sm-4 { grid-column: span 4; }
+  .col-sm-12 { grid-column: span 12; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Flexbox Grid Alternative
+   ───────────────────────────────────────────────────────────── */
+
+.flex-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  width: 100%;
+}
+
+.flex-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.flex-col-2 {
+  flex: 2;
+}
+
+.flex-col-3 {
+  flex: 3;
+}
+
+.flex-col-auto {
+  flex: 0 0 auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   3. SIDEBAR LAYOUT
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4);
+  gap: var(--space-4);
+  flex-shrink: 0;
+  transition: width var(--transition-base);
+}
+
+.sidebar.sidebar-expanded {
+  width: var(--sidebar-expanded-width);
+  align-items: flex-start;
+  padding: var(--space-6);
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+/* Responsive: Sidebar becomes overlay on small screens */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: var(--z-fixed);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar.sidebar-expanded {
+    left: 0;
+    width: var(--sidebar-expanded-width);
+  }
+
+  .main-content {
+    margin-left: var(--sidebar-width);
+  }
+
+  .sidebar.sidebar-expanded ~ .main-content {
+    margin-left: var(--sidebar-expanded-width);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   4. HEADER & FOOTER COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.header {
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-primary);
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.header-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  margin: 0;
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.footer {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-primary);
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   5. SECTION & CONTENT BLOCKS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.section {
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.section-subtitle {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin-top: var(--space-2);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Content Block
+   ───────────────────────────────────────────────────────────── */
+
+.content-block {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.content-block.with-icon {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.content-block-icon {
+  font-size: var(--text-2xl);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.content-block-content {
+  flex: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   6. SPLIT LAYOUT (Two-Column with Sidebar)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.split-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-6);
+}
+
+.split-layout-main {
+  min-width: 0;
+}
+
+.split-layout-sidebar {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  height: fit-content;
+  position: sticky;
+  top: var(--space-6);
+}
+
+@media (max-width: 1024px) {
+  .split-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .split-layout-sidebar {
+    position: static;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   7. STACK LAYOUT - Vertical Stacking
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stack.gap-2 {
+  gap: var(--space-2);
+}
+
+.stack.gap-3 {
+  gap: var(--space-3);
+}
+
+.stack.gap-6 {
+  gap: var(--space-6);
+}
+
+.stack.gap-8 {
+  gap: var(--space-8);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Stack: Horizontal
+   ───────────────────────────────────────────────────────────── */
+
+.stack-h {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.stack-h.gap-2 {
+  gap: var(--space-2);
+}
+
+.stack-h.gap-3 {
+  gap: var(--space-3);
+}
+
+.stack-h.gap-6 {
+  gap: var(--space-6);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   8. SPACING SYSTEM - Margin & Padding Helpers
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Padding */
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+
+.px-2 { padding-left: var(--space-2); padding-right: var(--space-2); }
+.px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+.px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
+
+.py-2 { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.py-6 { padding-top: var(--space-6); padding-bottom: var(--space-6); }
+
+.pt-1 { padding-top: var(--space-1); }
+.pt-2 { padding-top: var(--space-2); }
+.pt-3 { padding-top: var(--space-3); }
+.pt-4 { padding-top: var(--space-4); }
+.pt-6 { padding-top: var(--space-6); }
+
+.pb-1 { padding-bottom: var(--space-1); }
+.pb-2 { padding-bottom: var(--space-2); }
+.pb-3 { padding-bottom: var(--space-3); }
+.pb-4 { padding-bottom: var(--space-4); }
+.pb-6 { padding-bottom: var(--space-6); }
+
+/* Margin */
+.m-0 { margin: 0; }
+.m-1 { margin: var(--space-1); }
+.m-2 { margin: var(--space-2); }
+.m-3 { margin: var(--space-3); }
+.m-4 { margin: var(--space-4); }
+.m-6 { margin: var(--space-6); }
+.m-8 { margin: var(--space-8); }
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
+
+.mb-1 { margin-bottom: var(--space-1); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mb-8 { margin-bottom: var(--space-8); }
+
+.ml-1 { margin-left: var(--space-1); }
+.ml-2 { margin-left: var(--space-2); }
+.ml-3 { margin-left: var(--space-3); }
+.ml-4 { margin-left: var(--space-4); }
+
+.mr-1 { margin-right: var(--space-1); }
+.mr-2 { margin-right: var(--space-2); }
+.mr-3 { margin-right: var(--space-3); }
+.mr-4 { margin-right: var(--space-4); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   9. RESPONSIVE HELPERS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.hidden-sm {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .hidden-sm {
+    display: block;
+  }
+  .show-sm {
+    display: none;
+  }
+}
+
+.hidden-md {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .hidden-md {
+    display: none;
+  }
+}
+
+.hidden-lg {
+  display: block;
+}
+
+@media (max-width: 1024px) {
+  .hidden-lg {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   10. ACCESSIBILITY HELPERS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus-visible:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   END OF LAYOUT COMPONENTS
+   ════════════════════════════════════════════════════════════════════════ */
