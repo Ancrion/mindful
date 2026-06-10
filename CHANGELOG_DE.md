@@ -1,7 +1,34 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.6
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.7
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
+
+---
+
+## 🚀 v1.7.7 - Widget-System Smooth Drag-Drop & UX-Verbesserungen
+
+**Veröffentlichung**: 10.06.2026
+
+### ✨ Verbesserungen
+
+- **Smooth Drag-Drop-Animationen**: 
+  - Placeholder pulst sanft beim Drag (pulsing-animation)
+  - Transitions auf `.widget-card` (0.3s) für glatte visuellen Änderungen
+  - Größere Box-Shadow beim Dragging (0.12–0.15 opacity)
+- **Bessere visuelle Feedback während Drag**:
+  - `.drag-over` zeigt 3px Accent-Border + verstärkte Box-Shadow
+  - Dragged Widget mit 0.5 Opacity + 0.95 Scale (subtiler als 0.4/0.97)
+- **Intelligente Placeholder-Logik**:
+  - Placeholder wird mit 50ms Delay erzeugt (verhindert Flackern)
+  - Position berechnet sich auf Basis der Cursor-Position relativ zur Ziel-Karte (Mitte teilt vor/nach)
+  - Fade-out beim Drop (0.25s Transition) statt hartem Löschen
+- **Cursor-Position-basierte Insertion**: Placeholder platziert sich vor oder nach Ziel-Karte je nach Maus-Position
+- **Fehlerbehandlung**: `.catch()` auf API-Calls verhindert stille Fehler
+- **Resize-Feedback**: `.resizing` mit verbesserter Box-Shadow für visuellen Feedback
+
+### 📝 Commits
+
+🔗 [`7d17edc`](https://github.com/Ancrion/mindful/commit/7d17edc) - improve: Smooth widget drag-drop with better visual feedback and animations
 
 ---
 
@@ -793,7 +820,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Versionen** | 20 |
+| **Versionen** | 21 |
 | **Commits** | 75+ |
 | **Features hinzugefügt** | 100+ |
 | **Bugs behoben** | 35+ |
