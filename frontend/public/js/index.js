@@ -294,17 +294,48 @@ function _getPostRender(widget) {
 
 // ─── Drag & Drop ───
 let _dragId = null;
+let _placeholderEl = null;
+
+function _autoFitWidget(card) {
+  const grid = document.getElementById("widgetGrid");
+  if (!grid) return;
+  const allCards = [...grid.querySelectorAll(".widget-card")];
+  const idx = allCards.indexOf(card);
+  if (idx === -1) return;
+  const curSize = parseInt(card.dataset.widgetSize);
+
+  let col = 0;
+  for (let i = 0; i < allCards.length; i++) {
+    const s = parseInt(allCards[i].dataset.widgetSize);
+    if (col + s > 4) col = 0;
+    if (i === idx) {
+      const available = 4 - col;
+      const bestSize = available >= 4 ? 4 : available >= 2 ? 2 : 1;
+      if (bestSize !== curSize) {
+        const w = _widgets.find(x => x.id == parseInt(card.dataset.widgetId));
+        if (w) _setWidgetSize(card, w, bestSize);
+      }
+      break;
+    }
+    col += s;
+    if (col >= 4) col = 0;
+  }
+}
 
 function _onDragStart(e) {
   _dragId = this.dataset.widgetId;
   this.classList.add("dragging");
   e.dataTransfer.effectAllowed = "move";
   e.dataTransfer.setData("text/plain", _dragId);
+  _placeholderEl = document.createElement("div");
+  _placeholderEl.className = `widget-placeholder widget-s${this.dataset.widgetSize}`;
+  this.parentNode.insertBefore(_placeholderEl, this.nextSibling);
 }
 
 function _onDragEnd() {
   this.classList.remove("dragging");
   document.querySelectorAll(".widget-card.drag-over").forEach((el) => el.classList.remove("drag-over"));
+  if (_placeholderEl) { _placeholderEl.remove(); _placeholderEl = null; }
   _dragId = null;
 }
 
@@ -315,6 +346,9 @@ function _onDragOver(e) {
     if (el !== this) el.classList.remove("drag-over");
   });
   this.classList.add("drag-over");
+  if (_placeholderEl) {
+    this.parentNode.insertBefore(_placeholderEl, this);
+  }
 }
 
 function _onDrop(e) {
@@ -336,6 +370,11 @@ function _onDrop(e) {
   } else {
     this.parentNode.insertBefore(fromEl, this);
   }
+
+  if (_placeholderEl) { _placeholderEl.remove(); _placeholderEl = null; }
+
+  // Auto-fit widget to available space
+  _autoFitWidget(fromEl);
 
   // Save new order
   const reordered = [...grid.querySelectorAll(".widget-card")];
