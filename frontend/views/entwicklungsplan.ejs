@@ -1684,6 +1684,64 @@ app.use((err, req, res, next) => {
 // frontend/public/js/app.js – Null Safety
 if (greetingEl && user?.name) greetingEl.textContent = user.name.split(" ")[0];
 </script>
+<script type="text/plain" id="jaro-24">/* CODE QUALITY & INFRASTRUCTURE v1.6.4 */
+
+// backend/config.js (NEW)
+module.exports = {
+  uploadDir: path.join(__dirname, process.env.UPLOAD_DIR || "uploads"),
+  maxFileSize: parseInt(process.env.MAX_FILE_SIZE || 100 * 1024 * 1024),
+  port: parseInt(process.env.PORT || 3000),
+  corsOrigin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  jwtSecret: process.env.JWT_SECRET || "fallback-secret-change-in-production",
+};
+
+// backend/middleware/logger.js (NEW)
+function log(level, message, data = {}) {
+  const timestamp = new Date().toISOString();
+  const logEntry = { timestamp, level, message, ...data };
+  console.log(JSON.stringify(logEntry));
+}
+
+// backend/middleware/pagination.js (NEW)
+function getPaginationParams(req, defaultLimit = 20, maxLimit = 100) {
+  let offset = Math.max(0, parseInt(req.query.offset) || 0);
+  let limit = Math.max(1, Math.min(parseInt(req.query.limit) || defaultLimit, maxLimit));
+  return { offset, limit };
+}
+
+function buildPaginationResponse(data, total, offset, limit) {
+  return {
+    data,
+    pagination: { offset, limit, total, hasMore: offset + limit < total },
+  };
+}
+
+// backend/routes/search.js – Add Pagination
+const { getPaginationParams, buildPaginationResponse } = require("../middleware/pagination");
+const { offset, limit } = getPaginationParams(req);
+// SELECT ... LIMIT ? OFFSET ?
+res.json(buildPaginationResponse({ todos, notizen, events, dokumente }, total, offset, limit));
+
+// backend/routes/leaderboard.js – Add Pagination + Logging
+const logger = require("../middleware/logger");
+logger.error("Leaderboard error", { error: err.message });
+
+// backend/server.js – CORS Configuration
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
+// frontend/public/js/documents.js – Remove Inline onclick
+container.querySelectorAll(".chip").forEach(btn => {
+  btn.addEventListener("click", () => setCategory(btn.dataset.cat));
+});
+
+// backend/routes/auth-routes.js – Use Config for Dirs
+const avatarDir = path.join(config.uploadDir, "avatars");
+</script>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -2575,7 +2633,7 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23","jaro-24",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
@@ -2678,7 +2736,10 @@ git push --tags</script>
             commit:"git commit -m \"fix all 7 HIGH-priority bugs: frontend error handling, workspace cascade delete, input validation, time tracking timestamps, leaderboard fix\"" },
           { id:"jaro-23", file:"backend/middleware/rateLimit.js (NEU) + backend/middleware/validators.js (NEU) + backend/server.js",
             desc:"SECURITY HARDENING v1.6.3: ① Rate Limiting (5 Login, 3 PW-Reset per Fenster), ② Email-Regex + Search-Query-Limit (200 Zeichen), ③ Multer fileSize Limit (100 MB), ④ Security Headers (CSP, X-Frame-Options, etc.), ⑤ Error Standardization (keine internen Details), ⑥ Global Error Handler, ⑦ Null-Safety with optional chaining.",
-            commit:"git commit -m \"add comprehensive security fixes: rate limiting, validators, security headers, error standardization, null checks\"" }
+            commit:"git commit -m \"add comprehensive security fixes: rate limiting, validators, security headers, error standardization, null checks\"" },
+          { id:"jaro-24", file:"backend/config.js (NEU) + backend/middleware/logger.js (NEU) + backend/middleware/pagination.js (NEU)",
+            desc:"CODE QUALITY & INFRASTRUCTURE v1.6.4: ① API Pagination (offset/limit + hasMore) für Search + Leaderboard, ② Strukturiertes JSON-Logging statt console.error, ③ CORS-Config Whitelist via CORS_ORIGIN env-var, ④ XSS-Prevention (onclick → addEventListener in documents.js), ⑤ Config Module für uploadDir/maxFileSize/corsOrigin, ⑥ Centralized Environment Variable Management.",
+            commit:"git commit -m \"add LOW-priority fixes: pagination, logging, CORS config, XSS prevention, environment variables\"" }
         ]
       },
       omar: {
