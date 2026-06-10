@@ -765,8 +765,7 @@ function _buildWidgetDayView(year, month, events, today, months, daysDe) {
     return ed.toDateString() === _calendarDate.toDateString();
   });
 
-  let html = `<div class="cal-wday-head">${daysDe[_calendarDate.getDay() === 0 ? 6 : _calendarDate.getDay() - 1]}, ${_calendarDate.getDate()}. ${months[month]} ${year}</div>
-    <div class="cal-wev-list">`;
+  let html = `<div class="cal-wev-list">`;
 
   if (eventsToday.length === 0) {
     html += `<div class="cal-wev-empty">Keine Termine</div>`;
@@ -797,6 +796,7 @@ function _buildCalendarBody() {
 
   const months = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
   const daysDe = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+  const weekdaysDe = ["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
 
   const events = dashboardData ? wsFilter(dashboardData.events || []) : [];
 
@@ -807,7 +807,8 @@ function _buildCalendarBody() {
     const { mon, sun } = _getWeekRange(_calendarDate);
     title = `${mon.getDate()}. – ${sun.getDate()}. ${months[sun.getMonth()]} ${year}`;
   } else {
-    title = `${_calendarDate.getDate()}. ${months[month]} ${year}`;
+    const wd = weekdaysDe[_calendarDate.getDay()];
+    title = `${wd}, ${_calendarDate.getDate()}. ${months[month]} ${year}`;
   }
 
   const viewBtns = ["month","week","day"].map(v =>
@@ -828,9 +829,9 @@ function _buildCalendarBody() {
       <div class="cal-head-row">
         <button class="cal-nav" data-dir="-1"><i class="fas fa-chevron-left"></i></button>
         <span class="cal-title">${title}</span>
+        <div class="cal-view-switch">${viewBtns}</div>
         <button class="cal-nav" data-dir="1"><i class="fas fa-chevron-right"></i></button>
       </div>
-      <div class="cal-view-switch">${viewBtns}</div>
     </div>
     ${bodyHtml}
   </div>`;
