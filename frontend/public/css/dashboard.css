@@ -425,14 +425,6 @@ body.dark .widget-manage-btn:hover {
   border-radius: 6px;
 }
 
-.widget-list .dash-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin: 2px 0;
-}
-
 .widget-list .dash-icon {
   width: 28px;
   height: 28px;

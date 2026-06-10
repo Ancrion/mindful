@@ -1408,44 +1408,28 @@ function initEventDrag() {
   color: var(--text);
   text-decoration: none;
 }</script>
-<script type="text/plain" id="jaro-19">// index.js – Widget "Termin-Vorschau"
-const WIDGET_TYPES = {
-  // ...
-  upcoming: { name: "Termin-Vorschau", icon: "fa-calendar-alt",
-    desc: "Nächste anstehende Termine", color: "#eab308" },
-};
-
-const DEFAULT_SIZES = { /* ... */ upcoming: 2, /* ... */ };
-
-function _getWidgetBody(widget) {
-  switch (widget.typ) {
-    // ...
-    case "upcoming": return _buildUpcomingBody();
-  }
-}
-
-function _buildUpcomingBody() {
+<script type="text/plain" id="jaro-19">// index.js – Widget "Termine" überarbeitet (Gruppierung + Uhrzeit)
+function _buildEventsBody() {
   const events = dashboardData ? wsFilter(dashboardData.events || []) : [];
   window._dashEvents = {};
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  const future = events.filter(e => {
+  const upcoming = events.filter(e => {
     if (!e.start_datum) return false;
     return new Date(e.start_datum.split("T")[0] || e.start_datum) >= today;
   }).sort((a,b) => new Date(a.start_datum) - new Date(b.start_datum));
 
-  if (future.length === 0)
-    return '<ul class="widget-list"><li class="empty-text">Keine anstehenden Termine.</li></ul>';
+  if (upcoming.length === 0)
+    return '<ul class="widget-list"><li class="empty-text">Keine Termine anstehend.</li></ul>';
 
   let html = '', lastGroup = null;
-  future.slice(0, 12).forEach(e => {
+  upcoming.slice(0, 12).forEach(e => {
     window._dashEvents[e.id] = e;
     const d = new Date(e.start_datum.split("T")[0] || e.start_datum);
     const diff = Math.round((d - today) / (1000*60*60*24));
     let group = diff === 0 ? "Heute" : diff === 1 ? "Morgen"
-      : diff < 7 ? d.toLocaleDateString("de-DE", { weekday: "long" })
-      : d.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "short" });
+      : diff >= 2 && diff <= 6 ? "Diese Woche" : "Nächste Woche";
 
     if (group !== lastGroup) {
       if (lastGroup !== null) html += '</ul>';
@@ -1453,11 +1437,10 @@ function _buildUpcomingBody() {
       lastGroup = group;
     }
 
-    const color = e.farbe || "#f59e0b";
     const timeStr = e.ganztag ? "ganztags"
       : (e.start_datum ? new Date(e.start_datum).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : "");
     html += `<li data-dash-id="${e.id}" data-dash-type="event">
-      <span class="dash-dot" style="background:${color}"></span>
+      <i class="fas fa-calendar-day dash-icon events"></i>
       <span class="dash-title">${escHtml(e.titel)}</span>
       <span class="dash-meta">${timeStr}</span>
     </li>`;
@@ -1466,12 +1449,6 @@ function _buildUpcomingBody() {
   html += '</ul>';
   html += '<a href="/calendar" class="widget-link">Alle Termine anzeigen <i class="fas fa-arrow-right"></i></a>';
   return html;
-}
-
-/* dashboard.css */
-.widget-list .dash-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  flex-shrink: 0; margin: 2px 0;
 }</script>
 <script type="text/plain" id="omar-1"><!doctype html>
 <html lang="de">
@@ -2454,9 +2431,9 @@ git push --tags</script>
           { id:"jaro-18", file:"frontend/views/partials/sidebar.ejs + style.css",
             desc:"Sidebar-Bottom: Optionen-Link (Zahnrad → /profile) + Abmelden-Button (logout()). .module-bottom mit border-top-Trennung, inherit von .module-link. Altes Abmelden-<small> aus .user-info entfernt. Fix: height:100vh wieder rückgängig → Sidebar scrollt normal mit der Seite mit.",
             commit:"git commit -m \"add options and logout buttons to sidebar bottom\"" },
-          { id:"jaro-19", file:"frontend/public/js/index.js + frontend/public/css/dashboard.css",
-            desc:"Dashboard-Widget „Termin-Vorschau\": Alle anstehenden Termine als Liste mit Tages-Gruppierung (Heute/Morgen/Wochentag/Datum), Farbdot pro Event, bis zu 12 Events, im Design der App.",
-            commit:"git commit -m \"add upcoming events dashboard widget with day grouping and color dots\"" }
+          { id:"jaro-19", file:"frontend/public/js/index.js",
+            desc:"Dashboard-Widget „Termine\" überarbeitet: Gruppierung in Heute/Morgen/Diese Woche/Nächste Woche (wie Termin-Vorschau), Uhrzeit bei jedem Event, bis zu 12 Events. Separates Widget „Termin-Vorschau\" (upcoming) entfernt (jetzt redundant).",
+            commit:"git commit -m \"enhance events widget with day grouping and time display, remove redundant upcoming widget\"" }
         ]
       },
       omar: {
