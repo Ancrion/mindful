@@ -247,9 +247,6 @@ body.dark .widget-manage-btn:hover {
     padding: 12px;
     gap: 12px;
   }
-  .topbar-right h1 {
-    font-size: 22px;
-  }
   .widget-manage-btn span {
     display: none;
   }
@@ -689,6 +686,38 @@ body.dark .widget-manage-btn:hover {
 
 .weather-location-btn:hover {
   background: var(--accent-alpha, rgba(110,138,184,0.1));
+}
+
+/* ─── Dashboard Welcome ─── */
+.dashboard-welcome {
+  padding: 0 24px 16px;
+}
+.dashboard-welcome h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+.dashboard-welcome h1 span {
+  color: var(--accent);
+}
+.dashboard-welcome .subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-welcome h1 {
+    font-size: 22px;
+  }
+  .dashboard-welcome {
+    padding: 0 16px 12px;
+  }
+  .widget-grid-header {
+    padding: 0 16px;
+  }
 }
 
 /* ─── Topbar Right ─── */
