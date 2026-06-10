@@ -20,6 +20,13 @@ try {
   // Spalte existiert bereits
 }
 
+// Migration: UNIQUE-Index auf changelog.version für INSERT OR IGNORE
+try {
+  db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_changelog_version ON changelog(version)");
+} catch (e) {
+  // Index existiert bereits
+}
+
 db.exec(`
   -- 1. BENUTZER
   CREATE TABLE IF NOT EXISTS users (
@@ -228,11 +235,9 @@ db.exec(`
   );
 `);
 
-// Seed: Standard-Changelog-Einträge (nur wenn Tabelle leer)
-const count = db.prepare("SELECT COUNT(*) AS c FROM changelog").get();
-if (count.c === 0) {
-  const insert = db.prepare("INSERT INTO changelog (version, datum, titel, features, fixes, commits) VALUES (?, ?, ?, ?, ?, ?)");
-  const seed = [
+// Seed: Fehlende Changelog-Einträge nachtragen (inkrementell)
+const insert = db.prepare("INSERT OR IGNORE INTO changelog (version, datum, titel, features, fixes, commits) VALUES (?, ?, ?, ?, ?, ?)");
+const seed = [
     ["0.1.0", "2026-06-09", "Initiale Entwicklung", '["Dashboard mit Widget-System","To-Do-Listen mit Workspaces und Prioritäten","Kalender mit Kategorien und Events","Notizen mit Markdown-Editor und Kategorien","Pomodoro-Timer","Zeiterfassung mit Dashboard-Statistiken","Sidebar-Navigation mit Workspace-Filter","Dark Mode","Globale Spotlight-Suche (Strg+K)","Dokumenten-Upload und -Verwaltung"]', '[]', '["f7ec37c","2cc4c60","c2d91cb","2bf8706","fcf9c96","c521c45","52ad5ad"]'],
     ["0.2.0", "2026-06-09", "Community & Kommunikation", '["Rangliste (Leaderboard) mit Todo-/Pomodoro-/Tracking-Punkten","Benutzerprofile mit individuellen Avataren und Wallpapern","Nachrichtensystem mit User-Suche und Privatchats","Überarbeitete Notizen-Oberfläche mit Live-Vorschau"]', '["Notizen-Toolbar deaktiviert sich bei Inaktivität"]', '["4452441","909d6d4","9721fdb","2abbef2","1effffa","8db4ad9","e64941d","5d2ca21","8f973e0"]'],
     ["0.3.0", "2026-06-09", "Projektplan & Entwicklungs-Dashboard", '["Entwicklungsplan-Seite mit Aufgabenverteilung (Team-Übersicht)","Interaktive Aufgabenliste mit Checkboxen und localStorage","Code-Snippet-Viewer mit 1:1-Projektdatei-Kopien","34 exakte Code-Snippets für alle Teammitglieder","Dynamische Aufgaben-Filter (offen/erledigt)"]', '["EJS-Escaping von Spezialzeichen (</script>, <%=)","Schema-Migrationen in einen einzelnen db.exec-Block vereinheitlicht","Alle Snippets auf exakte 1:1-Kopien umgestellt"]', '["55e6be5","df51583","c047569","94cbb5b","e6d3f26","6bdc076","61dd482","779ffb4","54ffb87","5bf4b1f","87d5128","51b436c","2f358b9","90e1587"]'],
@@ -247,6 +252,5 @@ if (count.c === 0) {
     for (const row of seed) insert.run(...row);
   });
   tx();
-}
 
 module.exports = db;
