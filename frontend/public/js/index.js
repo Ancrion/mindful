@@ -122,8 +122,10 @@ function renderWidgets() {
       // Remove dragging state
       element.classList.remove("dragging");
       
-      // Move element to new position
+      // Remove element from DOM first, then insert at new position
+      // This makes insertBefore work reliably even when element is already before target
       if (dropTarget && dropTarget !== element) {
+        element.remove();
         if (insertBefore) {
           grid.insertBefore(element, dropTarget);
         } else {
