@@ -437,18 +437,6 @@ function _onDrop(e) {
     el.classList.remove("drag-over");
   });
 }
-          const removeBtn = card.querySelector(".widget-remove");
-          if (removeBtn) {
-            removeBtn.addEventListener("click", (e) => {
-              e.stopPropagation();
-              _removeWidget(w.id);
-            });
-          }
-        }
-      });
-      console.warn("⚠️ Widget order reverted");
-    });
-}
 // ─── Auto-Refresh ───
 let _refreshTimers = {};
 
