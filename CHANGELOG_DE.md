@@ -43,13 +43,19 @@
   - `getBoundingClientRect()` wird VOR `element.remove()` berechnet (verhindert falsche Koordinaten)
 
 - **Root Cause: Drag-Drop Logik war falsch**:
-  - Problem: `insertBefore = relX < 0.5` funktioniert auch nicht → wenn Cursor auf linker Hälfte des Targets, wird VOR eingefügt (kein Swap)
-  - Wirkung: Widget von LINKS nach RECHTS verschoben → insertBefore=true weil linke Hälfte → **kein Tausch**
-  - Lösung: **Swap-basierte Logik** statt Cursor-Position
-  - `draggedIdx = indexOf(element)`, `targetIdx = indexOf(dropTarget)`
-  - Wenn dragged VOR target war → insert NACH target (swap nach rechts)
-  - Wenn dragged NACH target war → insert VOR target (swap nach links)
-  - Immer ein sauberer Tausch, keine Cursor-Position mehr nötig
+  - Problem: `insertBefore = relX < 0.5` → Cursor auf linker Hälfte → insert vor target → kein Swap
+  - Lösung: **Swap-basierte Logik** via DOM-Index:
+    - `draggedIdx = indexOf(element)`, `targetIdx = indexOf(dropTarget)`
+    - Wenn dragged VOR target → insert NACH target (swap nach rechts)
+    - Wenn dragged NACH target → insert VOR target (swap nach links)
+  - Keine Cursor-Position nötig, funktioniert immer
+
+- **Visuelles Drag-Drop Feedback verbessert**:
+  - `.dragging`: opacity 0.5, scale 0.95, accent border + großer Schatten
+  - `.drag-over`: accent border + 3px glow + scale 1.02 (hervorheben)
+  - Smooth Transitions (0.25s) auf opacity, transform, box-shadow, border-color
+
+- **Code bereinigt**: Debug-Logs entfernt, klare Struktur
 
 - **Sauberer Code**:
   - Entfernt redundante `_onDrop()` Funktion auf Card-Level
@@ -91,6 +97,7 @@
 🔗 [`1df7825`](https://github.com/Ancrion/mindful/commit/1df7825) - debug: Add detailed drag-drop logging for debugging
 🔗 [`18a8d6b`](https://github.com/Ancrion/mindful/commit/18a8d6b) - fix: Remove relY < 0.3 override for insertBefore, calculate rect before element.remove()
 🔗 [`5106255`](https://github.com/Ancrion/mindful/commit/5106255) - fix: Swap-based drag-drop logic - always swap dragged with target position
+🔗 [`9f64d54`](https://github.com/Ancrion/mindful/commit/9f64d54) - refactor: Remove debug logs, enhance visual drag-drop feedback with scale + border effects
 
 ---
 
