@@ -18,6 +18,7 @@ const dashboardWidgetRoutes = require("./dashboard_widgets");
 const leaderboardRoutes = require("./leaderboard");
 const usersRoutes = require("./users");
 const messagesRoutes = require("./messages");
+const bugsRoutes = require("./bugs");
 
 // Auth Routes (öffentlich - kein auth erforderlich)
 router.use("/auth", authRoutes);
@@ -37,6 +38,7 @@ router.use("/dashboard/widgets", auth, dashboardWidgetRoutes);
 router.use("/leaderboard", auth, leaderboardRoutes);
 router.use("/users", auth, usersRoutes);
 router.use("/messages", auth, messagesRoutes);
+router.use("/bugs", auth, bugsRoutes);
 
 // Health Check
 router.get("/health", (req, res) => {

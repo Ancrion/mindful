@@ -1953,6 +1953,24 @@ git tag phase-6-ui-ux
 git tag phase-7-setup
 git push --tags</script>
 
+<script type="text/plain" id="team-2"># Bug-Melden-Seite (gemeinsam: jaro + aisha)
+#
+# JARO:
+# - DB: bug_reports-Tabelle (id, user_id, titel, beschreibung,
+#        status, erledigt, created_at)
+# - /api/bugs (GET alle, POST neu, PUT /:id/toggle)
+# - View-Route /bugs + /bug-report in index.js
+# - api_root.js: const bugsRoutes = require("./bugs")
+# - sidebar.ejs: Link zu /bugs
+#
+# AISHA:
+# - frontend/views/bugs.ejs (Formular + Grid)
+# - /frontend/public/js/bugs.js (load, submit, toggle)
+# - CSS in style.css (.bugs-main, .bug-form, .bug-card, …)
+#
+# Commit: jaro "feat: add bug report API and DB table"
+# Commit: aisha "feat: add bug report frontend"</script>
+
     <script>
     // ═══════════════════════════════════════════════
     // CODE-SNIPPETS (via DOM, kein JS-Escaping nötig)
@@ -1966,7 +1984,7 @@ git push --tags</script>
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
       "yaman-1","yaman-2","yaman-3","yaman-4",
-      "team-1"
+      "team-1","team-2"
     ];
 
     // ═══════════════════════════════════════════════
@@ -2113,7 +2131,10 @@ git push --tags</script>
         items: [
           { id:"team-1", file:"GitLab-Workflow",
             desc:"Jeder committed seine Tasks in der richtigen Reihenfolge mit den vorgegebenen Commit-Nachrichten. Nach jeder Phase Tag setzen.",
-            commit:"git tag phase-1 && git push --tags" }
+            commit:"git tag phase-1 && git push --tags" },
+          { id:"team-2", file:"Bug-Melden-Seite",
+            desc:"Bug-Melden-Seite: DB-Tabelle, API (GET/POST/PUT), View, Frontend (Eingabe, Grid, Checkbox zum Abhaken)",
+            commit:'git commit -m "feat: add bug report page"' }
         ]
       }
     };

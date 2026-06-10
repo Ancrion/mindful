@@ -187,6 +187,18 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now', 'localtime')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
+
+  -- 15. BUG-REPORTS
+  CREATE TABLE IF NOT EXISTS bug_reports (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL,
+    titel       TEXT NOT NULL,
+    beschreibung TEXT,
+    status      TEXT DEFAULT 'offen',
+    erledigt    INTEGER DEFAULT 0,
+    created_at  TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
 `);
 
 console.log("✅ Datenbank bereit (mindful.db)");

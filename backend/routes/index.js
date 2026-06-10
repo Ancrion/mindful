@@ -29,6 +29,8 @@ router.get("/nachrichten", auth, (req, res) => res.render("messages", { currentP
 router.get("/profile", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/entwicklungsplan", auth, (req, res) => res.render("entwicklungsplan", { currentPage: "entwicklungsplan" }));
+router.get("/bugs", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
+router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 
 // ─── HEALTH CHECK ───
 router.get("/health", (req, res) => {

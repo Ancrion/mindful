@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Bug-Report</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="bugs-main">
+        <header class="bugs-header">
+          <h1>Bug-<span>Report</span></h1>
+          <p class="subtitle">Melde Fehler und verfolge den Status aller eingereichten Bugs.</p>
+        </header>
+
+        <div class="bugs-content">
+          <form id="bugForm" class="bug-form">
+            <div class="bug-form-row">
+              <input type="text" id="bugTitle" placeholder="Kurze Zusammenfassung des Fehlers …" required />
+              <button type="submit" class="primary-btn">Melden</button>
+            </div>
+            <textarea id="bugDesc" placeholder="Genauere Beschreibung (optional) …" rows="2"></textarea>
+          </form>
+
+          <div class="bug-grid" id="bugGrid">
+            <p class="loading">Lade Bugs …</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/bugs.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>
