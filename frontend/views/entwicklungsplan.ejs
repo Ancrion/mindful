@@ -1979,6 +1979,29 @@ git push --tags</script>
 # Commit: jaro "feat: add bug report API and DB table"
 # Commit: aisha "feat: add bug report kanban frontend"</script>
 
+<script type="text/plain" id="team-3"># Workspace-Hierarchie & Changelog (jaro)
+#
+# WORKSPACE-HIERARCHIE:
+# - DB: parent_id-Spalte in workspaces (ALTER TABLE)
+# - workspace.js: POST/PUT/Move/Delete mit parent_id
+# - Kinder werden beim LÃ¶schen an GroÃŸeltern gehÃ¤ngt
+# - todos.js: ?workspace_ids=1,2,3 fÃ¼r rekursive Filterung
+# - app.js: Baumansicht mit Expand/Collapse in Sidebar
+# - Drag & Drop per addEventListener zum Verschieben
+# - Beim Klick auf Parent: Todos aus allen Kindern laden
+#
+# CHANGELOG:
+# - DB: changelog-Tabelle (version, datum, titel, features,
+#        fixes, commits als JSON)
+# - API: GET (public), POST/PUT/DELETE (nur jaro)
+# - Timeline-UI mit vertikaler Zeitachse
+# - Admin-Interface: EintrÃ¤ge hinzufÃ¼gen/bearbeiten/lÃ¶schen
+# - Seed: 7 EintrÃ¤ge aus Git-Historie
+#
+# Commit: jaro "feat: workspace hierarchy (parent_id, ...)"
+# Commit: jaro "feat: add professional changelog/release notes page"
+# Commit: jaro "fix: replace inline drag handlers with addEventListener"</script>
+
     <script>
     // ═══════════════════════════════════════════════
     // CODE-SNIPPETS (via DOM, kein JS-Escaping nötig)
@@ -1992,7 +2015,7 @@ git push --tags</script>
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
       "yaman-1","yaman-2","yaman-3","yaman-4",
-      "team-1","team-2"
+      "team-1","team-2","team-3"
     ];
 
     // ═══════════════════════════════════════════════
@@ -2142,7 +2165,10 @@ git push --tags</script>
             commit:"git tag phase-1 && git push --tags" },
           { id:"team-2", file:"Bug-Melden-Seite (Kanban)",
             desc:"Bug-Melden-Seite als Kanban-Board: 3 Spalten (Offen/In Arbeit/Abgeschlossen), Drag & Drop, LÃ¶schen, nur jaro darf verwalten",
-            commit:'git commit -m "feat: add bug report kanban board"' }
+            commit:'git commit -m "feat: add bug report kanban board"' },
+          { id:"team-3", file:"Workspace-Hierarchie + Changelog",
+            desc:"Workspace-Baum (parent_id, Expand/Collapse, Drag & Drop) + Versionsverlauf-Seite mit Timeline-Design und Admin-Interface",
+            commit:'git commit -m "feat: workspace hierarchy + changelog page"' }
         ]
       }
     };
