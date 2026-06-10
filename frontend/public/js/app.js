@@ -204,13 +204,9 @@ function renderWsSidebarList() {
     const color = WORKSPACE_COLORS[w.farbe] || "#ccc";
     const hasChildren = w._children.length > 0;
     const expandBtn = hasChildren
-      ? `<span class="ws-sb-expand" onclick="event.stopPropagation();toggleWsExpand(this)"><i class="fas fa-chevron-right"></i></span>`
+      ? `<span class="ws-sb-expand" data-expand="${w.id}"><i class="fas fa-chevron-right"></i></span>`
       : `<span class="ws-sb-expand ws-sb-expand-placeholder"></span>`;
-    return `<div class="ws-sb-dd-item${active ? " active" : ""}" data-id="${w.id}" data-level="${w._level}" draggable="true"
-              onclick="event.stopPropagation();selectWsSidebar(${w.id})"
-              ondragstart="wsDragStart(event, ${w.id})"
-              ondragover="wsDragOver(event)"
-              ondrop="wsDrop(event, ${w.id})">
+    return `<div class="ws-sb-dd-item${active ? " active" : ""}" data-id="${w.id}" data-level="${w._level}" draggable="true">
       <span class="ws-sb-dd-indent" style="padding-left:${w._level * 18}px"></span>
       ${expandBtn}
       <span class="ws-sb-dd-dot" style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></span>
@@ -218,6 +214,23 @@ function renderWsSidebarList() {
       <span class="ws-sb-check"><i class="fas fa-check"></i></span>
     </div>`;
   }).join("");
+
+  // Events dynamisch binden (keine Inline-Handler)
+  list.querySelectorAll(".ws-sb-dd-item").forEach(el => {
+    el.addEventListener("click", e => {
+      e.stopPropagation();
+      window.selectWsSidebar(parseInt(el.dataset.id));
+    });
+    el.addEventListener("dragstart", e => window.wsDragStart(e, parseInt(el.dataset.id)));
+    el.addEventListener("dragover", e => window.wsDragOver(e));
+    el.addEventListener("drop", e => window.wsDrop(e, parseInt(el.dataset.id)));
+  });
+  list.querySelectorAll(".ws-sb-expand[data-expand]").forEach(el => {
+    el.addEventListener("click", e => {
+      e.stopPropagation();
+      window.toggleWsExpand(el);
+    });
+  });
 
   const allItem = document.querySelector('#sidebarWs .ws-sb-dd-item[data-id=""]');
   if (allItem) allItem.classList.toggle("active", !window.currentWorkspaceId);
