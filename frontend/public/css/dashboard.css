@@ -83,7 +83,6 @@ body.dark .widget-manage-btn:hover {
   gap: 20px;
   padding: 24px;
   align-items: stretch;
-  grid-auto-flow: dense;
 }
 
 .widget-grid:empty {

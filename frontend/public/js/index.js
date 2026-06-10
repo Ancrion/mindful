@@ -299,28 +299,28 @@ function _getPostRender(widget) {
 let _dragId = null;
 let _placeholderEl = null;
 
-function _autoFitWidget(card) {
+function _reflowAll() {
   const grid = document.getElementById("widgetGrid");
   if (!grid) return;
   const allCards = [...grid.querySelectorAll(".widget-card")];
-  const idx = allCards.indexOf(card);
-  if (idx === -1) return;
-  const curSize = parseInt(card.dataset.widgetSize);
 
   let col = 0;
-  for (let i = 0; i < allCards.length; i++) {
-    const s = parseInt(allCards[i].dataset.widgetSize);
-    if (col + s > 4) col = 0;
-    if (i === idx) {
-      const available = 4 - col;
-      const bestSize = available >= 4 ? 4 : available >= 2 ? 2 : 1;
-      if (bestSize !== curSize) {
+  for (const card of allCards) {
+    const cur = parseInt(card.dataset.widgetSize);
+    if (col + cur > 4) {
+      const avail = 4 - col;
+      const best =
+        avail >= 4 ? 4 :
+        avail >= 2 ? 2 :
+        1;
+      if (best !== cur) {
         const w = _widgets.find(x => x.id == parseInt(card.dataset.widgetId));
-        if (w) _setWidgetSize(card, w, bestSize);
+        if (w) _setWidgetSize(card, w, best);
       }
-      break;
+      col = 4;
+    } else {
+      col += cur;
     }
-    col += s;
     if (col >= 4) col = 0;
   }
 }
@@ -376,8 +376,8 @@ function _onDrop(e) {
 
   if (_placeholderEl) { _placeholderEl.remove(); _placeholderEl = null; }
 
-  // Auto-fit widget to available space
-  _autoFitWidget(fromEl);
+  // Reflow all widgets to fill rows
+  _reflowAll();
 
   // Save new order
   const reordered = [...grid.querySelectorAll(".widget-card")];
@@ -437,12 +437,14 @@ function _setupKeyboard(card, widget) {
     if (e.key === "ArrowLeft" && idx > 0) {
       e.preventDefault();
       grid.insertBefore(card, allCards[idx - 1]);
+      _reflowAll();
       _saveOrder();
       allCards[idx - 1].focus();
     }
     if (e.key === "ArrowRight" && idx < allCards.length - 1) {
       e.preventDefault();
       grid.insertBefore(allCards[idx + 1], card);
+      _reflowAll();
       _saveOrder();
       allCards[idx + 1].focus();
     }
@@ -559,6 +561,9 @@ function _onResizeEnd() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ config }),
   });
+
+  // Reflow all widgets after resize
+  _reflowAll();
 
   _resizeData = null;
 }
