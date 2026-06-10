@@ -356,7 +356,7 @@ async function loadTodoWorkspaces() {
       .join("");
 
   const makeItem = (id, label, color, isActive) => `
-    <div class="workspace-item${isActive ? " active" : ""}" onclick="selectWorkspace(${id})">
+    <div class="workspace-item${isActive ? " active" : ""}" data-id="${id === null ? "" : id}" draggable="true">
       <span class="ws-item-dot" style="background:${color}"></span>
       <span class="workspace-name">${label}</span>
       <span class="ws-item-check"><i class="fas fa-check"></i></span>
@@ -371,6 +371,42 @@ async function loadTodoWorkspaces() {
     .join("");
 
   document.getElementById("workspaceList").innerHTML = wsHtml;
+
+  // Events für Kontextmenü + DnD auf den Todo-Workspace-Items
+  document.querySelectorAll("#workspaceList .workspace-item").forEach(el => {
+    const idStr = el.dataset.id;
+
+    el.addEventListener("click", e => {
+      e.stopPropagation();
+      selectWorkspace(idStr ? parseInt(idStr) : null);
+    });
+
+    if (!idStr) return; // "Alle" – kein Kontextmenü/DnD
+
+    el.addEventListener("contextmenu", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.openWsCtxMenu === "function") {
+        window.openWsCtxMenu(e, parseInt(idStr));
+      }
+    });
+
+    el.addEventListener("dragstart", e => {
+      if (typeof window.wsDragStart === "function") {
+        window.wsDragStart(e, parseInt(idStr));
+      }
+    });
+    el.addEventListener("dragover", e => {
+      if (typeof window.wsDragOver === "function") {
+        window.wsDragOver(e);
+      }
+    });
+    el.addEventListener("drop", e => {
+      if (typeof window.wsDrop === "function") {
+        window.wsDrop(e, parseInt(idStr));
+      }
+    });
+  });
 
   if (currentWorkspaceId) {
     const active = workspaces.find((w) => w.id == currentWorkspaceId);
