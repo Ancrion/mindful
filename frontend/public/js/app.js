@@ -206,7 +206,10 @@ function renderWsSidebarList() {
     const expandBtn = hasChildren
       ? `<span class="ws-sb-expand" data-expand="${w.id}"><i class="fas fa-chevron-right"></i></span>`
       : `<span class="ws-sb-expand ws-sb-expand-placeholder"></span>`;
-    return `<div class="ws-sb-dd-item${active ? " active" : ""}" data-id="${w.id}" data-level="${w._level}" draggable="true">
+    return `<div class="ws-sb-dd-item${active ? " active" : ""}" data-id="${w.id}" data-level="${w._level}" draggable="true"
+      ondragstart="window.wsDragStart(event, ${w.id})"
+      ondragover="event.preventDefault();window.wsDragOver(event)"
+      ondrop="event.preventDefault();window.wsDrop(event, ${w.id})">
       <span class="ws-sb-dd-indent" style="padding-left:${w._level * 18}px"></span>
       ${expandBtn}
       <span class="ws-sb-dd-dot" style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></span>
@@ -215,15 +218,12 @@ function renderWsSidebarList() {
     </div>`;
   }).join("");
 
-  // Events dynamisch binden (keine Inline-Handler)
+  // Click-Events per addEventListener (damit stopPropagation funktioniert)
   list.querySelectorAll(".ws-sb-dd-item").forEach(el => {
     el.addEventListener("click", e => {
       e.stopPropagation();
       window.selectWsSidebar(parseInt(el.dataset.id));
     });
-    el.addEventListener("dragstart", e => window.wsDragStart(e, parseInt(el.dataset.id)));
-    el.addEventListener("dragover", e => window.wsDragOver(e));
-    el.addEventListener("drop", e => window.wsDrop(e, parseInt(el.dataset.id)));
   });
   list.querySelectorAll(".ws-sb-expand[data-expand]").forEach(el => {
     el.addEventListener("click", e => {

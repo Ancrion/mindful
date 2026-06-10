@@ -1,8 +1,6 @@
 let currentStatusFilter = "offen";
 let currentWorkspaceId = null;
 let workspaceCache = [];
-let ctxTaskId = null;
-let ctxTaskDone = false;
 let dragTaskId = null;
 
 function effectiveFilter() {
@@ -108,7 +106,7 @@ async function loadTodos() {
       const isOverdue = todo.faellig && new Date(todo.faellig) < now && todo.status !== "erledigt";
       const dueDate = todo.faellig ? todo.faellig.split("T")[0] : "";
       return `
-    <div class="task-item" draggable="true" data-id="${todo.id}" data-priority="${prio}" onclick='editTask(${JSON.stringify(todo).replace(/"/g, "&quot;").replace(/'/g, "&#39;")}, event)' oncontextmenu="showTaskCtxMenu(event, ${todo.id}, ${todo.status === 'erledigt'})">
+    <div class="task-item" draggable="true" data-id="${todo.id}" data-priority="${prio}" onclick='editTask(${JSON.stringify(todo).replace(/"/g, "&quot;").replace(/'/g, "&#39;")}, event)'>
       <div class="task-check${todo.status === "erledigt" ? " checked" : ""}" data-id="${todo.id}" onclick="event.stopPropagation(); toggleDone(${todo.id})">
         <i class="fas fa-check"></i>
       </div>
@@ -488,51 +486,51 @@ window.editTask = editTask;
 window.toggleDone = toggleDone;
 
 /* ====== KONTEXTMENÜ ====== */
-window.showTaskCtxMenu = function (e, taskId, isDone) {
-  e.preventDefault();
-  e.stopPropagation();
-  closeCtxMenu();
+(function () {
+  let ctxTaskId = null;
 
-  ctxTaskId = taskId;
-  ctxTaskDone = isDone;
+  function closeCtxMenu() {
+    const menu = document.getElementById("ctxMenu");
+    if (menu) menu.classList.remove("open");
+    ctxTaskId = null;
+  }
 
-  const menu = document.getElementById("ctxMenu");
-  const items = menu.querySelectorAll(".ctx-item");
+  document.addEventListener("click", closeCtxMenu);
 
-  document.getElementById("ctxToggleLabel").textContent = isDone ? "Wieder öffnen" : "Als erledigt markieren";
+  document.addEventListener("contextmenu", (e) => {
+    const taskEl = e.target.closest(".task-item");
+    if (!taskEl) { closeCtxMenu(); return; }
+    e.preventDefault();
+    e.stopPropagation();
 
-  items[0].onclick = () => {
-    closeCtxMenu();
-    const taskEl = document.querySelector(`.task-item[data-id="${taskId}"]`);
-    if (taskEl) taskEl.click();
-  };
-  items[1].onclick = () => {
-    closeCtxMenu();
-    toggleDone(taskId);
-  };
-  items[2].onclick = () => {
-    closeCtxMenu();
-    document.getElementById("editTaskId").value = taskId;
-    deleteTask();
-  };
+    const taskId = parseInt(taskEl.dataset.id);
+    const isDone = taskEl.classList.contains("done") || taskEl.querySelector(".task-check.checked") !== null;
+    ctxTaskId = taskId;
 
-  const x = Math.min(e.clientX, window.innerWidth - menu.offsetWidth - 8);
-  const y = Math.min(e.clientY, window.innerHeight - menu.offsetHeight - 8);
-  menu.style.left = x + "px";
-  menu.style.top = y + "px";
-  menu.classList.add("open");
-};
+    document.getElementById("ctxToggleLabel").textContent = isDone ? "Wieder öffnen" : "Als erledigt markieren";
 
-function closeCtxMenu() {
-  const menu = document.getElementById("ctxMenu");
-  if (menu) menu.classList.remove("open");
-  ctxTaskId = null;
-}
+    const menu = document.getElementById("ctxMenu");
+    menu.querySelector("[data-action='edit']").onclick = () => {
+      closeCtxMenu();
+      taskEl.click();
+    };
+    menu.querySelector("[data-action='toggle-done']").onclick = () => {
+      closeCtxMenu();
+      toggleDone(taskId);
+    };
+    menu.querySelector("[data-action='delete']").onclick = () => {
+      closeCtxMenu();
+      document.getElementById("editTaskId").value = taskId;
+      deleteTask();
+    };
 
-document.addEventListener("click", closeCtxMenu);
-document.addEventListener("contextmenu", (e) => {
-  if (!e.target.closest(".task-item")) closeCtxMenu();
-});
+    const x = Math.min(e.clientX, window.innerWidth - menu.offsetWidth - 8);
+    const y = Math.min(e.clientY, window.innerHeight - menu.offsetHeight - 8);
+    menu.style.left = x + "px";
+    menu.style.top = y + "px";
+    menu.classList.add("open");
+  });
+})();
 
 /* ====== DETAIL PANEL ====== */
 let currentDetailTask = null;
