@@ -3039,7 +3039,10 @@ git push --tags</script>
             commit:"f63471d", hash:"https://github.com/Ancrion/mindful/commit/f63471d" },
           { id:"jaro-43", file:"frontend/public/js/index.js",
             desc:"WIDGET DRAG-DROP SYSTEM KOMPLETT REWRITTEN v1.7.7-Final: ① Neuer _dragState statt _dragId + _draggedCard → klarer, ② Einfaches State-Management {id, draggedElement}, ③ grid.insertBefore() statt this.parentNode → zuverlässig, ④ originalHTML + originalSizes VOR Änderung, ⑤ Event-Listener re-attach nach Undo, ⑥ Robuste insertBefore Logik (dragIdx < targetIdx)",
-            commit:"8f5636a", hash:"https://github.com/Ancrion/mindful/commit/8f5636a" }
+            commit:"8f5636a", hash:"https://github.com/Ancrion/mindful/commit/8f5636a" },
+          { id:"jaro-44", file:"frontend/public/js/index.js",
+            desc:"WIDGET DRAG-DROP EVENT-HANDLING FIX v1.7.8: ① Neue _initGridDragDrop() registriert dragover+drop auf Grid-Container statt Cards, ② Bug-Fix: Drop-Event wurde nicht ausgelöst weil Cards während Drag bewegt werden, ③ Grid empfängt alle Events unabhängig vom DOM-Umzug, ④ Entfernt redundante _onDrop() Funktion auf Card-Level, ⑤ Code aufgeräumt, Debug-Logs entfernt",
+            commit:"13001b2", hash:"https://github.com/Ancrion/mindful/commit/13001b2" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",

@@ -1,7 +1,44 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.7 Hotfix
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.8
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
+
+---
+
+## 🐛 v1.7.8 - Widget Drag-Drop Event-Handling Fix
+
+**Bugfix**: 10.06.2026
+
+### 🔧 Bugfixes & Improvements
+
+- **Fixed: Drop-Event wurde nicht ausgelöst**:
+  - Problem: `dragover` und `drop` Handler waren NUR auf Widget-Cards registriert
+  - Bei Drag werden Cards durch das Grid bewegt → Target-Element ändert sich
+  - Lösung: Neue `_initGridDragDrop()` Funktion registriert Handler auf **Grid-Container selbst**
+  - Grid empfängt alle `dragover` und `drop` Events, egal wo Drag stattfindet
+  
+- **Sauberer Code**:
+  - Entfernt redundante `_onDrop()` Funktion auf Card-Level
+  - Nur noch Ein Drop-Handler (auf Grid) statt mehrere
+  - Debug-Logs aufgeräumt (nur wichtige Fehler-Logs bleiben)
+
+- **Getestete Funktionalität**:
+  - ✅ Widgets lassen sich ziehen
+  - ✅ Placeholder wird aktualisiert beim Drag über andere Widgets
+  - ✅ Drop wird korrekt erkannt und verarbeitet
+  - ✅ Neue Reihenfolge wird zur API gesendet
+  - ✅ Server speichert Änderung (`{ok: true}`)
+
+### Technische Details:
+- `_initGridDragDrop(grid)` neu hinzugefügt
+- Grid-Level `dragover` handler: `e.preventDefault()` + `dropEffect = "move"`
+- Grid-Level `drop` handler: Führt Insert + Reflow + API-Save durch
+- Card-Level `dragover` handler bleibt nur für visuelles Feedback (`.drag-over` Klasse)
+
+### 📝 Commits
+
+🔗 [`13001b2`](https://github.com/Ancrion/mindful/commit/13001b2) - fix: Add grid-level dragover/drop handlers for proper drag-drop
+🔗 [`5ad238c`](https://github.com/Ancrion/mindful/commit/5ad238c) - chore: Clean up debug logs and remove redundant _onDrop function
 
 ---
 
