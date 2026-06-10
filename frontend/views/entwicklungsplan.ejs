@@ -2050,12 +2050,15 @@ git push --tags</script>
 # - ZuverlÃ¤ssiger bei dynamisch gerenderten HTML-Templates
 #
 # WORKSPACE-KONTEXTMENÃ:
-# - Rechtsklick auf Workspace in Sidebar: Unter-Workspace
-#   anlegen / Umbenennen / LÃ¶schen
+# - Rechtsklick auf Workspace in Sidebar + Todo-Dropdown
+# - Optionen: Unter-Workspace anlegen / Umbenennen / LÃ¶schen
 # - Rename: prompt() + PUT /api/workspaces/:id
 # - Delete: confirm() + DELETE /api/workspaces/:id
-# - Add-child: setzt dataset.parentId auf den Input + Ã¶ffnet
-#   das Sidebar-Dropdown fÃ¼r die Namenseingabe
+# - Add-child: setzt dataset.parentId auf Input + Ã¶ffnet Dropdown
+#
+# WORKSPACE-DND:
+# - Drag & Drop funktioniert jetzt in Sidebar UND Todo-Dropdown
+# - .workspace-item in todo.css haben ws-dragging/ws-drag-over-Styles
 #
 # BUGFIX: loadWorkspaces-Konflikt
 # - todo.js definierte eigene loadWorkspaces(), die app.js-Version
@@ -2065,8 +2068,7 @@ git push --tags</script>
 # - App.js loadWorkspaces() wird jetzt auch auf Todo-Seite korrekt
 #   ausgefÃ¼hrt â†’ Sidebar-Baum + DnD + KontextmenÃ¼ funktionieren
 #
-# Commit: jaro "fix: rewrite todo context menu as addEventListener
-#   (more reliable), inline drag handlers for workspace sidebar"</script>
+# Commit: jaro "add context menu + DnD to todo page workspace dropdown"</script>
 
     <script>
     // ═══════════════════════════════════════════════
@@ -2154,7 +2156,7 @@ git push --tags</script>
             desc:"E-Mail-Sektion im Profil: anzeigen + speichern. updateEmail()-Funktion in profile.js.",
             commit:"git commit -m \"add email display and edit section to profile page\"" },
           { id:"jaro-15", file:"frontend/public/js/todo.js + app.js",
-            desc:"Rechtsklick-Kontextmenü für Todos (Bearbeiten/Erledigt/Löschen) per addEventListener. Kontextmenü für Workspaces (Unter-Workspace/Umbenennen/Löschen). Bugfix: loadWorkspaces-Konflikt zwischen app.js und todo.js – Sidebar-Baum wurde nie auf der Todo-Seite gerendert. DnD inkl. Inline-Handler.",
+            desc:"Rechtsklick-Kontextmenü für Todos (Bearbeiten/Erledigt/Löschen) per addEventListener. Kontextmenü für Workspaces (Unter-Workspace/Umbenennen/Löschen) in Sidebar + Todo-Dropdown. Bugfix: loadWorkspaces-Konflikt zwischen app.js und todo.js – Sidebar-Baum wurde nie auf der Todo-Seite gerendert. DnD inkl. addEventListener in Sidebar + Todo-Dropdown.",
             commit:"git commit -m \"fix: rewrite todo context menu, add workspace context menu, fix naming conflict\"" }
         ]
       },
@@ -2239,8 +2241,8 @@ git push --tags</script>
             desc:"Workspace-Baum (parent_id, Expand/Collapse, Drag & Drop) + Versionsverlauf-Seite mit Timeline-Design und Admin-Interface",
             commit:'git commit -m "feat: workspace hierarchy + changelog page"' },
           { id:"team-4", file:"Kontextmenüs & DnD-Fix",
-            desc:"Rechtsklick-Kontextmenü für Todos und Workspaces. Bugfix: Sidebar-Baum wurde auf der Todo-Seite nie gerendert (loadWorkspaces-Konflikt). DnD funktioniert jetzt überall.",
-            commit:'git commit -m "fix: context menus for todos and workspaces, fix workspace tree on todo page"' }
+            desc:"Rechtsklick-Kontextmenü für Todos und Workspaces (Sidebar + Todo-Dropdown). Bugfix: Sidebar-Baum wurde auf Todo-Seite nie gerendert (loadWorkspaces-Konflikt). DnD funktioniert jetzt in Sidebar + Todo-Dropdown.",
+            commit:'git commit -m "fix: add context menu + DnD to todo page workspace dropdown"' }
         ]
       }
     };
