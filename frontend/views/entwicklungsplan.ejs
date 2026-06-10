@@ -1625,6 +1625,65 @@ db.prepare("DELETE FROM events WHERE workspace_id = ? AND user_id = ?").run(req.
 // backend/database/db.js – Migrations für completed_at
 try { db.exec("ALTER TABLE time_entries ADD COLUMN completed_at TEXT DEFAULT NULL"); } catch(e) {}
 </script>
+<script type="text/plain" id="jaro-23">/* SECURITY HARDENING v1.6.3 */
+
+// backend/middleware/rateLimit.js (NEW)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, max: 5,
+  message: "Zu viele Anmeldeversuche..."
+});
+const passwordLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, max: 3,
+  message: "Zu viele Passwort-Zurücksetzen-Versuche..."
+});
+
+// backend/middleware/validators.js (NEW)
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return email && email.length <= 254 && emailRegex.test(email);
+}
+
+function isValidSearchQuery(query) {
+  return query && query.length > 0 && query.length <= 200; // Max 200 für ReDoS-Prävention
+}
+
+// backend/routes/auth-routes.js – Apply Rate Limiting
+router.post("/register", authLimiter, async (req, res) => { ... });
+router.post("/login", authLimiter, async (req, res) => { ... });
+router.post("/forgot-password", passwordLimiter, async (req, res) => { ... });
+router.post("/reset-password", passwordLimiter, async (req, res) => { ... });
+
+// Email Validation
+if (email && !isValidEmail(email)) {
+  return res.status(400).json({ error: "Ungültige E-Mail-Adresse" });
+}
+
+// backend/routes/dokumente.js – File Size Limit
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 100 * 1024 * 1024 } // 100 MB limit
+});
+
+// backend/server.js – Security Headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Content-Security-Policy", "default-src 'self'; ...");
+  next();
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  const statusCode = err.status || 500;
+  const genericMessage = statusCode === 500 ? "Interner Serverfehler" : err.message;
+  res.status(statusCode).json({ error: genericMessage });
+});
+
+// frontend/public/js/app.js – Null Safety
+if (greetingEl && user?.name) greetingEl.textContent = user.name.split(" ")[0];
+</script>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -2516,7 +2575,7 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
@@ -2616,7 +2675,10 @@ git push --tags</script>
             commit:"git commit -m \"fix critical security issues: auth on changelog, XSS in reset token, leaderboard timestamp, role-based admin authorization\"" },
           { id:"jaro-22", file:"frontend/public/js/app.js (safeJson Helper) + backend/routes/workspace.js + backend/routes/zeit.js",
             desc:"INPUT VALIDATION & ERROR HANDLING v1.6.2: ① Global safeJson() Helper für sichere JSON-Parsing in allen Frontend-Calls, ② Workspace-Farbe-Whitelist (8 erlaubte Farben), ③ Zeit-Entry duration_seconds Validierung (0-86400), ④ Workspace-Lösch-Cascade (Todos/Notizen/Events), ⑤ time_entries.completed_at Migration + Leaderboard-Query-Fix.",
-            commit:"git commit -m \"fix all 7 HIGH-priority bugs: frontend error handling, workspace cascade delete, input validation, time tracking timestamps, leaderboard fix\"" }
+            commit:"git commit -m \"fix all 7 HIGH-priority bugs: frontend error handling, workspace cascade delete, input validation, time tracking timestamps, leaderboard fix\"" },
+          { id:"jaro-23", file:"backend/middleware/rateLimit.js (NEU) + backend/middleware/validators.js (NEU) + backend/server.js",
+            desc:"SECURITY HARDENING v1.6.3: ① Rate Limiting (5 Login, 3 PW-Reset per Fenster), ② Email-Regex + Search-Query-Limit (200 Zeichen), ③ Multer fileSize Limit (100 MB), ④ Security Headers (CSP, X-Frame-Options, etc.), ⑤ Error Standardization (keine internen Details), ⑥ Global Error Handler, ⑦ Null-Safety with optional chaining.",
+            commit:"git commit -m \"add comprehensive security fixes: rate limiting, validators, security headers, error standardization, null checks\"" }
         ]
       },
       omar: {
