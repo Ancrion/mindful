@@ -3051,7 +3051,10 @@ git push --tags</script>
             commit:"f46886a", hash:"https://github.com/Ancrion/mindful/commit/f46886a" },
           { id:"jaro-47", file:"frontend/public/css/dashboard.css + frontend/public/js/index.js",
             desc:"WIDGET NEIGHBOR JUMP FIX v1.7.8: ① Bug-Fix: Rechter Nachbar springt nach rechts während Drag, ② Ursache: Gezogenes Element nahm immer noch Platz im Grid ein, ③ Lösung: .dragging mit position: absolute aus Grid-Fluss genommen, ④ .widget-grid erhält position: relative, ⑤ In _onDragStart: Element-Position berechnet + inline styles (left/top/width/height) gesetzt, ⑥ In _onDragEnd + Drop-Handler: Inline-Styles entfernt",
-            commit:"636acf6", hash:"https://github.com/Ancrion/mindful/commit/636acf6" }
+            commit:"636acf6", hash:"https://github.com/Ancrion/mindful/commit/636acf6" },
+          { id:"jaro-48", file:"frontend/public/css/dashboard.css + frontend/public/js/index.js",
+            desc:"DRAG-DROP SIMPLIFICATION v1.7.8: ① Refactor: Entfernt position: absolute Ansatz weil Widget weit weg vom Mauszeiger war, ② Neue Strategie: Einfacher Grid-Flow, Widget bleibt sichtbar mit opacity 0.6, Placeholder nimmt seinen Platz, ③ Entfernt: position: relative vom Grid, komplexe Inline-Styles (left/top/width/height), ④ Vereinfachte _onDragStart ohne Position-Berechnung, ⑤ UX: Normal und intuitiv - Widget in der Hand, Placeholder zeigt neuen Platz",
+            commit:"0e4031c", hash:"https://github.com/Ancrion/mindful/commit/0e4031c" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
