@@ -2118,7 +2118,7 @@ git push --tags</script>
 # - Todo-Dropdown wird nach jedem workspacechange aktualisiert
 #
 # BUG-SEITE FULL-SCREEN (v1.5.0):
-# - bugs-main: max-width 1400px + margin:0 auto (zentriert)
+# - bugs-main: max-width 1400px, linksbÃ¼ndig (kein margin:auto)
 # - bugs-content + kanban: flex:1 â†’ fÃ¼llen verfÃ¼gbare HÃ¶he
 # - kanban-cards: overflow-y:auto + gap:6px â†’ einzeln scrollbar
 # - bugs-main: overflow-y:auto â†’ Gesamtseite scrollt bei Ãœberlauf
@@ -2218,7 +2218,7 @@ git push --tags</script>
             desc:"Rechtsklick-Kontextmenü für Todos (Bearbeiten/Erledigt/Löschen) per addEventListener. Kontextmenü für Workspaces (Unter-Workspace/Umbenennen/Löschen/Zu root machen) in Sidebar + Todo-Dropdown. Drop auf 'Alle' = root setzen. Bugfix: loadWorkspaces-Konflikt – Sidebar-Baum wurde nie auf der Todo-Seite gerendert. wsDragStart nutzt e.currentTarget statt closest – crashte auf .workspace-item. DnD in Sidebar + Todo-Dropdown. Inline-DnD-Handler auf addEventListener refaktoriert. Workspace-Filter initialisiert via localStorage bei Page-Load. Sidebar-Sync bei Auswahl im Todo-Dropdown.",
             commit:"git commit -m \"fix: rewrite todo context menu, add workspace context menu, fix naming conflict\"" },
           { id:"jaro-16", file:"frontend/public/css/style.css (bugs-main, .kanban)",
-            desc:"Bug-Seite Full-Screen-Redesign: bugs-main zentriert (max-width:1400px + margin:0 auto), bugs-content + kanban mit flex:1 für dynamische Höhe, Kanban-Spalten scrollen einzeln (overflow-y:auto), bugs-main overflow-y:auto.",
+            desc:"Bug-Seite Full-Screen-Redesign: bugs-main linksbündig mit max-width:1400px, bugs-content + kanban mit flex:1, Kanban-Spalten scrollen einzeln (overflow-y:auto), bugs-main overflow-y:auto.",
             commit:"git commit -m \"bug page: full-height centered layout with scrollable kanban cols\"" }
         ]
       },
