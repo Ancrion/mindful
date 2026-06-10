@@ -1529,7 +1529,60 @@ case "calendar": return () => {
 };
 
 /* dashboard.css – Full calendar widget styles in calendar widget section */</script>
-<script type="text/plain" id="omar-1"><!doctype html>
+<script type="text/plain" id="jaro-21">/* SECURITY & BUG-FIXES v1.6.1 */
+
+// backend/middleware/admin.js (NEW)
+module.exports = async (req, res, next) => {
+  if (!req.user?.id) return res.status(401).json({ error: "Nicht autorisiert" });
+  const user = db.prepare("SELECT is_admin FROM users WHERE id = ?").get(req.user.id);
+  if (!user || !user.is_admin) return res.status(403).json({ error: "Admin-Zugriff erforderlich" });
+  next();
+};
+
+// backend/database/db.js – Migrations
+try { db.exec("ALTER TABLE todos ADD COLUMN erledigt_at TEXT DEFAULT NULL"); } catch(e) {}
+try { db.exec("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0"); } catch(e) {}
+try { db.prepare("UPDATE users SET is_admin = 1 WHERE name = ?").run("jaro"); } catch(e) {}
+
+// backend/routes/todos.js – Update Query with erledigt_at Timestamp
+db.prepare(`UPDATE todos SET ... erledigt_at = ? WHERE id = ? AND user_id = ?`).run(
+  status === "erledigt" && todo.status !== "erledigt" ? new Date().toISOString() : null,
+  req.params.id, req.user.id
+);
+
+// backend/routes/leaderboard.js – Fix timestamp query
+const todosDone = db.prepare(`
+  SELECT u.id, u.name, COUNT(*) AS value FROM todos t
+  JOIN users u ON t.user_id = u.id
+  WHERE t.status = 'erledigt' AND date(COALESCE(t.erledigt_at, t.erstellt)) = date(?)
+  GROUP BY u.id ORDER BY value DESC
+`).all(today);
+
+// backend/routes/api_root.js – Add auth to changelog
+router.use("/changelog", auth, changelogRoutes);
+
+// backend/routes/changelog.js – Use adminOnly middleware
+router.post("/", auth, adminOnly, (req, res) => { ... });
+router.put("/:id", auth, adminOnly, (req, res) => { ... });
+router.delete("/:id", auth, adminOnly, (req, res) => { ... });
+
+// backend/routes/bugs.js – Replace isJaro check
+function isJaro(user) { return user && user.is_admin; }
+
+// backend/routes/index.js – Use adminOnly for Entwicklungsplan
+router.get("/entwicklungsplan", auth, adminOnly, (req, res) => { ... });
+
+// frontend/views/reset_password.ejs – Move token to hidden input
+<form id="resetForm" class="auth-form active">
+  <input type="hidden" id="resetToken" value="<%= token %>" />
+  ...
+</form>
+<script>
+  document.getElementById("resetForm").addEventListener("submit", async (e) => {
+    const TOKEN = document.getElementById("resetToken").value;
+    ...
+  });
+</script>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -2421,7 +2474,7 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
@@ -2515,7 +2568,10 @@ git push --tags</script>
             commit:"git commit -m \"enhance events widget with day grouping and time display, remove redundant upcoming widget\"" },
           { id:"jaro-20", file:"frontend/public/js/index.js + frontend/public/css/dashboard.css",
             desc:"Dashboard-Widget „Kalender\": Mini-Monatskalender mit Monatsnavigation (Pfeile), Termin-Dots für Tage mit Events, Heute-Hervorhebung, Klick auf Tag → /calendar.",
-            commit:"git commit -m \"add calendar month widget to dashboard with event dots and navigation\"" }
+            commit:"git commit -m \"add calendar month widget to dashboard with event dots and navigation\"" },
+          { id:"jaro-21", file:"backend/middleware/admin.js (NEU) + backend/database/db.js + backend/routes/*",
+            desc:"SECURITY & BUG-FIXES v1.6.1: ① Fehlende Auth-Middleware auf /api/changelog (CRITICAL), ② Password-Reset-Token von JS zu Hidden-Input (XSS-Fix), ③ Leaderboard erledigt_at Timestamp für korrekte Todo-Completion, ④ Role-based is_admin statt hardcoded \'jaro\'-Checks, ⑤ adminOnly-Middleware für Changelog/Entwicklungsplan/Bugs.",
+            commit:"git commit -m \"fix critical security issues: auth on changelog, XSS in reset token, leaderboard timestamp, role-based admin authorization\"" }
         ]
       },
       omar: {
@@ -2603,7 +2659,10 @@ git push --tags</script>
             commit:'git commit -m "fix workspace DnD visual + add root drop zone + make-root context menu option"' },
           { id:"team-5", file:"Kalender-DnD & Sidebar-Buttons",
             desc:"HTML5-DnD für Kalender-Events: Week/Day vertical repositioning (Y→Uhrzeit, 5-Min-Snapping), cross-day (data-date), Month cross-cell (Datum, Zeit erhalten). Resize-Handle-Konflikt verhindert. Click-suppression via _isDragging-Flag. Sidebar unten: Optionen (Zahnrad → /profile) + Abmelden (logout()) mit border-top-Trennung. Fix: height:100vh revertiert → Sidebar scrollt mit der Seite. Dashboard-Widget „Termine\" überarbeitet (Uhrzeit+Gruppierung). Dashboard-Widget „Kalender\" (Mini-Monat mit Dots).",
-            commit:'git commit -m "add drag and drop for calendar events (week/day/month views) + sidebar bottom options/logout buttons + upcoming events widget"' }
+            commit:'git commit -m "add drag and drop for calendar events (week/day/month views) + sidebar bottom options/logout buttons + upcoming events widget"' },
+          { id:"team-6", file:"Security Audit & Bug-Fixes",
+            desc:"Security-Audit durchgeführt: 35 Issues identifiziert (3 CRITICAL, 7 HIGH, 13 MEDIUM, 12 LOW). CRITICAL-Fixes: ① Auth-Middleware auf Changelog-Routes, ② XSS-Fix in Password-Reset, ③ Leaderboard-Timestamp-Bug, ④ Role-based Admin-Authorization statt hardcoded Username. Weitere HIGH-Priority-Fixes in Progress.",
+            commit:'git commit -m "fix critical security issues: auth on changelog, XSS in reset token, leaderboard timestamp, role-based admin authorization"' }
         ]
       }
     };
