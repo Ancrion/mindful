@@ -244,21 +244,47 @@ function _getPostRender(widget) {
     }
     case "calendar": return () => {
       const grid = document.querySelector(".widget-calendar .cal-wgrid");
-      if (!grid) return;
-      grid.addEventListener("click", e => {
-        const cell = e.target.closest(".cal-wc");
-        if (cell && cell.dataset.date) {
-          const d = new Date(cell.dataset.date);
-          if (!isNaN(d.getTime())) {
-            window.location.href = "/calendar";
+      if (grid) {
+        grid.addEventListener("click", e => {
+          const cell = e.target.closest(".cal-wc");
+          if (cell && cell.dataset.date) {
+            const d = new Date(cell.dataset.date);
+            if (!isNaN(d.getTime())) {
+              if (_calendarWidgetView === "day") {
+                window.location.href = "/calendar";
+              } else {
+                _calendarDate = d;
+                _calendarWidgetView = "day";
+                _rerenderWidget("calendar");
+              }
+            }
           }
-        }
-      });
+        });
+      }
       const navBtns = document.querySelectorAll(".widget-calendar .cal-nav");
       navBtns.forEach(btn => {
         btn.addEventListener("click", () => {
-          _calendarDate.setMonth(_calendarDate.getMonth() + parseInt(btn.dataset.dir));
+          if (_calendarWidgetView === "month") {
+            _calendarDate.setMonth(_calendarDate.getMonth() + parseInt(btn.dataset.dir));
+          } else if (_calendarWidgetView === "week") {
+            _calendarDate.setDate(_calendarDate.getDate() + 7 * parseInt(btn.dataset.dir));
+          } else {
+            _calendarDate.setDate(_calendarDate.getDate() + parseInt(btn.dataset.dir));
+          }
           _rerenderWidget("calendar");
+        });
+      });
+      const viewBtns = document.querySelectorAll(".widget-calendar .cal-view-btn");
+      viewBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          _calendarWidgetView = btn.dataset.view;
+          _rerenderWidget("calendar");
+        });
+      });
+      const evItems = document.querySelectorAll(".widget-calendar .cal-wev-item");
+      evItems.forEach(item => {
+        item.addEventListener("click", () => {
+          window.location.href = "/calendar";
         });
       });
     };
@@ -618,31 +644,26 @@ function _buildEventsBody() {
 }
 
 let _calendarDate = new Date();
+let _calendarWidgetView = "month";
 
-function _buildCalendarBody() {
-  const year = _calendarDate.getFullYear();
-  const month = _calendarDate.getMonth();
-  const today = new Date();
-  today.setHours(0,0,0,0);
+function _getWeekRange(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(d.setDate(diff));
+  const sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6);
+  return { mon, sun };
+}
 
+function _buildWidgetMonthView(year, month, events, today, months, daysDe) {
   const firstDay = new Date(year, month, 1);
   const startPad = firstDay.getDay();
   const startOff = startPad === 0 ? 6 : startPad - 1;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrev = new Date(year, month, 0).getDate();
 
-  const months = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
-  const daysDe = ["Mo","Di","Mi","Do","Fr","Sa","So"];
-
-  const events = dashboardData ? wsFilter(dashboardData.events || []) : [];
-
-  let html = `<div class="cal-widget">
-    <div class="cal-head">
-      <button class="cal-nav" data-dir="-1"><i class="fas fa-chevron-left"></i></button>
-      <span class="cal-title">${months[month]} ${year}</span>
-      <button class="cal-nav" data-dir="1"><i class="fas fa-chevron-right"></i></button>
-    </div>
-    <div class="cal-days">${daysDe.map(d => `<span>${d}</span>`).join("")}</div>
+  let html = `<div class="cal-days">${daysDe.map(d => `<span>${d}</span>`).join("")}</div>
     <div class="cal-wgrid">`;
 
   for (let i = startOff - 1; i >= 0; i--)
@@ -667,8 +688,113 @@ function _buildCalendarBody() {
   for (let i = 1; i <= rem; i++)
     html += `<div class="cal-wc other-month"><span class="cal-wd">${i}</span></div>`;
 
-  html += `</div></div>`;
+  html += `</div>`;
   return html;
+}
+
+function _buildWidgetWeekView(year, month, events, today, months, daysDe) {
+  const { mon, sun } = _getWeekRange(_calendarDate);
+  const monStr = `${mon.getDate()}. ${months[mon.getMonth()]}`;
+  const sunStr = `${sun.getDate()}. ${months[sun.getMonth()]} ${sun.getFullYear()}`;
+
+  let html = `<div class="cal-days">${daysDe.map(d => `<span>${d}</span>`).join("")}</div>
+    <div class="cal-wgrid">`;
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(mon);
+    d.setDate(mon.getDate() + i);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    const isToday = d.toDateString() === today.toDateString();
+    const hasEv = events.some(e => {
+      if (!e.start_datum) return false;
+      const ed = new Date(e.start_datum.split("T")[0] || e.start_datum);
+      return ed.toDateString() === d.toDateString();
+    });
+    html += `<div class="cal-wc${isToday ? " today" : ""}" data-date="${dateStr}">
+      <span class="cal-wd">${d.getDate()}</span>${hasEv ? '<span class="cal-dot"></span>' : ''}
+    </div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function _buildWidgetDayView(year, month, events, today, months, daysDe) {
+  const eventsToday = events.filter(e => {
+    if (!e.start_datum) return false;
+    const ed = new Date(e.start_datum.split("T")[0] || e.start_datum);
+    return ed.toDateString() === _calendarDate.toDateString();
+  });
+
+  let html = `<div class="cal-wday-head">${daysDe[_calendarDate.getDay() === 0 ? 6 : _calendarDate.getDay() - 1]}, ${_calendarDate.getDate()}. ${months[month]} ${year}</div>
+    <div class="cal-wev-list">`;
+
+  if (eventsToday.length === 0) {
+    html += `<div class="cal-wev-empty">Keine Termine</div>`;
+  } else {
+    eventsToday.slice(0, 5).forEach(e => {
+      const timeStr = e.ganztag ? "ganztags"
+        : (e.start_datum ? new Date(e.start_datum).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : "");
+      const color = e.farbe || "var(--accent)";
+      html += `<div class="cal-wev-item" data-date="${_calendarDate.toISOString().split("T")[0]}">
+        <span class="cal-wev-dot" style="background:${color}"></span>
+        <span class="cal-wev-title">${escHtml(e.titel)}</span>
+        <span class="cal-wev-time">${timeStr}</span>
+      </div>`;
+    });
+    if (eventsToday.length > 5)
+      html += `<div class="cal-wev-more">+${eventsToday.length - 5} weitere</div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function _buildCalendarBody() {
+  const year = _calendarDate.getFullYear();
+  const month = _calendarDate.getMonth();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const months = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+  const daysDe = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+
+  const events = dashboardData ? wsFilter(dashboardData.events || []) : [];
+
+  let title;
+  if (_calendarWidgetView === "month") {
+    title = `${months[month]} ${year}`;
+  } else if (_calendarWidgetView === "week") {
+    const { mon, sun } = _getWeekRange(_calendarDate);
+    title = `${mon.getDate()}. – ${sun.getDate()}. ${months[sun.getMonth()]} ${year}`;
+  } else {
+    title = `${_calendarDate.getDate()}. ${months[month]} ${year}`;
+  }
+
+  const viewBtns = ["month","week","day"].map(v =>
+    `<button class="cal-view-btn${_calendarWidgetView === v ? " active" : ""}" data-view="${v}">${v === "month" ? "Monat" : v === "week" ? "Woche" : "Tag"}</button>`
+  ).join("");
+
+  let bodyHtml;
+  if (_calendarWidgetView === "month") {
+    bodyHtml = _buildWidgetMonthView(year, month, events, today, months, daysDe);
+  } else if (_calendarWidgetView === "week") {
+    bodyHtml = _buildWidgetWeekView(year, month, events, today, months, daysDe);
+  } else {
+    bodyHtml = _buildWidgetDayView(year, month, events, today, months, daysDe);
+  }
+
+  return `<div class="cal-widget">
+    <div class="cal-head">
+      <div class="cal-head-row">
+        <button class="cal-nav" data-dir="-1"><i class="fas fa-chevron-left"></i></button>
+        <span class="cal-title">${title}</span>
+        <button class="cal-nav" data-dir="1"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="cal-view-switch">${viewBtns}</div>
+    </div>
+    ${bodyHtml}
+  </div>`;
 }
 
 function _buildDocsBody() {
