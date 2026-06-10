@@ -295,9 +295,8 @@ function _getPostRender(widget) {
   }
 }
 
-// ─── Drag & Drop (Completely Rewritten) ───
-let _dragState = null; // {id, draggedElement}
-let _placeholderEl = null;
+// ─── Simple Drag & Drop ───
+let _drag = null; // { element, placeholder }
 
 function _reflowAll() {
   const grid = document.getElementById("widgetGrid");
@@ -322,147 +321,121 @@ function _reflowAll() {
 }
 
 function _onDragStart(e) {
+  const element = this;
   const grid = document.getElementById("widgetGrid");
-  if (!grid) return;
-
-  _dragState = {
-    id: this.dataset.widgetId,
-    draggedElement: this,
-  };
-
-  this.classList.add("dragging");
+  
+  console.log("🎯 Drag start:", element.dataset.widgetId);
+  
+  element.classList.add("dragging");
   e.dataTransfer.effectAllowed = "move";
-  e.dataTransfer.setData("text/plain", this.dataset.widgetId);
-
-  _placeholderEl = document.createElement("div");
-  _placeholderEl.className = `widget-placeholder widget-s${this.dataset.widgetSize}`;
-  grid.insertBefore(_placeholderEl, this.nextSibling);
+  e.dataTransfer.setData("text/plain", element.dataset.widgetId);
+  
+  const placeholder = document.createElement("div");
+  placeholder.className = `widget-placeholder widget-s${element.dataset.widgetSize}`;
+  grid.insertBefore(placeholder, element.nextSibling);
+  
+  _drag = { element, placeholder, startSize: parseInt(element.dataset.widgetSize) };
 }
 
 function _onDragEnd() {
-  if (_dragState?.draggedElement) {
-    _dragState.draggedElement.classList.remove("dragging");
+  console.log("❌ Drag end");
+  
+  if (_drag?.element) {
+    _drag.element.classList.remove("dragging");
   }
-  document.querySelectorAll(".widget-card.drag-over").forEach((el) => {
+  if (_drag?.placeholder) {
+    _drag.placeholder.remove();
+  }
+  
+  document.querySelectorAll(".widget-card.drag-over").forEach(el => {
     el.classList.remove("drag-over");
   });
-  if (_placeholderEl) {
-    _placeholderEl.remove();
-    _placeholderEl = null;
-  }
-  _dragState = null;
+  
+  _drag = null;
 }
 
 function _onDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
-
-  if (!_dragState) return;
-  if (this.dataset.widgetId === _dragState.id) return;
-
-  document.querySelectorAll(".widget-card.drag-over").forEach((el) => {
-    if (el !== this) el.classList.remove("drag-over");
-  });
-  this.classList.add("drag-over");
-
-  if (!_placeholderEl) return;
-  const grid = document.getElementById("widgetGrid");
-  if (!grid) return;
-
-  const rect = this.getBoundingClientRect();
-  const midX = rect.left + rect.width / 2;
-  if (e.clientX < midX) {
-    grid.insertBefore(_placeholderEl, this);
-  } else {
-    grid.insertBefore(_placeholderEl, this.nextSibling);
+  
+  if (!_drag) return;
+  
+  const target = this;
+  const { element, placeholder } = _drag;
+  
+  // Feedback
+  if (target !== element) {
+    document.querySelectorAll(".widget-card.drag-over").forEach(el => {
+      if (el !== target) el.classList.remove("drag-over");
+    });
+    target.classList.add("drag-over");
+    
+    // Move placeholder
+    const grid = document.getElementById("widgetGrid");
+    const rect = target.getBoundingClientRect();
+    const midX = rect.left + rect.width / 2;
+    
+    if (e.clientX < midX) {
+      grid.insertBefore(placeholder, target);
+    } else {
+      grid.insertBefore(placeholder, target.nextSibling);
+    }
   }
 }
 
 function _onDrop(e) {
   e.preventDefault();
-
-  if (!_dragState) return;
-
+  
+  if (!_drag) return;
+  
+  const { element, placeholder } = _drag;
   const grid = document.getElementById("widgetGrid");
-  if (!grid) return;
-
-  const draggedElement = _dragState.draggedElement;
-  const targetElement = this;
-
-  if (draggedElement === targetElement || !targetElement) return;
-
-  document.querySelectorAll(".widget-card.drag-over").forEach((el) => {
-    el.classList.remove("drag-over");
-  });
-
-  // Save state before change
-  const originalHTML = grid.innerHTML;
-  const originalSizes = {};
-  [...grid.querySelectorAll(".widget-card")].forEach(el => {
-    originalSizes[parseInt(el.dataset.widgetId)] = parseInt(el.dataset.widgetSize);
-  });
-
-  // Remove placeholder
-  if (_placeholderEl) {
-    _placeholderEl.remove();
-    _placeholderEl = null;
-  }
-
-  // Move dragged element to placeholder position
-  const allCards = [...grid.querySelectorAll(".widget-card")];
-  const dragIdx = allCards.indexOf(draggedElement);
-  const targetIdx = allCards.indexOf(targetElement);
-
-  if (dragIdx === -1 || targetIdx === -1) return;
-
-  if (dragIdx < targetIdx) {
-    grid.insertBefore(draggedElement, targetElement.nextSibling);
+  
+  console.log("✅ Drop:", element.dataset.widgetId);
+  
+  // Remove placeholder and move element to its position
+  const nextNode = placeholder.nextSibling;
+  placeholder.remove();
+  
+  if (nextNode) {
+    grid.insertBefore(element, nextNode);
   } else {
-    grid.insertBefore(draggedElement, targetElement);
+    grid.appendChild(element);
   }
-
+  
+  // Reflow
   _reflowAll();
-
-  // Save to server
+  
+  // Save order
   const newOrder = [...grid.querySelectorAll(".widget-card")].map((el, i) => ({
     id: parseInt(el.dataset.widgetId),
-    position: i,
+    position: i
   }));
-
+  
+  console.log("📍 New order:", newOrder.map(o => o.id).join(", "));
+  
   apiFetch("dashboard/widgets/order", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ order: newOrder }),
+    body: JSON.stringify({ order: newOrder })
   })
     .then(res => {
-      if (!res?.ok) throw new Error("Server error");
+      if (!res?.ok) throw new Error("API error");
       newOrder.forEach(o => {
         const w = _widgets.find(x => x.id == o.id);
         if (w) w.position = o.position;
       });
-      console.log("✅ Widget order saved");
+      console.log("💾 Saved successfully");
     })
     .catch(err => {
-      console.error("❌ Save failed:", err);
-      grid.innerHTML = originalHTML;
-      [...grid.querySelectorAll(".widget-card")].forEach(el => {
-        const id = parseInt(el.dataset.widgetId);
-        const sz = originalSizes[id];
-        el.classList.remove(...Array.from(el.classList).filter(c => c.startsWith("widget-s")));
-        el.classList.add(`widget-s${sz}`);
-        el.dataset.widgetSize = sz;
-        const w = _widgets.find(x => x.id == id);
-        if (w) {
-          const card = el;
-          card.addEventListener("dragstart", _onDragStart);
-          card.addEventListener("dragend", _onDragEnd);
-          card.addEventListener("dragover", _onDragOver);
-          card.addEventListener("drop", _onDrop);
-          const resizeHandle = card.querySelector(".widget-resize-handle");
-          if (resizeHandle) {
-            resizeHandle.addEventListener("mousedown", (e) => _startResize(e, card, w));
-            resizeHandle.addEventListener("touchstart", (e) => _startResize(e, card, w), { passive: false });
-          }
+      console.error("💥 Save failed:", err);
+      location.reload(); // Force reload on error
+    });
+  
+  document.querySelectorAll(".widget-card.drag-over").forEach(el => {
+    el.classList.remove("drag-over");
+  });
+}
           const removeBtn = card.querySelector(".widget-remove");
           if (removeBtn) {
             removeBtn.addEventListener("click", (e) => {
