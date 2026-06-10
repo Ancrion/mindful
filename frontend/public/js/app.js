@@ -239,6 +239,12 @@ function renderWsSidebarList() {
 
   const allItem = document.querySelector('#sidebarWs .ws-sb-dd-item[data-id=""]');
   if (allItem) allItem.classList.toggle("active", !window.currentWorkspaceId);
+
+  // "Alle Bereiche" als Drop-Zone: DnD darauf → parent_id = null
+  if (allItem) {
+    allItem.addEventListener("dragover", e => window.wsDragOver(e));
+    allItem.addEventListener("drop", e => window.wsDrop(e, 0));
+  }
 }
 
 // Expand / Collapse
@@ -262,12 +268,13 @@ let _wsDragId = null;
 window.wsDragStart = function (e, id) {
   _wsDragId = id;
   e.dataTransfer.effectAllowed = "move";
-  e.dataTransfer.setData("text/plain", id);
-  e.target.closest(".ws-sb-dd-item").classList.add("ws-dragging");
+  e.dataTransfer.setData("text/plain", String(id));
+  const item = e.currentTarget;
+  item.classList.add("ws-dragging");
 };
 
 document.addEventListener("dragend", function () {
-  document.querySelectorAll(".ws-sb-dd-item").forEach(el => el.classList.remove("ws-dragging", "ws-drag-over"));
+  document.querySelectorAll(".ws-sb-dd-item, .workspace-item").forEach(el => el.classList.remove("ws-dragging", "ws-drag-over"));
   _wsDragId = null;
 });
 
@@ -283,9 +290,13 @@ window.wsDrop = async function (e, targetId) {
   const dragId = _wsDragId || parseInt(e.dataTransfer.getData("text/plain"));
   if (!dragId || dragId == targetId) return;
 
+  // Auf "Alle" ablegen → parent_id = null (root)
+  // Auf einen Workspace ablegen → wird Kind des Targets (parent_id = targetId)
+  const newParentId = targetId === 0 ? null : targetId;
+
   const res = await authFetch(`${API_BASE}/workspaces/${dragId}/move`, {
     method: "PUT",
-    body: JSON.stringify({ parent_id: targetId }),
+    body: JSON.stringify({ parent_id: newParentId }),
   });
   if (!res || !res.ok) return showToast("Fehler beim Verschieben", "error");
   showToast("Verschoben", "success");
@@ -299,6 +310,10 @@ let _wsCtxId = null;
 window.openWsCtxMenu = function (e, id) {
   _wsCtxId = id;
   const menu = document.getElementById("wsCtxMenu");
+  menu.querySelector("[data-action='make-root']").onclick = () => {
+    closeWsCtxMenu();
+    moveWsToRoot(id);
+  };
   menu.querySelector("[data-action='add-child']").onclick = () => {
     closeWsCtxMenu();
     document.getElementById("wsSbNewName").value = "";
@@ -326,6 +341,17 @@ window.openWsCtxMenu = function (e, id) {
   menu.style.top = y + "px";
   menu.classList.add("open");
 };
+
+async function moveWsToRoot(id) {
+  const res = await authFetch(`${API_BASE}/workspaces/${id}/move`, {
+    method: "PUT",
+    body: JSON.stringify({ parent_id: null }),
+  });
+  if (!res || !res.ok) return showToast("Fehler", "error");
+  showToast("Zu root gemacht", "success");
+  await loadWorkspaces();
+  window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId } }));
+}
 
 function closeWsCtxMenu() {
   const menu = document.getElementById("wsCtxMenu");

@@ -381,7 +381,12 @@ async function loadTodoWorkspaces() {
       selectWorkspace(idStr ? parseInt(idStr) : null);
     });
 
-    if (!idStr) return; // "Alle" – kein Kontextmenü/DnD
+    if (!idStr) {
+      // "Alle" – nur als Drop-Zone für root (parent_id=null)
+      el.addEventListener("dragover", e => { if (typeof window.wsDragOver === "function") window.wsDragOver(e); });
+      el.addEventListener("drop", e => { if (typeof window.wsDrop === "function") window.wsDrop(e, 0); });
+      return;
+    }
 
     el.addEventListener("contextmenu", e => {
       e.preventDefault();
