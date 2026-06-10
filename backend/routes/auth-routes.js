@@ -11,6 +11,8 @@ const db = require("../database/db");
 const auth = require("../middleware/auth");
 const { authLimiter, passwordLimiter } = require("../middleware/rateLimit");
 const { isValidEmail, safeParseDateISO, isValidFileSize } = require("../middleware/validators");
+const config = require("../config");
+const logger = require("../middleware/logger");
 
 const transporter = nodemailer.createTransport(
   process.env.MAIL_USER && process.env.MAIL_PASS
@@ -23,10 +25,10 @@ const transporter = nodemailer.createTransport(
     : { sendmail: true, newline: "unix", path: "/usr/sbin/sendmail" }
 );
 
-const wallpaperDir = path.join(__dirname, "../uploads/wallpapers");
+const wallpaperDir = path.join(config.uploadDir, "wallpapers");
 if (!fs.existsSync(wallpaperDir)) fs.mkdirSync(wallpaperDir, { recursive: true });
 
-const avatarDir = path.join(__dirname, "../uploads/avatars");
+const avatarDir = path.join(config.uploadDir, "avatars");
 if (!fs.existsSync(avatarDir)) fs.mkdirSync(avatarDir, { recursive: true });
 
 const wallpaperUpload = multer({

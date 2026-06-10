@@ -81,9 +81,16 @@ function renderCategories() {
     .map((c) => {
       const count = c === "alle" ? allDocuments.length : allDocuments.filter((d) => (d.bereich || "") === c).length;
       const label = c === "alle" ? "Alle" : getCatDisplay(c);
-      return `<button class="chip ${c === activeCategory ? "active" : ""}" data-cat="${c}" onclick="setCategory('${c}')">${label} <span class="count">${count}</span></button>`;
+      return `<button class="chip ${c === activeCategory ? "active" : ""}" data-cat="${c}">${label} <span class="count">${count}</span></button>`;
     })
     .join("");
+  
+  // Add event listeners instead of inline onclick
+  container.querySelectorAll(".chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      setCategory(btn.dataset.cat);
+    });
+  });
 }
 
 /* ── Filter ── */

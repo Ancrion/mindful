@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
 const auth = require("../middleware/auth");
+const { getPaginationParams, buildPaginationResponse } = require("../middleware/pagination");
+const logger = require("../middleware/logger");
 
 function todayStr() {
   return new Date().toLocaleDateString("en-CA");
@@ -9,6 +11,7 @@ function todayStr() {
 
 router.get("/", auth, (req, res) => {
   try {
+    const { offset, limit } = getPaginationParams(req, 20, 100);
     const today = todayStr();
 
     const todosDone = db
@@ -40,18 +43,24 @@ router.get("/", auth, (req, res) => {
          JOIN users u ON te.user_id = u.id
          WHERE te.completed_at IS NOT NULL AND date(COALESCE(te.completed_at, te.end_time)) = date(?)
          GROUP BY u.id
-         ORDER BY value DESC`,
+         ORDER BY value DESC LIMIT ? OFFSET ?`,
       )
-      .all(today);
+      .all(today, limit, offset);
 
     const totalTodos = db
       .prepare(`SELECT COUNT(*) AS c FROM todos`).get().c;
     const totalUsers = db
       .prepare(`SELECT COUNT(*) AS c FROM users`).get().c;
 
-    res.json({ todosDone, pomodoro, tracked, totalTodos, totalUsers });
+    res.json(buildPaginationResponse(
+      { todosDone, pomodoro, tracked, totalTodos, totalUsers },
+      Math.max(todosDone.length, pomodoro.length, tracked.length),
+      offset,
+      limit
+    ));
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    logger.error("Leaderboard error", { error: err.message });
+    res.status(500).json({ error: "Leaderboard-Fehler" });
   }
 });
 

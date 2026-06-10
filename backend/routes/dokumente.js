@@ -6,9 +6,11 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { isValidFileSize } = require("../middleware/validators");
+const config = require("../config");
+const logger = require("../middleware/logger");
 
-// Multer Setup with file size limit (100MB)
-const uploadDir = path.join(__dirname, "../uploads");
+// Multer Setup with file size limit from config
+const uploadDir = config.uploadDir;
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
@@ -19,7 +21,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ 
   storage,
-  limits: { fileSize: 100 * 1024 * 1024 } // 100 MB limit
+  limits: { fileSize: config.maxFileSize }
 });
 
 /**
