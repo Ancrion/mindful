@@ -5,6 +5,45 @@
 
 ---
 
+## 🐛 v1.7.7 Final Rewrite - Widget Drag-Drop komplett überarbeitet
+
+**Final Fix**: 10.06.2026
+
+### 🔧 Bugfixes & Improvements
+
+- **Drag-Drop System komplett rewritten**:
+  - Neuer `_dragState` statt mehrere globale Variablen → klarer und weniger Fehler
+  - Einfacheres State-Management: nur `{id, draggedElement}`
+  - Placeholder wird IMMER in das Grid eingefügt (nicht `this.parentNode`) → zuverlässig
+  
+- **Sicherer Drop-Mechanismus**:
+  - Speichert `originalHTML` + `originalSizes` VOR jeder Änderung
+  - Klare Bedingung für Undo: nur bei API-Fehler
+  - Re-attach Event-Listener nach Undo ✅
+  
+- **Robuste insertBefore Logik**:
+  - Nutzt IMMER das Grid (`document.getElementById("widgetGrid")`)
+  - Nicht `this.parentNode` (kann falsch sein)
+  - `dragIdx < targetIdx` → after, else → before
+  
+- **Better Visual Feedback**:
+  - Placeholder blinkt nicht mehr
+  - Klare DragOver-States
+  - Fehler-Meldungen in Console mit ✅/❌
+
+### Kernänderungen:
+- `_dragId` & `_draggedCard` → `_dragState` Objekt
+- `grid.insertBefore()` statt `this.parentNode.insertBefore()`
+- `originalHTML` + `originalSizes` für vollständiges Undo
+- Event-Listener neu attachiert nach Undo
+- Einfachere, klarere Logik (~100 Zeilen, vorher ~170)
+
+### 📝 Commits
+
+🔗 [`8f5636a`](https://github.com/Ancrion/mindful/commit/8f5636a) - refactor: Complete rewrite of widget drag-drop system - simpler and more robust
+
+---
+
 ## 🐛 v1.7.7 Hotfix - Widget Drag-Drop Fehler-Handling
 
 **Hotfix**: 10.06.2026

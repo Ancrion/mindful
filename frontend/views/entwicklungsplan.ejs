@@ -3036,7 +3036,10 @@ git push --tags</script>
             commit:"7d17edc", hash:"https://github.com/Ancrion/mindful/commit/7d17edc" },
           { id:"jaro-42", file:"frontend/public/js/index.js",
             desc:"WIDGET DRAG-DROP UNDO & ERROR-HANDLING v1.7.7-Hotfix: ① _onDrop() speichert originalOrder + Größen, ② Bei API-Fehler: Reverts DOM + UI + Größen, ③ _setWidgetSize() mit Optimistic Update + Rollback, ④ _saveOrder() auch mit Undo, ⑤ Validiert res.ok statt nur error, ⑥ Widgets springen nicht mehr zurück bei Fehler",
-            commit:"f63471d", hash:"https://github.com/Ancrion/mindful/commit/f63471d" }
+            commit:"f63471d", hash:"https://github.com/Ancrion/mindful/commit/f63471d" },
+          { id:"jaro-43", file:"frontend/public/js/index.js",
+            desc:"WIDGET DRAG-DROP SYSTEM KOMPLETT REWRITTEN v1.7.7-Final: ① Neuer _dragState statt _dragId + _draggedCard → klarer, ② Einfaches State-Management {id, draggedElement}, ③ grid.insertBefore() statt this.parentNode → zuverlässig, ④ originalHTML + originalSizes VOR Änderung, ⑤ Event-Listener re-attach nach Undo, ⑥ Robuste insertBefore Logik (dragIdx < targetIdx)",
+            commit:"8f5636a", hash:"https://github.com/Ancrion/mindful/commit/8f5636a" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
