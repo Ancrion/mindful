@@ -131,11 +131,10 @@ function renderWidgets() {
       element.classList.remove("dragging");
       
       if (dropTarget && dropTarget !== element) {
-        element.remove();
         const rect = dropTarget.getBoundingClientRect();
         const relX = (e.clientX - rect.left) / rect.width;
         const relY = (e.clientY - rect.top) / rect.height;
-        const insertBefore = relX < 0.5 || relY < 0.3;
+        const insertBefore = relX < 0.5;
         
         console.log("📍 INSERT", {
           insertBefore,
@@ -145,11 +144,9 @@ function renderWidgets() {
           nextSibling: dropTarget.nextSibling?.dataset?.widgetId || null
         });
         
-        if (insertBefore) {
-          grid.insertBefore(element, dropTarget);
-        } else {
-          grid.insertBefore(element, dropTarget.nextSibling);
-        }
+        element.remove();
+        const refNode = insertBefore ? dropTarget : dropTarget.nextSibling;
+        grid.insertBefore(element, refNode);
         
         console.log("✅ DOM after:", [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId));
       } else {
@@ -456,7 +453,7 @@ function _onDragOver(e) {
       targetId: target.dataset.widgetId,
       relX: relX.toFixed(2),
       relY: relY.toFixed(2),
-      wouldInsertBefore: relX < 0.5 || relY < 0.3
+      wouldInsertBefore: relX < 0.5
     });
     
     document.querySelectorAll(".widget-card.drag-over").forEach(el => {
