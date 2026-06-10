@@ -28,8 +28,31 @@
             <textarea id="bugDesc" placeholder="Genauere Beschreibung (optional) …" rows="2"></textarea>
           </form>
 
-          <div class="bug-grid" id="bugGrid">
-            <p class="loading">Lade Bugs …</p>
+          <div class="kanban" id="kanban">
+            <div class="kanban-col" data-status="offen">
+              <div class="kanban-col-header offen">
+                <span class="kanban-col-dot"></span>
+                Offen
+                <span class="kanban-count" id="count-offen">0</span>
+              </div>
+              <div class="kanban-cards" id="col-offen"></div>
+            </div>
+            <div class="kanban-col" data-status="in_arbeit">
+              <div class="kanban-col-header in-arbeit">
+                <span class="kanban-col-dot"></span>
+                In Arbeit
+                <span class="kanban-count" id="count-in_arbeit">0</span>
+              </div>
+              <div class="kanban-cards" id="col-in_arbeit"></div>
+            </div>
+            <div class="kanban-col" data-status="abgeschlossen">
+              <div class="kanban-col-header abgeschlossen">
+                <span class="kanban-col-dot"></span>
+                Abgeschlossen
+                <span class="kanban-count" id="count-abgeschlossen">0</span>
+              </div>
+              <div class="kanban-cards" id="col-abgeschlossen"></div>
+            </div>
           </div>
         </div>
       </main>

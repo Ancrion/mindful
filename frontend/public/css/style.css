@@ -1829,10 +1829,11 @@ body.dark .search-overlay {
   font-size: 12px;
 }
 
-/* ─── Bug-Report ─── */
+/* ─── Bug-Report / Kanban ─── */
 .bugs-main {
   padding: 32px 40px;
-  max-width: 960px;
+  max-width: 1200px;
+  width: 100%;
 }
 .bugs-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
 .bugs-header h1 span { color: var(--accent); }
@@ -1883,99 +1884,138 @@ body.dark .search-overlay {
 }
 .bug-form textarea:focus { border-color: var(--accent); }
 
-.bug-grid {
+/* ─── KANBAN ─── */
+.kanban {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  min-height: 400px;
 }
-.bug-card {
+.kanban-col {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 16px 18px;
-  transition: opacity 0.2s;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
 }
-.bug-card.done {
-  opacity: 0.55;
-}
-.bug-card-head {
+.kanban-col-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  gap: 8px;
+  padding: 14px 16px 12px;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  border-radius: 12px 12px 0 0;
 }
-.bug-check-wrap {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
+.kanban-col-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
 }
-.bug-check-wrap input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-}
-.bug-checkmark {
-  position: absolute;
-  top: 0; left: 0;
-  width: 20px; height: 20px;
-  border: 2px solid var(--border);
-  border-radius: 5px;
+.kanban-col-header.offen .kanban-col-dot { background: #f97316; }
+.kanban-col-header.in-arbeit .kanban-col-dot { background: #3b82f6; }
+.kanban-col-header.abgeschlossen .kanban-col-dot { background: #22c55e; }
+.kanban-count {
+  margin-left: auto;
   background: var(--bg);
-  transition: all 0.15s;
-}
-.bug-check-wrap input:checked + .bug-checkmark {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.bug-checkmark::after {
-  content: "";
-  position: absolute;
-  display: none;
-  left: 5px; top: 1px;
-  width: 5px; height: 10px;
-  border: solid #fff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-.bug-check-wrap input:checked + .bug-checkmark::after { display: block; }
-.bug-user {
+  padding: 1px 8px;
+  border-radius: 10px;
   font-size: 12px;
+  font-weight: 600;
   color: var(--text-secondary);
 }
-.bug-user i { margin-right: 4px; }
-.bug-title {
+.kanban-cards {
+  padding: 10px 12px;
+  flex: 1;
+  min-height: 80px;
+  transition: background 0.15s;
+}
+.kanban-cards.drag-over {
+  background: rgba(59,130,246,0.06);
+  border-radius: 0 0 12px 12px;
+}
+.kanban-empty {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+  padding: 24px 0;
+}
+.kanban-card {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  cursor: default;
+  transition: box-shadow 0.15s, opacity 0.2s;
+}
+.kanban-card[draggable="true"] {
+  cursor: grab;
+}
+.kanban-card[draggable="true"]:active {
+  cursor: grabbing;
+}
+.kanban-card.dragging {
+  opacity: 0.4;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.kanban-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.kanban-card:last-child {
+  margin-bottom: 0;
+}
+.kanban-card-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #ef4444;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+.kanban-card:hover .kanban-card-delete {
+  opacity: 0.5;
+}
+.kanban-card-delete:hover {
+  opacity: 1 !important;
+  background: rgba(239,68,68,0.1);
+}
+.kanban-card-title {
   display: block;
   font-size: 14px;
   font-weight: 600;
   color: var(--text);
   margin-bottom: 4px;
   line-height: 1.4;
+  padding-right: 24px;
 }
-.bug-desc {
-  font-size: 13px;
+.kanban-card-desc {
+  font-size: 12px;
   color: var(--text-secondary);
   margin: 0 0 8px;
   line-height: 1.5;
+  padding-right: 24px;
 }
-.bug-card.done .bug-title,
-.bug-card.done .bug-desc { text-decoration: line-through; }
-.bug-meta {
+.kanban-card-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
-}
-.bug-date {
   font-size: 11px;
   color: var(--text-secondary);
 }
-.bug-status {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 10px;
-}
-.bug-status.open { background: var(--accent-light); color: var(--accent); }
-.bug-status.done { background: #dcfce7; color: #16a34a; }
-.loading { color: var(--text-secondary); font-size: 14px; padding: 40px; text-align: center; }
+.kanban-card-meta i { margin-right: 3px; }

@@ -1953,23 +1953,31 @@ git tag phase-6-ui-ux
 git tag phase-7-setup
 git push --tags</script>
 
-<script type="text/plain" id="team-2"># Bug-Melden-Seite (gemeinsam: jaro + aisha)
+<script type="text/plain" id="team-2"># Bug-Melden-Seite als Kanban-Board (gemeinsam: jaro + aisha)
 #
 # JARO:
 # - DB: bug_reports-Tabelle (id, user_id, titel, beschreibung,
 #        status, erledigt, created_at)
-# - /api/bugs (GET alle, POST neu, PUT /:id/toggle)
+# - bugs.js API: GET (alle + isJaro-Flag), POST (neu),
+#   PUT /:id/status, DELETE /:id (beide nur jaro)
 # - View-Route /bugs + /bug-report in index.js
 # - api_root.js: const bugsRoutes = require("./bugs")
 # - sidebar.ejs: Link zu /bugs
 #
 # AISHA:
-# - frontend/views/bugs.ejs (Formular + Grid)
-# - /frontend/public/js/bugs.js (load, submit, toggle)
-# - CSS in style.css (.bugs-main, .bug-form, .bug-card, …)
+# - frontend/views/bugs.ejs (Kanban: 3 Spalten Offen/In Arbeit/
+#   Abgeschlossen + Formular)
+# - /frontend/public/js/bugs.js (Kanban-Rendering, Drag & Drop,
+#   LÃ¶schen, Berechtigungen)
+# - CSS in style.css (.kanban, .kanban-col, .kanban-card, â¦)
+#
+# Regeln:
+# - Nur jaro darf Karten verschieben, abhaken und lÃ¶schen
+# - Andere User sehen nur das Board und kÃ¶nnen neue Bugs melden
+# - Rotes X zum LÃ¶schen nur fÃ¼r jaro sichtbar
 #
 # Commit: jaro "feat: add bug report API and DB table"
-# Commit: aisha "feat: add bug report frontend"</script>
+# Commit: aisha "feat: add bug report kanban frontend"</script>
 
     <script>
     // ═══════════════════════════════════════════════
@@ -2132,9 +2140,9 @@ git push --tags</script>
           { id:"team-1", file:"GitLab-Workflow",
             desc:"Jeder committed seine Tasks in der richtigen Reihenfolge mit den vorgegebenen Commit-Nachrichten. Nach jeder Phase Tag setzen.",
             commit:"git tag phase-1 && git push --tags" },
-          { id:"team-2", file:"Bug-Melden-Seite",
-            desc:"Bug-Melden-Seite: DB-Tabelle, API (GET/POST/PUT), View, Frontend (Eingabe, Grid, Checkbox zum Abhaken)",
-            commit:'git commit -m "feat: add bug report page"' }
+          { id:"team-2", file:"Bug-Melden-Seite (Kanban)",
+            desc:"Bug-Melden-Seite als Kanban-Board: 3 Spalten (Offen/In Arbeit/Abgeschlossen), Drag & Drop, LÃ¶schen, nur jaro darf verwalten",
+            commit:'git commit -m "feat: add bug report kanban board"' }
         ]
       }
     };
