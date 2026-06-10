@@ -10,6 +10,7 @@ const WIDGET_TYPES = {
   tasks: { name: "To-Do", icon: "fa-tasks", desc: "Anstehende Aufgaben", color: "#3b82f6" },
   notes: { name: "Notizen", icon: "fa-file-alt", desc: "Letzte Notizen", color: "#22c55e" },
   events: { name: "Termine", icon: "fa-calendar-day", desc: "Heutige Termine", color: "#f59e0b" },
+  upcoming: { name: "Termin-Vorschau", icon: "fa-calendar-alt", desc: "Nächste anstehende Termine", color: "#eab308" },
   docs: { name: "Dokumente", icon: "fa-file", desc: "Neueste Dokumente", color: "#8b5cf6" },
   pomodoro: { name: "Pomodoro", icon: "fa-clock", desc: "Fokus-Statistiken & Chart", color: "#ec4899" },
   weather: { name: "Wetter", icon: "fa-cloud-sun", desc: "Aktuelles Wetter & 5-Tage-Vorhersage", color: "#06b6d4" },
@@ -120,7 +121,7 @@ function _buildCard(widget) {
   const grid = document.getElementById("widgetGrid");
   if (!grid) return null;
 
-  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2 };
+  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, upcoming: 2, docs: 2, pomodoro: 3, weather: 2 };
   const config = widget.config ? (typeof widget.config === "string" ? JSON.parse(widget.config) : widget.config) : {};
   const size = config.size || DEFAULT_SIZES[widget.typ] || 2;
 
@@ -191,6 +192,7 @@ function _getWidgetBody(widget) {
     case "tasks": return _buildTasksBody();
     case "notes": return _buildNotesBody();
     case "events": return _buildEventsBody();
+    case "upcoming": return _buildUpcomingBody();
     case "docs": return _buildDocsBody();
     case "pomodoro": return _buildPomoBody();
     case "weather": return _buildWeatherBody(widget);
@@ -582,6 +584,57 @@ function _buildEventsBody() {
     html += '</ul>';
   }
   
+  html += '<a href="/calendar" class="widget-link">Alle Termine anzeigen <i class="fas fa-arrow-right"></i></a>';
+  return html;
+}
+
+function _buildUpcomingBody() {
+  const events = dashboardData ? wsFilter(dashboardData.events || []) : [];
+  window._dashEvents = {};
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const future = events.filter(e => {
+    if (!e.start_datum) return false;
+    const d = new Date(e.start_datum.split("T")[0] || e.start_datum);
+    return d >= today;
+  }).sort((a,b) => new Date(a.start_datum) - new Date(b.start_datum));
+
+  if (future.length === 0) {
+    return '<ul class="widget-list"><li class="empty-text">Keine anstehenden Termine.</li></ul>';
+  }
+
+  let html = '';
+  let lastGroup = null;
+
+  future.slice(0, 12).forEach(e => {
+    window._dashEvents[e.id] = e;
+    const d = new Date(e.start_datum.split("T")[0] || e.start_datum);
+    const diff = Math.round((d - today) / (1000*60*60*24));
+
+    let group;
+    if (diff === 0) group = "Heute";
+    else if (diff === 1) group = "Morgen";
+    else if (diff < 7) group = d.toLocaleDateString("de-DE", { weekday: "long" });
+    else group = d.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "short" });
+
+    if (group !== lastGroup) {
+      if (lastGroup !== null) html += '</ul>';
+      html += `<div class="widget-section-header">${group}</div><ul class="widget-list">`;
+      lastGroup = group;
+    }
+
+    const color = e.farbe || "#f59e0b";
+    const timeStr = e.ganztag ? "ganztags" : (e.start_datum ? new Date(e.start_datum).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : "");
+    html += `<li data-dash-id="${e.id}" data-dash-type="event">
+      <span class="dash-dot" style="background:${color}"></span>
+      <span class="dash-title">${escHtml(e.titel)}</span>
+      <span class="dash-meta">${timeStr}</span>
+    </li>`;
+  });
+
+  html += '</ul>';
   html += '<a href="/calendar" class="widget-link">Alle Termine anzeigen <i class="fas fa-arrow-right"></i></a>';
   return html;
 }
@@ -1012,6 +1065,7 @@ document.addEventListener("DOMContentLoaded", () => {
       _rerenderWidget("tasks");
       _rerenderWidget("notes");
       _rerenderWidget("events");
+      _rerenderWidget("upcoming");
       _rerenderWidget("stats");
     }
   });
