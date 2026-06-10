@@ -2,10 +2,17 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
 const auth = require("../middleware/auth");
+const { isValidSearchQuery } = require("../middleware/validators");
 
 router.get("/", auth, (req, res) => {
   try {
     const q = (req.query.q || "").trim();
+    
+    // Validate search query
+    if (q && !isValidSearchQuery(q)) {
+      return res.status(400).json({ error: "Suchbegriff zu lang (max. 200 Zeichen)" });
+    }
+    
     const userId = req.user.id;
     const limit = 10;
     const recentLimit = 8;

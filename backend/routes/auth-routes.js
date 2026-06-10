@@ -9,6 +9,8 @@ const path = require("path");
 const fs = require("fs");
 const db = require("../database/db");
 const auth = require("../middleware/auth");
+const { authLimiter, passwordLimiter } = require("../middleware/rateLimit");
+const { isValidEmail, safeParseDateISO, isValidFileSize } = require("../middleware/validators");
 
 const transporter = nodemailer.createTransport(
   process.env.MAIL_USER && process.env.MAIL_PASS
@@ -63,7 +65,7 @@ const wallpaperUpload = multer({
  *       201:
  *         description: Benutzer erfolgreich registriert
  */
-router.post("/register", async (req, res) => {
+router.post("/register", authLimiter, async (req, res) => {
   try {
     const { name, password, email } = req.body;
 
@@ -79,6 +81,10 @@ router.post("/register", async (req, res) => {
       .get(name);
     if (existingUser) {
       return res.status(400).json({ error: "Benutzer existiert bereits" });
+    }
+
+    if (email && !isValidEmail(email)) {
+      return res.status(400).json({ error: "Ungültige E-Mail-Adresse" });
     }
 
     if (email) {
@@ -129,7 +135,7 @@ router.post("/register", async (req, res) => {
  *       200:
  *         description: Erfolgreich angemeldet
  */
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   try {
     const { name, password } = req.body;
 
@@ -364,7 +370,7 @@ router.delete("/avatar", auth, (req, res) => {
   }
 });
 
-router.post("/forgot-password", async (req, res) => {
+router.post("/forgot-password", passwordLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: "E-Mail erforderlich" });
@@ -420,7 +426,7 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-router.post("/reset-password", async (req, res) => {
+router.post("/reset-password", passwordLimiter, async (req, res) => {
   try {
     const { token, password } = req.body;
     if (!token || !password) return res.status(400).json({ error: "Token und Passwort erforderlich" });

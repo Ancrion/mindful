@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
-const auth = require("../middleware/auth"); // Deine JWT-Middleware
+const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { isValidFileSize } = require("../middleware/validators");
 
-// Multer Setup
+// Multer Setup with file size limit (100MB)
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 const storage = multer.diskStorage({
@@ -16,7 +17,10 @@ const storage = multer.diskStorage({
     cb(null, unique + path.extname(file.originalname));
   },
 });
-const upload = multer({ storage });
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 100 * 1024 * 1024 } // 100 MB limit
+});
 
 /**
  * @swagger

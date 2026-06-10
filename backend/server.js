@@ -28,6 +28,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Security Headers
+app.use((req, res, next) => {
+  // Prevent MIME type sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  // Enable XSS protection
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  // Clickjacking protection
+  res.setHeader("X-Frame-Options", "DENY");
+  // Referrer policy
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  // Content Security Policy
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';"
+  );
+  next();
+});
+
 // Cache verhindern (wichtig für Auth-Seiten und JS/CSS Updates)
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
@@ -46,7 +64,23 @@ app.use("/", indexRoutes);
 
 // 404 Fehlerbehandlung
 app.use((req, res) => {
-  res.status(404).send("Seite nicht gefunden");
+  res.status(404).json({ error: "Ressource nicht gefunden" });
+});
+
+// Global Error Handler (mit standardisierter Error-Response)
+app.use((err, req, res, next) => {
+  console.error("Unerwarteter Fehler:", err.message);
+  
+  // Don't expose internal error details to client
+  const isApiRequest = req.originalUrl.startsWith("/api");
+  const statusCode = err.status || err.statusCode || 500;
+  const genericMessage = statusCode === 500 ? "Interner Serverfehler" : err.message;
+  
+  if (isApiRequest) {
+    res.status(statusCode).json({ error: genericMessage });
+  } else {
+    res.status(statusCode).send("Ein Fehler ist aufgetreten");
+  }
 });
 
 const PORT = process.env.PORT || 3000;

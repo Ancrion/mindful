@@ -74,14 +74,14 @@ function renderUserInfo(user) {
     .substring(0, 2);
 
   const nameEl = document.getElementById("userNameDisplay");
-  if (nameEl) nameEl.textContent = user.name;
+  if (nameEl && user?.name) nameEl.textContent = user.name;
 
   const greetingEl = document.getElementById("userGreeting");
-  if (greetingEl) greetingEl.textContent = user.name.split(" ")[0];
+  if (greetingEl && user?.name) greetingEl.textContent = user.name.split(" ")[0];
 
   const avatarEl = document.getElementById("userInitials");
   if (!avatarEl) return;
-  if (user.avatar) {
+  if (user?.avatar) {
     avatarEl.innerHTML = `<img src="/uploads/avatars/${user.avatar}?t=${Date.now()}" alt="" />`;
     avatarEl.classList.add("has-img");
   } else {
