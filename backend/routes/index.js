@@ -28,7 +28,10 @@ router.get("/messages", auth, (req, res) => res.render("messages", { currentPage
 router.get("/nachrichten", auth, (req, res) => res.render("messages", { currentPage: "messages" }));
 router.get("/profile", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
-router.get("/entwicklungsplan", auth, (req, res) => res.render("entwicklungsplan", { currentPage: "entwicklungsplan" }));
+router.get("/entwicklungsplan", auth, (req, res) => {
+  if (req.user.name !== "jaro") return res.redirect("/");
+  res.render("entwicklungsplan", { currentPage: "entwicklungsplan" });
+});
 router.get("/bugs", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/changelog", (req, res) => res.render("changelog", { currentPage: "changelog" }));

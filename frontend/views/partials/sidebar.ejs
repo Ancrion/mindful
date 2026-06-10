@@ -77,12 +77,14 @@
       <a href="/messages" class="module-link <%= currentPage === 'messages' ? 'active' : '' %>">
         <i class="fas fa-envelope"></i> <span>Nachrichten</span>
       </a>
-      <a href="/entwicklungsplan" class="module-link <%= currentPage === 'entwicklungsplan' ? 'active' : '' %>" style="opacity:0.6;font-size:0.8rem">
-        <i class="fas fa-code-branch"></i> <span>Projektplan</span>
-      </a>
       <a href="/bugs" class="module-link <%= currentPage === 'bugs' ? 'active' : '' %>" style="opacity:0.5;font-size:0.75rem">
         <i class="fas fa-bug"></i> <span>Bugs</span>
       </a>
+      <% if (typeof currentUser !== 'undefined' && currentUser && currentUser.name === 'jaro') { %>
+      <a href="/entwicklungsplan" class="module-link <%= currentPage === 'entwicklungsplan' ? 'active' : '' %>" style="opacity:0.6;font-size:0.8rem">
+        <i class="fas fa-code-branch"></i> <span>Projektplan</span>
+      </a>
+      <% } %>
       <a href="/changelog" class="module-link <%= currentPage === 'changelog' ? 'active' : '' %>" style="opacity:0.5;font-size:0.75rem">
         <i class="fas fa-clipboard-list"></i> <span>Versionsverlauf</span>
       </a>
