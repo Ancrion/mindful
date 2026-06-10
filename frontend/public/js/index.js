@@ -420,7 +420,8 @@ function _onDrop(e) {
     body: JSON.stringify({ order: newOrder })
   })
     .then(res => {
-      if (!res?.ok) throw new Error("API error");
+      console.log("📡 API Response:", res);
+      if (!res) throw new Error("No response");
       newOrder.forEach(o => {
         const w = _widgets.find(x => x.id == o.id);
         if (w) w.position = o.position;
@@ -429,7 +430,7 @@ function _onDrop(e) {
     })
     .catch(err => {
       console.error("💥 Save failed:", err);
-      location.reload(); // Force reload on error
+      console.warn("⚠️ Widget order not saved, but position kept locally");
     });
   
   document.querySelectorAll(".widget-card.drag-over").forEach(el => {
