@@ -13,6 +13,7 @@ const WIDGET_TYPES = {
   docs: { name: "Dokumente", icon: "fa-file", desc: "Neueste Dokumente", color: "#8b5cf6" },
   pomodoro: { name: "Pomodoro", icon: "fa-clock", desc: "Fokus-Statistiken & Chart", color: "#ec4899" },
   weather: { name: "Wetter", icon: "fa-cloud-sun", desc: "Aktuelles Wetter & 5-Tage-Vorhersage", color: "#06b6d4" },
+  calendar: { name: "Kalender", icon: "fa-calendar", desc: "Monatsübersicht mit Termin-Dots", color: "#8b5cf6" },
 };
 
 // ─── API Helper ───
@@ -120,7 +121,7 @@ function _buildCard(widget) {
   const grid = document.getElementById("widgetGrid");
   if (!grid) return null;
 
-  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2 };
+  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2, calendar: 4 };
   const config = widget.config ? (typeof widget.config === "string" ? JSON.parse(widget.config) : widget.config) : {};
   const size = config.size || DEFAULT_SIZES[widget.typ] || 2;
 
@@ -194,6 +195,7 @@ function _getWidgetBody(widget) {
     case "docs": return _buildDocsBody();
     case "pomodoro": return _buildPomoBody();
     case "weather": return _buildWeatherBody(widget);
+    case "calendar": return _buildCalendarBody();
     default: return "";
   }
 }
@@ -223,6 +225,26 @@ function _getPostRender(widget) {
         if (gpsBtn) gpsBtn.addEventListener("click", () => _requestWeatherLocation(widget));
       };
     }
+    case "calendar": return () => {
+      const grid = document.querySelector(".widget-calendar .cal-wgrid");
+      if (!grid) return;
+      grid.addEventListener("click", e => {
+        const cell = e.target.closest(".cal-wc");
+        if (cell && cell.dataset.date) {
+          const d = new Date(cell.dataset.date);
+          if (!isNaN(d.getTime())) {
+            window.location.href = "/calendar";
+          }
+        }
+      });
+      const navBtns = document.querySelectorAll(".widget-calendar .cal-nav");
+      navBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          _calendarDate.setMonth(_calendarDate.getMonth() + parseInt(btn.dataset.dir));
+          _rerenderWidget("calendar");
+        });
+      });
+    };
     default: return null;
   }
 }
@@ -577,6 +599,61 @@ function _buildEventsBody() {
   html += '<a href="/calendar" class="widget-link">Alle Termine anzeigen <i class="fas fa-arrow-right"></i></a>';
   return html;
 }
+
+let _calendarDate = new Date();
+
+function _buildCalendarBody() {
+  const year = _calendarDate.getFullYear();
+  const month = _calendarDate.getMonth();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const firstDay = new Date(year, month, 1);
+  const startPad = firstDay.getDay();
+  const startOff = startPad === 0 ? 6 : startPad - 1;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+
+  const months = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+  const daysDe = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+
+  const events = dashboardData ? wsFilter(dashboardData.events || []) : [];
+
+  let html = `<div class="cal-widget">
+    <div class="cal-head">
+      <button class="cal-nav" data-dir="-1"><i class="fas fa-chevron-left"></i></button>
+      <span class="cal-title">${months[month]} ${year}</span>
+      <button class="cal-nav" data-dir="1"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="cal-days">${daysDe.map(d => `<span>${d}</span>`).join("")}</div>
+    <div class="cal-wgrid">`;
+
+  for (let i = startOff - 1; i >= 0; i--)
+    html += `<div class="cal-wc other-month"><span class="cal-wd">${daysInPrev - i}</span></div>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const isToday = date.toDateString() === today.toDateString();
+    const hasEv = events.some(e => {
+      if (!e.start_datum) return false;
+      const ed = new Date(e.start_datum.split("T")[0] || e.start_datum);
+      return ed.toDateString() === date.toDateString();
+    });
+    html += `<div class="cal-wc${isToday ? " today" : ""}" data-date="${dateStr}">
+      <span class="cal-wd">${d}</span>${hasEv ? '<span class="cal-dot"></span>' : ''}
+    </div>`;
+  }
+
+  const total = startOff + daysInMonth;
+  const rem = (7 - total % 7) % 7;
+  for (let i = 1; i <= rem; i++)
+    html += `<div class="cal-wc other-month"><span class="cal-wd">${i}</span></div>`;
+
+  html += `</div></div>`;
+  return html;
+}
+
 function _buildDocsBody() {
   const docs = dashboardData ? (dashboardData.dokumente || []).slice(0, 5) : [];
   window._dashDocs = {};
@@ -1003,6 +1080,7 @@ document.addEventListener("DOMContentLoaded", () => {
       _rerenderWidget("tasks");
       _rerenderWidget("notes");
       _rerenderWidget("events");
+      _rerenderWidget("calendar");
       _rerenderWidget("stats");
     }
   });

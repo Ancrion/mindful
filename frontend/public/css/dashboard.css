@@ -844,4 +844,101 @@ body.dark .widget-manage-btn:hover {
   color: #fff;
 }
 
+/* ─── Calendar Widget ─── */
+.widget-calendar .widget-body {
+  padding: 0 16px 16px;
+}
 
+.cal-widget {
+  user-select: none;
+}
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.cal-nav {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+.cal-nav:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.cal-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.cal-wgrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-wc {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: 0.1s;
+}
+.cal-wc:hover {
+  background: var(--hover-bg, rgba(0,0,0,0.04));
+}
+.cal-wc.other-month .cal-wd {
+  color: var(--text-muted);
+  opacity: 0.4;
+}
+.cal-wc.today .cal-wd {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-wd {
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.cal-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  position: absolute;
+  bottom: 6px;
+}
