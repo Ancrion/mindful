@@ -32,6 +32,12 @@
   - Grid bleibt IMMER stabil, nichts wird verdrängt
   - UX: Normal und intuitiv - Zieh das Widget einfach auf ein anderes!
 
+- **Fixed: Widget-Tausch mit rechtem Nachbar funktioniert nicht**:
+  - Problem: `grid.insertBefore(element, target)` macht nichts wenn element bereits VOR target im DOM ist
+  - Man konnte kein Widget mit seinem rechten Nachbarn tauschen
+  - Lösung: `element.remove()` vor `grid.insertBefore()` - so ist element immer korrekt aus dem DOM entfernt
+  - `insertBefore` funktioniert jetzt immer, egal wo das Element ursprünglich war
+
 - **Sauberer Code**:
   - Entfernt redundante `_onDrop()` Funktion auf Card-Level
   - Nur noch Ein Drop-Handler (auf Grid) statt mehrere
@@ -67,6 +73,7 @@
 🔗 [`0e4031c`](https://github.com/Ancrion/mindful/commit/0e4031c) - fix: Simplify drag implementation - remove absolute positioning, keep normal grid flow
 🔗 [`958dc10`](https://github.com/Ancrion/mindful/commit/958dc10) - fix: Make placeholder absolute positioned so it doesn't affect grid layout
 🔗 [`b82a829`](https://github.com/Ancrion/mindful/commit/b82a829) - refactor: Simplify to basic drag-and-drop without placeholder
+🔗 [`12392de`](https://github.com/Ancrion/mindful/commit/12392de) - fix: Remove element from DOM before insertDuring to enable swap with right neighbor
 
 ---
 
