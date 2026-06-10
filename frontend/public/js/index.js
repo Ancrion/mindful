@@ -118,26 +118,42 @@ function renderWidgets() {
       if (!_drag) return;
       
       const { element } = _drag;
+      const dropTarget = e.target.closest(".widget-card");
+      
+      console.log("🔻 DROP", {
+        draggedId: element.dataset.widgetId,
+        dropTarget: dropTarget?.dataset?.widgetId,
+        eTarget: e.target.className?.slice(0, 60),
+        domBefore: [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId)
+      });
       
       // Remove dragging state
       element.classList.remove("dragging");
       
-      // Find target card directly from drop event (not from dragover)
-      const dropTarget = e.target.closest(".widget-card");
-      
       if (dropTarget && dropTarget !== element) {
         element.remove();
-        // Calculate relative position to determine before/after
         const rect = dropTarget.getBoundingClientRect();
         const relX = (e.clientX - rect.left) / rect.width;
         const relY = (e.clientY - rect.top) / rect.height;
         const insertBefore = relX < 0.5 || relY < 0.3;
+        
+        console.log("📍 INSERT", {
+          insertBefore,
+          relX: relX.toFixed(2),
+          relY: relY.toFixed(2),
+          targetId: dropTarget.dataset.widgetId,
+          nextSibling: dropTarget.nextSibling?.dataset?.widgetId || null
+        });
         
         if (insertBefore) {
           grid.insertBefore(element, dropTarget);
         } else {
           grid.insertBefore(element, dropTarget.nextSibling);
         }
+        
+        console.log("✅ DOM after:", [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId));
+      } else {
+        console.log("⏭️ No valid drop target", { dropTarget, same: dropTarget === element });
       }
       
       // Reflow
@@ -392,8 +408,10 @@ function _reflowAll() {
 
 function _onDragStart(e) {
   const element = this;
+  const grid = document.getElementById("widgetGrid");
   
-  console.log("🎯 Drag start:", element.dataset.widgetId);
+  console.log("🎯 DRAG START:", element.dataset.widgetId);
+  console.log("📋 DOM order:", [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId));
   
   element.classList.add("dragging");
   e.dataTransfer.effectAllowed = "move";
@@ -403,7 +421,11 @@ function _onDragStart(e) {
 }
 
 function _onDragEnd() {
-  console.log("❌ Drag end");
+  const grid = document.getElementById("widgetGrid");
+  console.log("❌ DRAG END", {
+    _drag: _drag ? "exists" : "null",
+    domFinal: grid ? [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId) : "no grid"
+  });
   
   if (_drag?.element) {
     _drag.element.classList.remove("dragging");
@@ -425,8 +447,18 @@ function _onDragOver(e) {
   const target = this;
   const { element } = _drag;
   
-  // Visual feedback - highlight target
   if (target !== element) {
+    const rect = target.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / rect.width;
+    const relY = (e.clientY - rect.top) / rect.height;
+    
+    console.log("🔄 OVER", {
+      targetId: target.dataset.widgetId,
+      relX: relX.toFixed(2),
+      relY: relY.toFixed(2),
+      wouldInsertBefore: relX < 0.5 || relY < 0.3
+    });
+    
     document.querySelectorAll(".widget-card.drag-over").forEach(el => {
       if (el !== target) el.classList.remove("drag-over");
     });
