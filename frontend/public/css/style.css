@@ -134,6 +134,7 @@ textarea {
   flex-direction: column;
   gap: 4px;
   width: 100%;
+  height: 100vh;
   overflow: hidden;
   transition: background-color 0.3s;
 }
@@ -143,6 +144,8 @@ textarea {
   flex-direction: column;
   gap: 12px;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .sidebar-header {
