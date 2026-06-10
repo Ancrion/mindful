@@ -46,13 +46,14 @@ async function init() {
     const globalId = e.detail.workspaceId;
     if (globalId !== currentWorkspaceId) {
       currentWorkspaceId = globalId;
-      const ids = e.detail.workspaceIds || [];
-      if (ids.length) localStorage.setItem("mindful_workspace_ids", JSON.stringify(ids));
       document.getElementById("wsSearch").value = "";
       showSkeleton();
-      loadTodoWorkspaces();
       loadTodos();
     }
+    const ids = e.detail.workspaceIds || [];
+    if (ids.length) localStorage.setItem("mindful_workspace_ids", JSON.stringify(ids));
+    // Bei DnD ändert sich die Struktur – immer neu laden
+    loadTodoWorkspaces();
   });
 }
 

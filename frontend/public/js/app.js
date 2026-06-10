@@ -206,10 +206,7 @@ function renderWsSidebarList() {
     const expandBtn = hasChildren
       ? `<span class="ws-sb-expand" data-expand="${w.id}"><i class="fas fa-chevron-right"></i></span>`
       : `<span class="ws-sb-expand ws-sb-expand-placeholder"></span>`;
-    return `<div class="ws-sb-dd-item${active ? " active" : ""}" data-id="${w.id}" data-level="${w._level}" draggable="true"
-      ondragstart="window.wsDragStart(event, ${w.id})"
-      ondragover="event.preventDefault();window.wsDragOver(event)"
-      ondrop="event.preventDefault();window.wsDrop(event, ${w.id})">
+    return `<div class="ws-sb-dd-item${active ? " active" : ""}" data-id="${w.id}" data-level="${w._level}" draggable="true">
       <span class="ws-sb-dd-indent" style="padding-left:${w._level * 18}px"></span>
       ${expandBtn}
       <span class="ws-sb-dd-dot" style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></span>
@@ -229,6 +226,12 @@ function renderWsSidebarList() {
       e.stopPropagation();
       window.openWsCtxMenu(e, parseInt(el.dataset.id));
     });
+    const id = parseInt(el.dataset.id);
+    if (!isNaN(id)) {
+      el.addEventListener("dragstart", e => window.wsDragStart(e, id));
+      el.addEventListener("dragover", e => window.wsDragOver(e));
+      el.addEventListener("drop", e => window.wsDrop(e, id));
+    }
   });
   list.querySelectorAll(".ws-sb-expand[data-expand]").forEach(el => {
     el.addEventListener("click", e => {
@@ -269,6 +272,7 @@ window.wsDragStart = function (e, id) {
   _wsDragId = id;
   e.dataTransfer.effectAllowed = "move";
   e.dataTransfer.setData("text/plain", String(id));
+  document.querySelectorAll(".ws-sb-dd-item, .workspace-item").forEach(el => el.classList.remove("ws-dragging", "ws-drag-over"));
   const item = e.currentTarget;
   item.classList.add("ws-dragging");
 };
@@ -281,6 +285,7 @@ document.addEventListener("dragend", function () {
 window.wsDragOver = function (e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
+  document.querySelectorAll(".ws-sb-dd-item, .workspace-item").forEach(el => el.classList.remove("ws-drag-over"));
   e.currentTarget.classList.add("ws-drag-over");
 };
 
