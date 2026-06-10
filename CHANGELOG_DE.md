@@ -39,9 +39,17 @@
 
 - **Fixed: Tausch mit übernächstem Nachbar ging nur eins nach rechts**:
   - Problem: `insertBefore = relX < 0.5 || relY < 0.3` → `relY < 0.3` überschrieb horizontale Position
-  - Wenn Cursor oben auf dem Target war (relY < 0.3), wurde IMMER "davor" eingefügt, auch rechts daneben
-  - Lösung: `insertBefore = relX < 0.5` (nur horizontale Position zählt)
-  - Zusätzlich: `getBoundingClientRect()` wird VOR `element.remove()` berechnet (verhindert falsche Koordinaten durch DOM-Reflow)
+  - Lösung: Nur `relX < 0.5` (nur horizontale Position zählt)
+  - `getBoundingClientRect()` wird VOR `element.remove()` berechnet (verhindert falsche Koordinaten)
+
+- **Root Cause: Drag-Drop Logik war falsch**:
+  - Problem: `insertBefore = relX < 0.5` funktioniert auch nicht → wenn Cursor auf linker Hälfte des Targets, wird VOR eingefügt (kein Swap)
+  - Wirkung: Widget von LINKS nach RECHTS verschoben → insertBefore=true weil linke Hälfte → **kein Tausch**
+  - Lösung: **Swap-basierte Logik** statt Cursor-Position
+  - `draggedIdx = indexOf(element)`, `targetIdx = indexOf(dropTarget)`
+  - Wenn dragged VOR target war → insert NACH target (swap nach rechts)
+  - Wenn dragged NACH target war → insert VOR target (swap nach links)
+  - Immer ein sauberer Tausch, keine Cursor-Position mehr nötig
 
 - **Sauberer Code**:
   - Entfernt redundante `_onDrop()` Funktion auf Card-Level
@@ -82,6 +90,7 @@
 🔗 [`aa7a466`](https://github.com/Ancrion/mindful/commit/aa7a466) - fix: Calculate drop target directly from drop event instead of dragover
 🔗 [`1df7825`](https://github.com/Ancrion/mindful/commit/1df7825) - debug: Add detailed drag-drop logging for debugging
 🔗 [`18a8d6b`](https://github.com/Ancrion/mindful/commit/18a8d6b) - fix: Remove relY < 0.3 override for insertBefore, calculate rect before element.remove()
+🔗 [`5106255`](https://github.com/Ancrion/mindful/commit/5106255) - fix: Swap-based drag-drop logic - always swap dragged with target position
 
 ---
 
