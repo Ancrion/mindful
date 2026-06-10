@@ -2373,3 +2373,61 @@ body.dark .ws-ctx-menu .ctx-item.ctx-danger:hover { background: #2d1515; }
   color: var(--text-secondary);
   word-break: break-all;
 }
+
+/* Weather Widget Autocomplete */
+.weather-search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.weather-suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 4px;
+}
+
+.weather-suggestion-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-soft);
+  transition: background-color var(--transition);
+}
+
+.weather-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.weather-suggestion-item:hover {
+  background-color: var(--surface-2);
+}
+
+.weather-suggestion-item i {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.weather-suggestion-item span {
+  flex: 1;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.weather-suggestion-item small {
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-left: auto;
+}

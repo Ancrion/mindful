@@ -224,18 +224,23 @@ function _getPostRender(widget) {
       if (config.lat && config.lon) {
         return () => _fetchWeather(widget, config.lat, config.lon);
       }
-      return () => {
-        const card = document.querySelector(`.widget-weather[data-widget-id="${widget.id}"]`);
-        if (!card) return;
-        const cityBtn = card.querySelector(".weather-city-btn");
-        const cityInput = card.querySelector(".weather-city-input");
-        const gpsBtn = card.querySelector(".weather-gps-btn");
-        if (cityBtn && cityInput) {
-          cityBtn.addEventListener("click", () => _searchWeatherCity(widget, cityInput.value));
-          cityInput.addEventListener("keydown", (e) => { if (e.key === "Enter") _searchWeatherCity(widget, cityInput.value); });
-        }
-        if (gpsBtn) gpsBtn.addEventListener("click", () => _requestWeatherLocation(widget));
-      };
+       return () => {
+         const card = document.querySelector(`.widget-weather[data-widget-id="${widget.id}"]`);
+         if (!card) return;
+         const cityBtn = card.querySelector(".weather-city-btn");
+         const cityInput = card.querySelector(".weather-city-input");
+         const gpsBtn = card.querySelector(".weather-gps-btn");
+         if (cityBtn && cityInput) {
+           cityBtn.addEventListener("click", () => _searchWeatherCity(widget, cityInput.value));
+           cityInput.addEventListener("keydown", (e) => { 
+             if (e.key === "Enter") _searchWeatherCity(widget, cityInput.value);
+           });
+           cityInput.addEventListener("input", (e) => {
+             _showWeatherSuggestions(widget, cityInput, e.target.value);
+           });
+         }
+         if (gpsBtn) gpsBtn.addEventListener("click", () => _requestWeatherLocation(widget));
+       };
     }
     case "calendar": return () => {
       const grid = document.querySelector(".widget-calendar .cal-wgrid");
@@ -703,7 +708,10 @@ function _buildWeatherBody(widget) {
   }
   return `
     <div class="weather-config">
-      <input type="text" class="weather-city-input" placeholder="Stadt eingeben..." value="${escHtml(config.city || "")}" />
+      <div class="weather-search-wrapper">
+        <input type="text" class="weather-city-input" placeholder="Stadt eingeben..." value="${escHtml(config.city || "")}" autocomplete="off" />
+        <ul class="weather-suggestions-list" style="display:none;"></ul>
+      </div>
       <button class="weather-city-btn"><i class="fas fa-search"></i></button>
       <button class="weather-gps-btn"><i class="fas fa-crosshairs"></i></button>
     </div>`;
@@ -796,10 +804,68 @@ async function _searchWeatherCity(widget, city) {
 function _weatherConfigHTML(widget) {
   const config = widget.config ? (typeof widget.config === "string" ? JSON.parse(widget.config) : widget.config) : {};
   return `<div class="weather-config">
-    <input type="text" class="weather-city-input" placeholder="Stadt eingeben..." value="${escHtml(config.city || "")}" />
+    <div class="weather-search-wrapper">
+      <input type="text" class="weather-city-input" placeholder="Stadt eingeben..." value="${escHtml(config.city || "")}" autocomplete="off" />
+      <ul class="weather-suggestions-list" style="display:none;"></ul>
+    </div>
     <button class="weather-city-btn"><i class="fas fa-search"></i></button>
     <button class="weather-gps-btn"><i class="fas fa-crosshairs"></i></button>
   </div>`;
+}
+
+async function _showWeatherSuggestions(widget, inputEl, query) {
+  const suggestionsList = inputEl.parentElement.querySelector(".weather-suggestions-list");
+  if (!suggestionsList) return;
+  
+  if (!query || query.trim().length < 2) {
+    suggestionsList.style.display = "none";
+    suggestionsList.innerHTML = "";
+    return;
+  }
+  
+  try {
+    const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query.trim())}&count=5&language=de&format=json`);
+    const data = await res.json();
+    
+    if (!data.results || data.results.length === 0) {
+      suggestionsList.style.display = "none";
+      return;
+    }
+    
+    suggestionsList.innerHTML = data.results.map(r => `
+      <li class="weather-suggestion-item" data-lat="${r.latitude}" data-lon="${r.longitude}" data-name="${escHtml(r.name)}">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>${escHtml(r.name)}</span>
+        ${r.admin1 ? `<small>${escHtml(r.admin1)}</small>` : ""}
+      </li>
+    `).join("");
+    
+    suggestionsList.style.display = "block";
+    
+    suggestionsList.querySelectorAll(".weather-suggestion-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const lat = item.dataset.lat;
+        const lon = item.dataset.lon;
+        const name = item.dataset.name;
+        
+        inputEl.value = name;
+        suggestionsList.style.display = "none";
+        
+        // Save and fetch weather
+        const config = { lat: parseFloat(lat), lon: parseFloat(lon), city: name };
+        apiFetch(`dashboard/widgets/${widget.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ config }),
+        });
+        widget.config = config;
+        _rerenderWidget("weather");
+      });
+    });
+  } catch (err) {
+    console.error("Wetter-Suggestions Fehler:", err);
+    suggestionsList.style.display = "none";
+  }
 }
 
 function _requestWeatherLocation(widget) {
