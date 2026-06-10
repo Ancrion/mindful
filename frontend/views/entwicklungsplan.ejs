@@ -1571,18 +1571,21 @@ function isJaro(user) { return user && user.is_admin; }
 
 // backend/routes/index.js – Use adminOnly for Entwicklungsplan
 router.get("/entwicklungsplan", auth, adminOnly, (req, res) => { ... });
+<script type="text/plain" id="jaro-21-bonus">/* XSS FIX: Move token to hidden input */
 
 // frontend/views/reset_password.ejs – Move token to hidden input
-<form id="resetForm" class="auth-form active">
-  <input type="hidden" id="resetToken" value="<%= token %>" />
+&lt;form id="resetForm" class="auth-form active"&gt;
+  &lt;input type="hidden" id="resetToken" value="&lt;%= token %&gt;" /&gt;
   ...
-</form>
-<script>
+&lt;/form&gt;
+&lt;script&gt;
   document.getElementById("resetForm").addEventListener("submit", async (e) => {
     const TOKEN = document.getElementById("resetToken").value;
     ...
   });
+&lt;/script&gt;
 </script>
+
 <script type="text/plain" id="jaro-22">/* INPUT VALIDATION & ERROR HANDLING v1.6.2 */
 
 // frontend/public/js/app.js – Global Safe JSON Helper
