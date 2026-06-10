@@ -36,8 +36,8 @@ function renderCl() {
          ${renderClList(e.fixes, "Behoben", "cl-fix")}
          ${renderCommitsList(e.commits)}
          <div class="cl-entry-actions">
-           <a href="https://github.com/Ancrion/mindful/releases/tag/v${escHtml(e.version)}" target="_blank" class="btn btn-secondary btn-sm">
-             <i class="fas fa-external-link-alt"></i> Auf GitHub anzeigen
+           <a href="https://github.com/Ancrion/mindful/commits" target="_blank" class="btn btn-secondary btn-sm">
+             <i class="fas fa-code-branch"></i> Commits auf GitHub
            </a>
          </div>
       </div>

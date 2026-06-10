@@ -112,24 +112,19 @@
 ### 📝 Commits
 
 **Design System Foundation (PHASE 1)**  
-📍 Commit: [`0a6c86f`](https://github.com/Ancrion/mindful/commit/0a6c86f)  
-► feat: PHASE 1 - Professional Design System v2.0 with complete design tokens
+🔗 [`0a6c86f`](https://github.com/Ancrion/mindful/commit/0a6c86f) - feat: PHASE 1 - Professional Design System v2.0 with complete design tokens
 
 **Component Library (PHASE 2)**  
-📍 Commit: [`b525dc9`](https://github.com/Ancrion/mindful/commit/b525dc9)  
-► feat: PHASE 2 - Professional Component Library with layouts and animations
+🔗 [`b525dc9`](https://github.com/Ancrion/mindful/commit/b525dc9) - feat: PHASE 2 - Professional Component Library with layouts and animations
 
 **Visual Polish (PHASE 3)**  
-📍 Commit: [`e4474df`](https://github.com/Ancrion/mindful/commit/e4474df)  
-► feat: PHASE 3 - Professional Design System v2.0 Visual Polish with Glassmorphism, Gradients & Advanced Effects
+🔗 [`e4474df`](https://github.com/Ancrion/mindful/commit/e4474df) - feat: PHASE 3 - Professional Design System v2.0 Visual Polish with Glassmorphism, Gradients & Advanced Effects
 
 **Accessibility Standards (PHASE 4)**  
-📍 Commit: [`c98853d`](https://github.com/Ancrion/mindful/commit/c98853d)  
-► feat: PHASE 4 - Accessibility Standards WCAG 2.1 AA Compliance with focus states, keyboard nav, ARIA support
+🔗 [`c98853d`](https://github.com/Ancrion/mindful/commit/c98853d) - feat: PHASE 4 - Accessibility Standards WCAG 2.1 AA Compliance with focus states, keyboard nav, ARIA support
 
 **Dokumentation**  
-📍 Commit: [`a87778b`](https://github.com/Ancrion/mindful/commit/a87778b)  
-► docs: Add comprehensive STYLEGUIDE.md - Complete Design System documentation
+🔗 [`a87778b`](https://github.com/Ancrion/mindful/commit/a87778b) - docs: Add comprehensive STYLEGUIDE.md - Complete Design System documentation
 
 ---
 
@@ -155,11 +150,9 @@
 
 ### 📝 Commits
 
-📍 Commit: [`ede332c`](https://github.com/Ancrion/mindful/commit/ede332c)  
-► feat: Add weather widget city autocomplete with suggestions dropdown
+🔗 [`ede332c`](https://github.com/Ancrion/mindful/commit/ede332c) - feat: Add weather widget city autocomplete with suggestions dropdown
 
-📍 Commit: [`5d8f9af`](https://github.com/Ancrion/mindful/commit/5d8f9af)  
-► docs: Add changelog v1.6.6 and entwicklungsplan jaro-26 with weather widget autocomplete
+🔗 [`5d8f9af`](https://github.com/Ancrion/mindful/commit/5d8f9af) - docs: Add changelog v1.6.6 and entwicklungsplan jaro-26 with weather widget autocomplete
 
 ---
 
@@ -181,11 +174,9 @@
 
 ### 📝 Commits
 
-📍 Commit: [`15f8df6`](https://github.com/Ancrion/mindful/commit/15f8df6)  
-► fix: Set first user as admin instead of hardcoded 'jaro' username
+🔗 [`15f8df6`](https://github.com/Ancrion/mindful/commit/15f8df6) - fix: Set first user as admin instead of hardcoded 'jaro' username
 
-📍 Commit: [`ce6c850`](https://github.com/Ancrion/mindful/commit/ce6c850)  
-► docs: Add changelog v1.6.5 and entwicklungsplan jaro-25 with admin-fix and template-escape
+🔗 [`ce6c850`](https://github.com/Ancrion/mindful/commit/ce6c850) - docs: Add changelog v1.6.5 and entwicklungsplan jaro-25 with admin-fix and template-escape
 
 ---
 
@@ -211,11 +202,9 @@
 
 ### 📝 Commits
 
-📍 Commit: [`ad815f0`](https://github.com/Ancrion/mindful/commit/ad815f0)  
-► add LOW-priority fixes: pagination, logging, CORS config, XSS prevention, environment variables
+🔗 [`ad815f0`](https://github.com/Ancrion/mindful/commit/ad815f0) - add LOW-priority fixes: pagination, logging, CORS config, XSS prevention, environment variables
 
-📍 Commit: [`bea45b4`](https://github.com/Ancrion/mindful/commit/bea45b4)  
-► add changelog v1.6.4 and entwicklungsplan jaro-24 - ALL 35 BUGS FIXED!
+🔗 [`bea45b4`](https://github.com/Ancrion/mindful/commit/bea45b4) - add changelog v1.6.4 and entwicklungsplan jaro-24 - ALL 35 BUGS FIXED!
 
 ---
 
@@ -243,11 +232,9 @@
 
 ### 📝 Commits
 
-📍 Commit: [`6f7c27d`](https://github.com/Ancrion/mindful/commit/6f7c27d)  
-► add comprehensive security fixes: rate limiting, validators, security headers, error standardization, null checks
+🔗 [`6f7c27d`](https://github.com/Ancrion/mindful/commit/6f7c27d) - add comprehensive security fixes: rate limiting, validators, security headers, error standardization, null checks
 
-📍 Commit: [`cc1af77`](https://github.com/Ancrion/mindful/commit/cc1af77)  
-► add changelog v1.6.3 and entwicklungsplan jaro-23 with security hardening documentation
+🔗 [`cc1af77`](https://github.com/Ancrion/mindful/commit/cc1af77) - add changelog v1.6.3 and entwicklungsplan jaro-23 with security hardening documentation
 
 ---
 
@@ -273,11 +260,9 @@
 
 ### 📝 Commits
 
-📍 Commit: [`c649fed`](https://github.com/Ancrion/mindful/commit/c649fed)  
-► fix all 7 HIGH-priority bugs: frontend error handling, workspace cascade delete, input validation, time tracking timestamps, leaderboard fix
+🔗 [`c649fed`](https://github.com/Ancrion/mindful/commit/c649fed) - fix all 7 HIGH-priority bugs: frontend error handling, workspace cascade delete, input validation, time tracking timestamps, leaderboard fix
 
-📍 Commit: [`b470fc3`](https://github.com/Ancrion/mindful/commit/b470fc3)  
-► update changelog v1.6.2 and entwicklungsplan with all HIGH-priority bug fixes
+🔗 [`b470fc3`](https://github.com/Ancrion/mindful/commit/b470fc3) - update changelog v1.6.2 and entwicklungsplan with all HIGH-priority bug fixes
 
 ---
 
@@ -302,11 +287,9 @@
 
 ### 📝 Commits
 
-📍 Commit: [`c5097b6`](https://github.com/Ancrion/mindful/commit/c5097b6)  
-► fix critical security issues: auth on changelog, XSS in reset token, leaderboard timestamp, role-based admin authorization
+🔗 [`c5097b6`](https://github.com/Ancrion/mindful/commit/c5097b6) - fix critical security issues: auth on changelog, XSS in reset token, leaderboard timestamp, role-based admin authorization
 
-📍 Commit: [`14a7499`](https://github.com/Ancrion/mindful/commit/14a7499)  
-► update changelog v1.6.1 and entwicklungsplan with security bug-fixes documentation
+🔗 [`14a7499`](https://github.com/Ancrion/mindful/commit/14a7499) - update changelog v1.6.1 and entwicklungsplan with security bug-fixes documentation
 
 ---
 
@@ -335,7 +318,7 @@
 
 ### 📝 Commits
 
-📍 Commit: [`007829c`](https://github.com/Ancrion/mindful/commit/007829c)  
+🔗 [`007829c`](https://github.com/Ancrion/mindful/commit/007829c)  
 ► v1.6.0: calendar drag & drop + sidebar bottom options/logout buttons, update changelog + entwicklungsplan
 
 ---
@@ -359,10 +342,10 @@
 
 ### 📝 Commits
 
-📍 Commit: [`24f0d15`](https://github.com/Ancrion/mindful/commit/24f0d15)  
+🔗 [`24f0d15`](https://github.com/Ancrion/mindful/commit/24f0d15)  
 ► bug page: full-height centered layout with scrollable kanban cols
 
-📍 Commit: [`44cfe94`](https://github.com/Ancrion/mindful/commit/44cfe94)  
+🔗 [`44cfe94`](https://github.com/Ancrion/mindful/commit/44cfe94)  
 ► bug page: left-aligned (remove margin: 0 auto)
 
 ---
@@ -381,10 +364,10 @@
 
 ### 📝 Commits
 
-📍 Commit: [`e3409eb`](https://github.com/Ancrion/mindful/commit/e3409eb)  
+🔗 [`e3409eb`](https://github.com/Ancrion/mindful/commit/e3409eb)  
 ► workspace filter fix: restore from localStorage, sync sidebar on change
 
-📍 Commit: [`e1d24cf`](https://github.com/Ancrion/mindful/commit/e1d24cf)  
+🔗 [`e1d24cf`](https://github.com/Ancrion/mindful/commit/e1d24cf)  
 ► fix workspace dnd and event listener issues
 
 ---
@@ -402,13 +385,13 @@
 
 ### 📝 Commits
 
-📍 Commit: [`4f85ce9`](https://github.com/Ancrion/mindful/commit/4f85ce9)  
+🔗 [`4f85ce9`](https://github.com/Ancrion/mindful/commit/4f85ce9)  
 ► workspace context menu and dnd improvements
 
-📍 Commit: [`004d84e`](https://github.com/Ancrion/mindful/commit/004d84e)  
+🔗 [`004d84e`](https://github.com/Ancrion/mindful/commit/004d84e)  
 ► fix workspace dnd drag visual issues
 
-📍 Commit: [`9288e67`](https://github.com/Ancrion/mindful/commit/9288e67)  
+🔗 [`9288e67`](https://github.com/Ancrion/mindful/commit/9288e67)  
 ► complete workspace dnd and context menu implementation
 
 ---
@@ -427,10 +410,10 @@
 
 ### 📝 Commits
 
-📍 Commit: [`434350c`](https://github.com/Ancrion/mindful/commit/434350c)  
+🔗 [`434350c`](https://github.com/Ancrion/mindful/commit/434350c)  
 ► add context menu for todos with right-click support
 
-📍 Commit: [`4f85ce9`](https://github.com/Ancrion/mindful/commit/4f85ce9)  
+🔗 [`4f85ce9`](https://github.com/Ancrion/mindful/commit/4f85ce9)  
 ► fix workspace dnd with addEventListener pattern
 
 ---
@@ -449,7 +432,7 @@
 
 ### 📝 Commits
 
-📍 Commit: [`3ecc272`](https://github.com/Ancrion/mindful/commit/3ecc272)  
+🔗 [`3ecc272`](https://github.com/Ancrion/mindful/commit/3ecc272)  
 ► redesign bug form with card layout and custom select styling
 
 ---
@@ -466,7 +449,7 @@
 
 ### 📝 Commits
 
-📍 Commit: [`c10e62c`](https://github.com/Ancrion/mindful/commit/c10e62c)  
+🔗 [`c10e62c`](https://github.com/Ancrion/mindful/commit/c10e62c)  
 ► add page selection dropdown to bug form and badges on cards
 
 ---
@@ -487,10 +470,10 @@
 
 ### 📝 Commits
 
-📍 Commit: [`f5187aa`](https://github.com/Ancrion/mindful/commit/f5187aa)  
+🔗 [`f5187aa`](https://github.com/Ancrion/mindful/commit/f5187aa)  
 ► add changelog page with professional timeline design
 
-📍 Commit: [`b214064`](https://github.com/Ancrion/mindful/commit/b214064)  
+🔗 [`b214064`](https://github.com/Ancrion/mindful/commit/b214064)  
 ► add automated changelog seeding from git history
 
 ---
@@ -510,7 +493,7 @@
 
 ### 📝 Commits
 
-📍 Commit: [`0a40bfb`](https://github.com/Ancrion/mindful/commit/0a40bfb)  
+🔗 [`0a40bfb`](https://github.com/Ancrion/mindful/commit/0a40bfb)  
 ► implement workspace hierarchy with parent_id and drag & drop
 
 ---
@@ -530,10 +513,10 @@
 
 ### 📝 Commits
 
-📍 Commit: [`1578c48`](https://github.com/Ancrion/mindful/commit/1578c48)  
+🔗 [`1578c48`](https://github.com/Ancrion/mindful/commit/1578c48)  
 ► add bug report system with kanban board
 
-📍 Commit: [`4e66369`](https://github.com/Ancrion/mindful/commit/4e66369)  
+🔗 [`4e66369`](https://github.com/Ancrion/mindful/commit/4e66369)  
 ► implement drag & drop for bug status columns
 
 ---
@@ -559,13 +542,13 @@
 
 ### 📝 Commits
 
-📍 Commit: [`e30464c`](https://github.com/Ancrion/mindful/commit/e30464c)  
+🔗 [`e30464c`](https://github.com/Ancrion/mindful/commit/e30464c)  
 ► add password reset functionality with email system
 
-📍 Commit: [`d3e6a0e`](https://github.com/Ancrion/mindful/commit/d3e6a0e)  
+🔗 [`d3e6a0e`](https://github.com/Ancrion/mindful/commit/d3e6a0e)  
 ► implement email templates and nodemailer integration
 
-📍 Commit: [`0d15197`](https://github.com/Ancrion/mindful/commit/0d15197)  
+🔗 [`0d15197`](https://github.com/Ancrion/mindful/commit/0d15197)  
 ► add fallback sendmail configuration
 
 ---
@@ -590,13 +573,13 @@
 
 ### 📝 Commits
 
-📍 Commit: [`55e6be5`](https://github.com/Ancrion/mindful/commit/55e6be5)  
+🔗 [`55e6be5`](https://github.com/Ancrion/mindful/commit/55e6be5)  
 ► add entwicklungsplan page with team task overview
 
-📍 Commit: [`df51583`](https://github.com/Ancrion/mindful/commit/df51583)  
+🔗 [`df51583`](https://github.com/Ancrion/mindful/commit/df51583)  
 ► implement interactive task list with checkbox and localstorage
 
-📍 Commit: [`c047569`](https://github.com/Ancrion/mindful/commit/c047569)  
+🔗 [`c047569`](https://github.com/Ancrion/mindful/commit/c047569)  
 ► add code snippet viewer for all team members
 
 ---
@@ -618,13 +601,13 @@
 
 ### 📝 Commits
 
-📍 Commit: [`4452441`](https://github.com/Ancrion/mindful/commit/4452441)  
+🔗 [`4452441`](https://github.com/Ancrion/mindful/commit/4452441)  
 ► add leaderboard with points system
 
-📍 Commit: [`909d6d4`](https://github.com/Ancrion/mindful/commit/909d6d4)  
+🔗 [`909d6d4`](https://github.com/Ancrion/mindful/commit/909d6d4)  
 ► implement user profiles with avatars and wallpapers
 
-📍 Commit: [`9721fdb`](https://github.com/Ancrion/mindful/commit/9721fdb)  
+🔗 [`9721fdb`](https://github.com/Ancrion/mindful/commit/9721fdb)  
 ► add messaging system with private chats
 
 ---
@@ -648,25 +631,25 @@
 
 ### 📝 Commits
 
-📍 Commit: [`f7ec37c`](https://github.com/Ancrion/mindful/commit/f7ec37c)  
+🔗 [`f7ec37c`](https://github.com/Ancrion/mindful/commit/f7ec37c)  
 ► initial project setup and dashboard implementation
 
-📍 Commit: [`2cc4c60`](https://github.com/Ancrion/mindful/commit/2cc4c60)  
+🔗 [`2cc4c60`](https://github.com/Ancrion/mindful/commit/2cc4c60)  
 ► add todo lists with workspace support
 
-📍 Commit: [`c2d91cb`](https://github.com/Ancrion/mindful/commit/c2d91cb)  
+🔗 [`c2d91cb`](https://github.com/Ancrion/mindful/commit/c2d91cb)  
 ► implement calendar with events
 
-📍 Commit: [`2bf8706`](https://github.com/Ancrion/mindful/commit/2bf8706)  
+🔗 [`2bf8706`](https://github.com/Ancrion/mindful/commit/2bf8706)  
 ► add notes with markdown editor
 
-📍 Commit: [`fcf9c96`](https://github.com/Ancrion/mindful/commit/fcf9c96)  
+🔗 [`fcf9c96`](https://github.com/Ancrion/mindful/commit/fcf9c96)  
 ► implement pomodoro timer
 
-📍 Commit: [`c521c45`](https://github.com/Ancrion/mindful/commit/c521c45)  
+🔗 [`c521c45`](https://github.com/Ancrion/mindful/commit/c521c45)  
 ► add time tracking system
 
-📍 Commit: [`52ad5ad`](https://github.com/Ancrion/mindful/commit/52ad5ad)  
+🔗 [`52ad5ad`](https://github.com/Ancrion/mindful/commit/52ad5ad)  
 ► add dark mode and spotlight search
 
 ---
