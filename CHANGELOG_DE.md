@@ -1,7 +1,33 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.1
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.2
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
+
+---
+
+## 🚀 v1.7.2 - Flexibles Widget-System mit Auto-Fit & Dense Grid
+
+**Veröffentlichung**: 10.06.2026
+
+### ✨ Verbesserungen
+
+- **Auto-Fit beim Drag & Drop**: Widgets passen ihre Breite automatisch an den verfügbaren Platz an, wenn sie an eine neue Position gezogen werden
+- **Dense Grid**: Lücken zwischen Widgets werden automatisch gefüllt (`grid-auto-flow: dense`) – keine leeren Plätze mehr
+- **Einheitliche Zeilenhöhen**: Widgets in derselben Zeile haben jetzt gleiche Höhe (`align-items: stretch`) – saubereres Raster
+- **Platzhalter beim Ziehen**: Gestrichelte Border (`widget-placeholder`) zeigt die Zielposition während des Drag-Vorgangs
+- **Min-Höhen pro Widget-Größe**: s1=140px, s2=180px, s3=200px, s4=220px – konsistente Grundhöhe
+- **Flex-Body**: Widget-Inhalte dehnen sich aus, um den verfügbaren Platz zu füllen
+
+### 🔧 Technische Änderungen
+
+- Grid auf `align-items: stretch` + `grid-auto-flow: dense` umgestellt
+- `_autoFitWidget()`: Berechnet beim Drop die optimale Breite basierend auf freien Spalten in der Zeile
+- `_onDragStart`/`_onDragOver`/`_onDrop`: Platzhalter-Element + verbessertes Drag-Feedback
+- Flexbox-Layout in `.widget-card` + `.widget-body` für Höhenanpassung
+
+### 📝 Commits
+
+🔗 [`c14d332`](https://github.com/Ancrion/mindful/commit/c14d332) - feat: Flexible widget grid with auto-fit on drag-drop and equal row heights
 
 ---
 
@@ -683,7 +709,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Versionen** | 15 |
+| **Versionen** | 16 |
 | **Commits** | 75+ |
 | **Features hinzugefügt** | 100+ |
 | **Bugs behoben** | 35+ |
