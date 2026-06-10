@@ -82,25 +82,93 @@ async function loadWidgets() {
 }
 
 function renderWidgets() {
-  const grid = document.getElementById("widgetGrid");
-  if (!grid) return;
-  grid.innerHTML = "";
-  _widgets.sort((a, b) => a.position - b.position);
-  if (_widgets.length === 0) {
-    grid.innerHTML = `<div class="widget-empty">
-      <i class="fas fa-puzzle-piece"></i>
-      <p>Noch keine Widgets vorhanden.</p>
-      <button class="btn-primary" onclick="document.getElementById('widgetManageBtn').click()">
-        <i class="fas fa-plus"></i> Widget hinzufügen
-      </button>
-    </div>`;
-    return;
-  }
-  for (const w of _widgets) {
-    const card = _buildCard(w);
-    if (card) grid.appendChild(card);
-  }
-}
+   const grid = document.getElementById("widgetGrid");
+   if (!grid) return;
+   grid.innerHTML = "";
+   _widgets.sort((a, b) => a.position - b.position);
+   if (_widgets.length === 0) {
+     grid.innerHTML = `<div class="widget-empty">
+       <i class="fas fa-puzzle-piece"></i>
+       <p>Noch keine Widgets vorhanden.</p>
+       <button class="btn-primary" onclick="document.getElementById('widgetManageBtn').click()">
+         <i class="fas fa-plus"></i> Widget hinzufügen
+       </button>
+     </div>`;
+     return;
+   }
+   for (const w of _widgets) {
+     const card = _buildCard(w);
+     if (card) grid.appendChild(card);
+   }
+   
+   // Initialize grid as drop target
+   _initGridDragDrop(grid);
+ }
+ 
+ function _initGridDragDrop(grid) {
+   // Grid selbst braucht dragover und drop Listener
+   grid.addEventListener("dragover", (e) => {
+     e.preventDefault();
+     e.dataTransfer.dropEffect = "move";
+     console.log("🔄 Grid dragover");
+   });
+   
+   grid.addEventListener("drop", (e) => {
+     console.log("🔻 Grid drop");
+     e.preventDefault();
+     
+     if (!_drag) {
+       console.log("⚠️ No drag state in grid drop");
+       return;
+     }
+     
+     const { element, placeholder } = _drag;
+     const nextNode = placeholder.nextSibling;
+     placeholder.remove();
+     
+     if (nextNode) {
+       grid.insertBefore(element, nextNode);
+     } else {
+       grid.appendChild(element);
+     }
+     
+     // Reflow
+     _reflowAll();
+     
+     // Save order
+     const newOrder = [...grid.querySelectorAll(".widget-card")].map((el, i) => ({
+       id: parseInt(el.dataset.widgetId),
+       position: i
+     }));
+     
+     console.log("📍 New order:", newOrder.map(o => o.id).join(", "));
+     
+     apiFetch("dashboard/widgets/order", {
+       method: "PUT",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({ order: newOrder })
+     })
+       .then(res => {
+         console.log("📡 API Response:", res);
+         if (!res) throw new Error("No response");
+         newOrder.forEach(o => {
+           const w = _widgets.find(x => x.id == o.id);
+           if (w) w.position = o.position;
+         });
+         console.log("💾 Saved successfully");
+       })
+       .catch(err => {
+         console.error("💥 Save failed:", err);
+         console.warn("⚠️ Widget order not saved, but position kept locally");
+       });
+     
+     document.querySelectorAll(".widget-card.drag-over").forEach(el => {
+       el.classList.remove("drag-over");
+     });
+     
+     _drag = null;
+   });
+ }
 
 function _rerenderWidget(typ) {
   const idx = _widgets.findIndex((w) => w.typ === typ);
@@ -167,7 +235,6 @@ function _buildCard(widget) {
   card.addEventListener("dragstart", _onDragStart);
   card.addEventListener("dragend", _onDragEnd);
   card.addEventListener("dragover", _onDragOver);
-  card.addEventListener("drop", _onDrop);
 
   // Resize (mouse + touch)
   const resizeHandle = card.querySelector(".widget-resize-handle");
