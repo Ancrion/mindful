@@ -110,17 +110,12 @@ function renderWidgets() {
    grid.addEventListener("dragover", (e) => {
      e.preventDefault();
      e.dataTransfer.dropEffect = "move";
-     console.log("🔄 Grid dragover");
    });
    
    grid.addEventListener("drop", (e) => {
-     console.log("🔻 Grid drop");
      e.preventDefault();
      
-     if (!_drag) {
-       console.log("⚠️ No drag state in grid drop");
-       return;
-     }
+     if (!_drag) return;
      
      const { element, placeholder } = _drag;
      const nextNode = placeholder.nextSibling;
@@ -141,25 +136,20 @@ function renderWidgets() {
        position: i
      }));
      
-     console.log("📍 New order:", newOrder.map(o => o.id).join(", "));
-     
      apiFetch("dashboard/widgets/order", {
        method: "PUT",
        headers: { "Content-Type": "application/json" },
        body: JSON.stringify({ order: newOrder })
      })
        .then(res => {
-         console.log("📡 API Response:", res);
          if (!res) throw new Error("No response");
          newOrder.forEach(o => {
            const w = _widgets.find(x => x.id == o.id);
            if (w) w.position = o.position;
          });
-         console.log("💾 Saved successfully");
        })
        .catch(err => {
-         console.error("💥 Save failed:", err);
-         console.warn("⚠️ Widget order not saved, but position kept locally");
+         console.error("💥 Widget order save failed:", err);
        });
      
      document.querySelectorAll(".widget-card.drag-over").forEach(el => {
@@ -425,12 +415,7 @@ function _onDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
   
-  if (!_drag) {
-    console.log("⚠️ No drag state");
-    return;
-  }
-  
-  console.log("🔄 Dragover:", this.dataset.widgetId);
+  if (!_drag) return;
   
   const target = this;
   const { element, placeholder } = _drag;
@@ -455,64 +440,6 @@ function _onDragOver(e) {
   }
 }
 
-function _onDrop(e) {
-  console.log("🔻 Drop event on:", this.dataset.widgetId);
-  e.preventDefault();
-  
-  if (!_drag) {
-    console.log("⚠️ No drag state in drop");
-    return;
-  }
-  
-  const { element, placeholder } = _drag;
-  const grid = document.getElementById("widgetGrid");
-  
-  console.log("✅ Drop:", element.dataset.widgetId);
-  
-  // Remove placeholder and move element to its position
-  const nextNode = placeholder.nextSibling;
-  placeholder.remove();
-  
-  if (nextNode) {
-    grid.insertBefore(element, nextNode);
-  } else {
-    grid.appendChild(element);
-  }
-  
-  // Reflow
-  _reflowAll();
-  
-  // Save order
-  const newOrder = [...grid.querySelectorAll(".widget-card")].map((el, i) => ({
-    id: parseInt(el.dataset.widgetId),
-    position: i
-  }));
-  
-  console.log("📍 New order:", newOrder.map(o => o.id).join(", "));
-  
-  apiFetch("dashboard/widgets/order", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ order: newOrder })
-  })
-    .then(res => {
-      console.log("📡 API Response:", res);
-      if (!res) throw new Error("No response");
-      newOrder.forEach(o => {
-        const w = _widgets.find(x => x.id == o.id);
-        if (w) w.position = o.position;
-      });
-      console.log("💾 Saved successfully");
-    })
-    .catch(err => {
-      console.error("💥 Save failed:", err);
-      console.warn("⚠️ Widget order not saved, but position kept locally");
-    });
-  
-  document.querySelectorAll(".widget-card.drag-over").forEach(el => {
-    el.classList.remove("drag-over");
-  });
-}
 // ─── Auto-Refresh ───
 let _refreshTimers = {};
 
