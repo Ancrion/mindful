@@ -394,6 +394,14 @@ function _onDrop(e) {
   const grid = document.getElementById("widgetGrid");
   if (!fromEl || !grid) return;
 
+  // Store original order for undo
+  const originalOrder = [...grid.querySelectorAll(".widget-card")].map(el => ({
+    id: parseInt(el.dataset.widgetId),
+    size: parseInt(el.dataset.widgetSize),
+    element: el
+  }));
+
+  // Move widget in DOM
   const allCards = [...grid.querySelectorAll(".widget-card")];
   const fromIdx = allCards.indexOf(fromEl);
   const toIdx = allCards.indexOf(this);
@@ -411,22 +419,49 @@ function _onDrop(e) {
 
   // Save new order
   const reordered = [...grid.querySelectorAll(".widget-card")];
-  const order = reordered.map((el, i) => ({
+  const newOrder = reordered.map((el, i) => ({
     id: parseInt(el.dataset.widgetId),
     position: i,
   }));
+
   apiFetch("dashboard/widgets/order", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ order }),
-  }).catch(err => console.error("Widget reorder failed:", err));
-
-  // Update local positions
-  for (const o of order) {
-    const w = _widgets.find((x) => x.id == o.id);
-    if (w) w.position = o.position;
-  }
+    body: JSON.stringify({ order: newOrder }),
+  })
+    .then(res => {
+      if (!res || !res.ok) throw new Error(res?.error || "Server error");
+      // Success - update local widget positions
+      for (const o of newOrder) {
+        const w = _widgets.find((x) => x.id == o.id);
+        if (w) w.position = o.position;
+      }
+      console.log("✅ Widget order saved successfully");
+    })
+    .catch(err => {
+      console.error("❌ Widget reorder failed:", err);
+      // Undo: restore original order in DOM
+      originalOrder.forEach(item => {
+        grid.appendChild(item.element);
+      });
+      
+      // Restore original sizes if they were changed by reflow
+      originalOrder.forEach(item => {
+        const card = item.element;
+        const currentSize = parseInt(card.dataset.widgetSize);
+        if (currentSize !== item.size) {
+          card.classList.remove(`widget-s${currentSize}`);
+          card.classList.add(`widget-s${item.size}`);
+          card.dataset.widgetSize = item.size;
+        }
+      });
+      
+      // Show error message
+      console.warn("⚠️ Widget-Verschiebung fehlgeschlagen und rückgängig gemacht.");
+    });
 }
+
+
 
 // ─── Auto-Refresh ───
 let _refreshTimers = {};
@@ -496,30 +531,77 @@ function _setupKeyboard(card, widget) {
 function _saveOrder() {
   const grid = document.getElementById("widgetGrid");
   if (!grid) return;
+  
+  // Store original order for undo
+  const originalCards = [...grid.querySelectorAll(".widget-card")];
+  const originalDOM = originalCards.map(el => ({
+    id: parseInt(el.dataset.widgetId),
+    element: el
+  }));
+  
   const reordered = [...grid.querySelectorAll(".widget-card")];
   const order = reordered.map((el, i) => ({ id: parseInt(el.dataset.widgetId), position: i }));
+  
   apiFetch("dashboard/widgets/order", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ order }),
-  });
-  for (const o of order) { const w = _widgets.find((x) => x.id == o.id); if (w) w.position = o.position; }
+  })
+    .then(res => {
+      if (!res || !res.ok) throw new Error(res?.error || "Server error");
+      // Success - update local positions
+      for (const item of order) {
+        const w = _widgets.find((x) => x.id == item.id);
+        if (w) w.position = item.position;
+      }
+      console.log("✅ Widget order saved");
+    })
+    .catch(err => {
+      console.error("❌ Failed to save order:", err);
+      // Undo: restore original order
+      originalDOM.forEach(item => {
+        grid.appendChild(item.element);
+      });
+    });
 }
 
 function _setWidgetSize(card, widget, newSize) {
   const cur = parseInt(card.dataset.widgetSize);
   if (cur === newSize) return;
+  
+  // Store original size for undo
+  const originalSize = cur;
+  
+  // Update UI immediately (optimistic update)
   card.classList.remove(`widget-s${cur}`);
   card.classList.add(`widget-s${newSize}`);
   card.dataset.widgetSize = newSize;
+  
+  // Update local widget state
   const config = widget.config ? (typeof widget.config === "string" ? JSON.parse(widget.config) : widget.config) : {};
   config.size = newSize;
   widget.config = config;
+  
+  // Save to server with error handling
   apiFetch(`dashboard/widgets/${widget.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ config }),
-  });
+  })
+    .then(res => {
+      if (!res || !res.ok) throw new Error(res?.error || "Server error");
+      console.log(`✅ Widget ${widget.id} size saved to ${newSize}`);
+    })
+    .catch(err => {
+      console.error(`❌ Failed to save widget size: ${err}`);
+      // Revert UI on failure
+      card.classList.remove(`widget-s${newSize}`);
+      card.classList.add(`widget-s${originalSize}`);
+      card.dataset.widgetSize = originalSize;
+      // Revert local state
+      config.size = originalSize;
+      widget.config = config;
+    });
 }
 
 // ─── Resize Widget (Mouse + Touch) ───
