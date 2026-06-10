@@ -12,6 +12,11 @@ async function init() {
   await loadWorkspaces();
   await loadTodoWorkspaces();
   showSkeleton();
+
+  // Gespeicherten Workspace-Filter wiederherstellen
+  const saved = localStorage.getItem("mindful_workspace");
+  if (saved) currentWorkspaceId = parseInt(saved);
+
   await loadTodos();
 
   document.querySelectorAll("#wsNewColors .ws-color-dot").forEach((el) => {
@@ -504,7 +509,7 @@ window.selectWorkspace = (id) => {
   document.querySelectorAll(".status-tile").forEach((t) => t.classList.remove("active"));
   document.querySelector('.status-tile[onclick*="offen"]')?.classList.add("active");
   showSkeleton();
-  loadWorkspaces();
+  if (typeof window.selectWsSidebar === "function") window.selectWsSidebar(id);
   loadTodoWorkspaces();
   loadTodos();
   document.getElementById("wsDropdown").classList.remove("open");
