@@ -2073,8 +2073,23 @@ git push --tags</script>
 # - App.js loadWorkspaces() wird jetzt auch auf Todo-Seite korrekt
 #   ausgefÃ¼hrt â†’ Sidebar-Baum + DnD + KontextmenÃ¼ funktionieren
 #
+# WORKSPACE-FILTER FIX (v1.4.1):
+# - Bei Page-Load wurde workspacechange-Event zu frÃ¼h dispatched
+#   (vor todo.js-Listener) â†’ currentWorkspaceId blieb null â†’ alle Todos
+# - Fix: init() restored currentWorkspaceId aus localStorage vor loadTodos()
+# - selectWorkspace (Todo-Dropdown) ruft jetzt selectWsSidebar(id)
+#   statt loadWorkspaces() â†’ Sidebar wird syncronisiert
+#
+# DND-REFACTOR (inline â†’ addEventListener):
+# - Inline ondragstart/ondragover/ondrop entfernt, per addEventListener
+# - e.currentTarget funktioniert zuverlÃ¤ssiger bei addEventListener
+# - wsDragOver rÃ¤umt vorher alle ws-drag-over-Klassen vor dem Setzen
+# - Todo-Dropdown wird nach jedem workspacechange aktualisiert
+#
 # Commit: jaro "add context menu + DnD to todo page workspace dropdown"
-# Commit: jaro "fix workspace DnD visual + add root drop zone"</script>
+# Commit: jaro "fix workspace DnD visual + add root drop zone"
+# Commit: jaro "refactor workspace DnD to consistent addEventListener"
+# Commit: jaro "fix workspace filter on page load + sync sidebar"</script>
 
     <script>
     // ═══════════════════════════════════════════════
@@ -2162,7 +2177,7 @@ git push --tags</script>
             desc:"E-Mail-Sektion im Profil: anzeigen + speichern. updateEmail()-Funktion in profile.js.",
             commit:"git commit -m \"add email display and edit section to profile page\"" },
           { id:"jaro-15", file:"frontend/public/js/todo.js + app.js",
-            desc:"Rechtsklick-Kontextmenü für Todos (Bearbeiten/Erledigt/Löschen) per addEventListener. Kontextmenü für Workspaces (Unter-Workspace/Umbenennen/Löschen/Zu root machen) in Sidebar + Todo-Dropdown. Drop auf 'Alle' = root setzen. Bugfix: loadWorkspaces-Konflikt – Sidebar-Baum wurde nie auf der Todo-Seite gerendert. wsDragStart nutzt e.currentTarget statt closest – crashte auf .workspace-item. DnD in Sidebar + Todo-Dropdown.",
+            desc:"Rechtsklick-Kontextmenü für Todos (Bearbeiten/Erledigt/Löschen) per addEventListener. Kontextmenü für Workspaces (Unter-Workspace/Umbenennen/Löschen/Zu root machen) in Sidebar + Todo-Dropdown. Drop auf 'Alle' = root setzen. Bugfix: loadWorkspaces-Konflikt – Sidebar-Baum wurde nie auf der Todo-Seite gerendert. wsDragStart nutzt e.currentTarget statt closest – crashte auf .workspace-item. DnD in Sidebar + Todo-Dropdown. Inline-DnD-Handler auf addEventListener refaktoriert. Workspace-Filter initialisiert via localStorage bei Page-Load. Sidebar-Sync bei Auswahl im Todo-Dropdown.",
             commit:"git commit -m \"fix: rewrite todo context menu, add workspace context menu, fix naming conflict\"" }
         ]
       },
