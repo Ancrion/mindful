@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
     <link
       rel="stylesheet"
@@ -1826,6 +1827,107 @@ async function _showWeatherSuggestions(widget, inputEl, query) {
 .weather-suggestion-item small { color: var(--text-secondary); font-size: 12px; margin-left: auto; }
 </script>
 
+<script type="text/plain" id="jaro-27">/* PHASE 1 - DESIGN SYSTEM FOUNDATION v1.7.0 */
+
+:root {
+  /* Color Palette */
+  --color-primary: #f24b3d;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  
+  /* Typography Scale (1.2 ratio) */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+  
+  /* Spacing Scale (8px base) */
+  --space-1: 0.25rem;    /* 4px */
+  --space-2: 0.5rem;     /* 8px */
+  --space-3: 0.75rem;    /* 12px */
+  --space-4: 1rem;       /* 16px */
+  --space-6: 1.5rem;     /* 24px */
+  --space-8: 2rem;       /* 32px */
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  
+  /* Transitions */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark {
+  --bg-primary: #0f172a;
+  --text-primary: #f1f5f9;
+  --border-primary: #334155;
+}
+</script>
+
+<script type="text/plain" id="jaro-28">/* PHASE 2 - COMPONENT LIBRARY v1.7.0 */
+
+/* Button Components */
+.btn { padding: var(--space-3) var(--space-6); background-color: var(--color-primary); color: white; border-radius: var(--radius-md); }
+.btn:hover { background-color: var(--color-primary-hover); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+/* Form Components */
+.form-group input { padding: var(--space-3) var(--space-4); border: 1px solid var(--border-primary); border-radius: var(--radius-md); }
+.form-group input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(242,75,61,0.1); }
+
+/* Card Components */
+.card { background-color: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-sm); }
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+/* Grid System */
+.grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--space-6); }
+.col-6 { grid-column: span 6; }
+.col-12 { grid-column: span 12; }
+
+/* Animations */
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.animate-slideUp { animation: slideUp 250ms cubic-bezier(0.4,0,0.2,1); }
+</script>
+
+<script type="text/plain" id="jaro-29">/* PHASE 3 - VISUAL POLISH v1.7.0 */
+
+/* Glassmorphism */
+.glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius-lg); }
+
+/* Gradients */
+.gradient-primary { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%); }
+.gradient-text { background: linear-gradient(135deg, #f24b3d 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* Enhanced Shadows */
+.shadow-soft { box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.08); }
+.shadow-primary { box-shadow: 0 10px 30px rgba(242,75,61,0.2); }
+
+/* Neumorphic */
+.neumorphic { box-shadow: -5px -5px 15px rgba(255,255,255,0.5), 5px 5px 15px rgba(0,0,0,0.1); border-radius: var(--radius-lg); }
+
+/* Borders */
+.border-accent { border: 2px solid var(--color-primary); }
+.border-dashed { border: 2px dashed var(--border-primary); }
+
+/* Gloss Effect */
+@keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
+.gloss::after { content: ''; animation: shine 3s infinite; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); }
+</script>
+
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -1837,6 +1939,7 @@ async function _showWeatherSuggestions(widget, inputEl, query) {
     <link rel="stylesheet" href="/css/components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
     <link
       rel="stylesheet"
@@ -1952,6 +2055,7 @@ document.addEventListener("DOMContentLoaded", loadLeaderboard);</script>
     <link rel="stylesheet" href="/css/components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
     <link
       rel="stylesheet"
@@ -2077,6 +2181,7 @@ document.addEventListener("DOMContentLoaded", loadProfile);</script>
     <link rel="stylesheet" href="/css/components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
     <link
       rel="stylesheet"
@@ -2729,7 +2834,7 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23","jaro-24","jaro-25","jaro-26",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23","jaro-24","jaro-25","jaro-26","jaro-27","jaro-28","jaro-29",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
@@ -2841,7 +2946,16 @@ git push --tags</script>
             commit:"git commit -m \"fix: Auto-detect first user as admin, escape EJS tags in dev-plan snippets\"" },
           { id:"jaro-26", file:"frontend/public/js/index.js + frontend/public/css/style.css",
             desc:"WEATHER WIDGET AUTOCOMPLETE v1.6.6: ① Stadt-Eingabe mit Live-Autocomplete (ab 2 Zeichen Input), ② Dropdown mit bis zu 5 Vorschlägen (Name, Admin1/Bundesland), ③ Klick auf Vorschlag: Stadt auto-select + Wetter laden, ④ Input-Event-Listener für echtzeitige Suggestions, ⑤ CSS Styling: weather-suggestions-list mit Hover-Effekten + Shadow",
-            commit:"git commit -m \"feat: Add weather widget city autocomplete with suggestions dropdown\"" }
+            commit:"git commit -m \"feat: Add weather widget city autocomplete with suggestions dropdown\"" },
+          { id:"jaro-27", file:"frontend/public/css/design-system.css (NEU) + design-system.css in alle Views",
+            desc:"PHASE 1 - DESIGN SYSTEM FOUNDATION v1.7.0: ① 25+ CSS Custom Properties (Colors, Typography, Spacing, Shadows, Radius, Transitions, Z-Index), ② Complete semantic color system (light + dark mode), ③ Modular typography scale (8 sizes, 1.2 ratio), ④ 8px-based spacing system (14 levels), ⑤ Professional shadow hierarchy (xs bis 2xl), ⑥ Easing functions & timing scales, ⑦ Dark mode color adjustments",
+            commit:"git commit -m \"feat: PHASE 1 - Professional Design System v2.0 with complete design tokens\"" },
+          { id:"jaro-28", file:"frontend/public/css/components.css (NEU) + layout-components.css + animations.css (NEU) in alle Views",
+            desc:"PHASE 2 - COMPONENT LIBRARY v1.7.0: ① 40+ standardized UI components (Buttons: 7 variants, Forms: 10 types, Cards: 4 variants, Modals, Navigation, Lists, Tables, Badges, Alerts), ② 12-column responsive grid system, ③ Sidebar + Split layout system, ④ Stack layout helpers, ⑤ 30+ animations (Fade, Slide, Scale, Zoom, Spin, Bounce, Shake), ⑥ Transition utilities, ⑦ Hover effects & loading states",
+            commit:"git commit -m \"feat: PHASE 2 - Professional Component Library with layouts and animations\"" },
+          { id:"jaro-29", file:"frontend/public/css/polish.css (NEU) in alle Views",
+            desc:"PHASE 3 - VISUAL POLISH v1.7.0: ① Glassmorphism effects (blur, transparency, frosted glass), ② Gradient effects (backgrounds, text, borders), ③ Enhanced shadow system (soft, hard, colored, depth), ④ Neumorphic effects & gloss shine, ⑤ Advanced border treatments (dashed, dotted, accent), ⑥ Backdrop & blur effects, ⑦ Overlay effects, ⑧ Divider & separator styling",
+            commit:"git commit -m \"feat: PHASE 3 - Professional Design System v2.0 Visual Polish with effects\"" }
         ]
       },
       omar: {
