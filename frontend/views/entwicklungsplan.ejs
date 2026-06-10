@@ -1214,6 +1214,37 @@ window.openWsCtxMenu = function (e, id) {
 // renameWs + deleteWs: API-Calls + loadWorkspaces + workspacechange-Event
 // Bugfix: loadWorkspaces in todo.js umbenannt zu loadTodoWorkspaces
 // → app.js-Version wird nicht mehr überschattet → Sidebar-Baum erscheint</script>
+<script type="text/plain" id="jaro-16">/* bugs-main: zentriert, full-height, flex-column */
+.bugs-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.bugs-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.kanban {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.kanban-col {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.kanban-cards {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}</script>
 <script type="text/plain" id="omar-1"><!doctype html>
 <html lang="de">
   <head>
@@ -2086,10 +2117,17 @@ git push --tags</script>
 # - wsDragOver rÃ¤umt vorher alle ws-drag-over-Klassen vor dem Setzen
 # - Todo-Dropdown wird nach jedem workspacechange aktualisiert
 #
+# BUG-SEITE FULL-SCREEN (v1.5.0):
+# - bugs-main: max-width 1400px + margin:0 auto (zentriert)
+# - bugs-content + kanban: flex:1 â†’ fÃ¼llen verfÃ¼gbare HÃ¶he
+# - kanban-cards: overflow-y:auto + gap:6px â†’ einzeln scrollbar
+# - bugs-main: overflow-y:auto â†’ Gesamtseite scrollt bei Ãœberlauf
+#
 # Commit: jaro "add context menu + DnD to todo page workspace dropdown"
 # Commit: jaro "fix workspace DnD visual + add root drop zone"
 # Commit: jaro "refactor workspace DnD to consistent addEventListener"
-# Commit: jaro "fix workspace filter on page load + sync sidebar"</script>
+# Commit: jaro "fix workspace filter on page load + sync sidebar"
+# Commit: jaro "bug page: full-height centered layout with scrollable kanban cols"</script>
 
     <script>
     // ═══════════════════════════════════════════════
@@ -2099,7 +2137,7 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
@@ -2178,7 +2216,10 @@ git push --tags</script>
             commit:"git commit -m \"add email display and edit section to profile page\"" },
           { id:"jaro-15", file:"frontend/public/js/todo.js + app.js",
             desc:"Rechtsklick-Kontextmenü für Todos (Bearbeiten/Erledigt/Löschen) per addEventListener. Kontextmenü für Workspaces (Unter-Workspace/Umbenennen/Löschen/Zu root machen) in Sidebar + Todo-Dropdown. Drop auf 'Alle' = root setzen. Bugfix: loadWorkspaces-Konflikt – Sidebar-Baum wurde nie auf der Todo-Seite gerendert. wsDragStart nutzt e.currentTarget statt closest – crashte auf .workspace-item. DnD in Sidebar + Todo-Dropdown. Inline-DnD-Handler auf addEventListener refaktoriert. Workspace-Filter initialisiert via localStorage bei Page-Load. Sidebar-Sync bei Auswahl im Todo-Dropdown.",
-            commit:"git commit -m \"fix: rewrite todo context menu, add workspace context menu, fix naming conflict\"" }
+            commit:"git commit -m \"fix: rewrite todo context menu, add workspace context menu, fix naming conflict\"" },
+          { id:"jaro-16", file:"frontend/public/css/style.css (bugs-main, .kanban)",
+            desc:"Bug-Seite Full-Screen-Redesign: bugs-main zentriert (max-width:1400px + margin:0 auto), bugs-content + kanban mit flex:1 für dynamische Höhe, Kanban-Spalten scrollen einzeln (overflow-y:auto), bugs-main overflow-y:auto.",
+            commit:"git commit -m \"bug page: full-height centered layout with scrollable kanban cols\"" }
         ]
       },
       omar: {
