@@ -133,7 +133,7 @@ function _buildCard(widget) {
   const grid = document.getElementById("widgetGrid");
   if (!grid) return null;
 
-  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2, calendar: 4 };
+  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2, calendar: 2 };
   const config = widget.config ? (typeof widget.config === "string" ? JSON.parse(widget.config) : widget.config) : {};
   const size = config.size || DEFAULT_SIZES[widget.typ] || 2;
 

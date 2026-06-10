@@ -846,7 +846,7 @@ body.dark .widget-manage-btn:hover {
 
 /* ─── Calendar Widget ─── */
 .widget-calendar .widget-body {
-  padding: 0 16px 16px;
+  padding: 0 12px 12px;
 }
 
 .cal-widget {
@@ -857,7 +857,7 @@ body.dark .widget-manage-btn:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
+  padding: 8px 0;
 }
 
 .cal-nav {
@@ -865,9 +865,9 @@ body.dark .widget-manage-btn:hover {
   border: none;
   cursor: pointer;
   color: var(--text-muted);
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
 }
 .cal-nav:hover {
   background: var(--surface-2);
@@ -876,40 +876,41 @@ body.dark .widget-manage-btn:hover {
 
 .cal-title {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
 }
 
 .cal-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 8px 0;
+  letter-spacing: 0.3px;
+  padding: 4px 0;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .cal-wgrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 1px;
 }
 
 .cal-wc {
-  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  border-radius: 8px;
+  gap: 1px;
+  padding: 2px 0;
+  border-radius: 4px;
   cursor: pointer;
   position: relative;
   transition: 0.1s;
+  min-height: 26px;
 }
 .cal-wc:hover {
   background: var(--hover-bg, rgba(0,0,0,0.04));
@@ -922,23 +923,25 @@ body.dark .widget-manage-btn:hover {
   background: var(--accent);
   color: #fff;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.7rem;
 }
 
 .cal-wd {
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   font-weight: 500;
+  line-height: 1;
 }
 
 .cal-dot {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: var(--accent);
   position: absolute;
-  bottom: 6px;
+  bottom: 2px;
 }

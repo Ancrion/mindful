@@ -5,6 +5,24 @@
 
 ---
 
+## 🚀 v1.7.1 - Kalender Widget kompakter & kleiner
+
+**Veröffentlichung**: 10.06.2026
+
+### ✨ Verbesserungen
+
+- **Kalender Widget verkleinert**: Standardgröße von 4 auf 2 reduziert – belegt nur noch die Hälfte der Dashboard-Breite
+- **Kompaktere UI**: Zellen ohne `aspect-ratio: 1` (nur `min-height: 26px`), kleinere Fonts und reduziertes Padding
+- **Optimierte Abstände**: Kalender-Kopf (8px statt 12px), Widget-Body (12px statt 16px), Zellen-Gap (1px statt 2px)
+- **Feinere Typografie**: Titel 0.8rem, Tageszahlen 0.7rem, Wochentage 0.6rem, Letter-Spacing 0.3px
+- **Kleinere Interaktionselemente**: Today-Kreis 22px (statt 28px), Dots 4px (statt 5px)
+
+### 📝 Commits
+
+🔗 [`9945e41`](https://github.com/Ancrion/mindful/commit/9945e41) - feat: Compact calendar widget - smaller default size and compact UI
+
+---
+
 ## 🚀 v1.7.0 - Professional Design System v2.0 - KOMPLETTE NEUGESTALTUNG
 
 **Veröffentlichung**: 10.06.2026
@@ -658,7 +676,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Versionen** | 14 |
+| **Versionen** | 15 |
 | **Commits** | 75+ |
 | **Features hinzugefügt** | 100+ |
 | **Bugs behoben** | 35+ |
