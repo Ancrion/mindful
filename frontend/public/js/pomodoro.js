@@ -22,8 +22,28 @@ const elCard = document.querySelector(".pomo-timer-card");
 async function initPomodoro() {
   loadTasks();
   await loadStats();
+  restorePomoState();
   setupEvents();
   updateDisplay();
+}
+
+function restorePomoState() {
+  const raw = localStorage.getItem("pomoState");
+  if (!raw) return;
+  let state;
+  try { state = JSON.parse(raw); } catch { return; }
+  if (!state.running) return;
+
+  const elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
+  _pomoRemaining = Math.max(0, state.remaining - elapsed);
+  _pomoDuration = state.duration;
+
+  if (_pomoRemaining <= 0) {
+    clearPomoState();
+    return;
+  }
+
+  startTimer();
 }
 
 async function loadTasks() {
