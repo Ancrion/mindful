@@ -1763,6 +1763,65 @@ try {
 // Solution: Use is_admin flag instead of username comparison
 // Result: First user is automatically promoted to admin, no hardcoded usernames needed
 </script>
+
+<script type="text/plain" id="jaro-26">/* WEATHER WIDGET AUTOCOMPLETE v1.6.6 */
+
+// frontend/public/js/index.js – Weather widget post-render hook
+case "weather": {
+  return () => {
+    const cityInput = card.querySelector(".weather-city-input");
+    cityInput.addEventListener("input", (e) => {
+      _showWeatherSuggestions(widget, cityInput, e.target.value);
+    });
+  };
+}
+
+// frontend/public/js/index.js – New autocomplete function
+async function _showWeatherSuggestions(widget, inputEl, query) {
+  const suggestionsList = inputEl.parentElement.querySelector(".weather-suggestions-list");
+  
+  if (!query || query.trim().length < 2) {
+    suggestionsList.style.display = "none";
+    return;
+  }
+  
+  try {
+    const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query.trim())}&count=5&language=de&format=json`);
+    const data = await res.json();
+    
+    suggestionsList.innerHTML = data.results.map(r => `
+      &lt;li class="weather-suggestion-item" data-lat="${r.latitude}" data-lon="${r.longitude}"&gt;
+        &lt;i class="fas fa-map-marker-alt"&gt;&lt;/i&gt;
+        &lt;span&gt;${escHtml(r.name)}&lt;/span&gt;
+        ${r.admin1 ? `&lt;small&gt;${escHtml(r.admin1)}&lt;/small&gt;` : ""}
+      &lt;/li&gt;
+    `).join("");
+    
+    suggestionsList.style.display = "block";
+    
+    // Click handler: select suggestion
+    suggestionsList.querySelectorAll(".weather-suggestion-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const config = { lat: parseFloat(item.dataset.lat), lon: parseFloat(item.dataset.lon) };
+        widget.config = config;
+        _rerenderWidget("weather");
+      });
+    });
+  } catch (err) {
+    suggestionsList.style.display = "none";
+  }
+}
+
+// frontend/public/css/style.css – Autocomplete styling
+.weather-search-wrapper { position: relative; width: 100%; }
+.weather-suggestions-list { position: absolute; top: 100%; left: 0; right: 0; list-style: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-md); max-height: 200px; overflow-y: auto; z-index: 1000; }
+.weather-suggestion-item { padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-soft); transition: background-color var(--transition); }
+.weather-suggestion-item:hover { background-color: var(--surface-2); }
+.weather-suggestion-item i { color: var(--text-secondary); font-size: 12px; }
+.weather-suggestion-item span { flex: 1; color: var(--text); font-size: 14px; font-weight: 500; }
+.weather-suggestion-item small { color: var(--text-secondary); font-size: 12px; margin-left: auto; }
+</script>
+
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -2654,7 +2713,7 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23","jaro-24","jaro-25",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23","jaro-24","jaro-25","jaro-26",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
@@ -2763,7 +2822,10 @@ git push --tags</script>
             commit:"git commit -m \"add LOW-priority fixes: pagination, logging, CORS config, XSS prevention, environment variables\"" },
           { id:"jaro-25", file:"backend/database/db.js + frontend/views/entwicklungsplan.ejs",
             desc:"BUG-FIXES v1.6.5: ① Admin-Autodetection: Erster User wird automatisch Admin statt hardcoded 'jaro' (flexibel für alle Deployments), ② EJS Template-Escape: Code-Snippets in entwicklungsplan.ejs mit HTML-Entities escaped (verhindert EJS-Interpretation), ③ Bug-Seite: Admin kann Bugs korrekt löschen/verschieben.",
-            commit:"git commit -m \"fix: Auto-detect first user as admin, escape EJS tags in dev-plan snippets\"" }
+            commit:"git commit -m \"fix: Auto-detect first user as admin, escape EJS tags in dev-plan snippets\"" },
+          { id:"jaro-26", file:"frontend/public/js/index.js + frontend/public/css/style.css",
+            desc:"WEATHER WIDGET AUTOCOMPLETE v1.6.6: ① Stadt-Eingabe mit Live-Autocomplete (ab 2 Zeichen Input), ② Dropdown mit bis zu 5 Vorschlägen (Name, Admin1/Bundesland), ③ Klick auf Vorschlag: Stadt auto-select + Wetter laden, ④ Input-Event-Listener für echtzeitige Suggestions, ⑤ CSS Styling: weather-suggestions-list mit Hover-Effekten + Shadow",
+            commit:"git commit -m \"feat: Add weather widget city autocomplete with suggestions dropdown\"" }
         ]
       },
       omar: {
