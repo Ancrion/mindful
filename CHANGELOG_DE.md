@@ -34,9 +34,14 @@
 
 - **Fixed: Widget-Tausch mit rechtem Nachbar funktioniert nicht**:
   - Problem: `grid.insertBefore(element, target)` macht nichts wenn element bereits VOR target im DOM ist
-  - Man konnte kein Widget mit seinem rechten Nachbarn tauschen
   - Lösung: `element.remove()` vor `grid.insertBefore()` - so ist element immer korrekt aus dem DOM entfernt
   - `insertBefore` funktioniert jetzt immer, egal wo das Element ursprünglich war
+
+- **Fixed: Tausch mit übernächstem Nachbar ging nur eins nach rechts**:
+  - Problem: `insertBefore = relX < 0.5 || relY < 0.3` → `relY < 0.3` überschrieb horizontale Position
+  - Wenn Cursor oben auf dem Target war (relY < 0.3), wurde IMMER "davor" eingefügt, auch rechts daneben
+  - Lösung: `insertBefore = relX < 0.5` (nur horizontale Position zählt)
+  - Zusätzlich: `getBoundingClientRect()` wird VOR `element.remove()` berechnet (verhindert falsche Koordinaten durch DOM-Reflow)
 
 - **Sauberer Code**:
   - Entfernt redundante `_onDrop()` Funktion auf Card-Level
@@ -74,6 +79,9 @@
 🔗 [`958dc10`](https://github.com/Ancrion/mindful/commit/958dc10) - fix: Make placeholder absolute positioned so it doesn't affect grid layout
 🔗 [`b82a829`](https://github.com/Ancrion/mindful/commit/b82a829) - refactor: Simplify to basic drag-and-drop without placeholder
 🔗 [`12392de`](https://github.com/Ancrion/mindful/commit/12392de) - fix: Remove element from DOM before insertDuring to enable swap with right neighbor
+🔗 [`aa7a466`](https://github.com/Ancrion/mindful/commit/aa7a466) - fix: Calculate drop target directly from drop event instead of dragover
+🔗 [`1df7825`](https://github.com/Ancrion/mindful/commit/1df7825) - debug: Add detailed drag-drop logging for debugging
+🔗 [`18a8d6b`](https://github.com/Ancrion/mindful/commit/18a8d6b) - fix: Remove relY < 0.3 override for insertBefore, calculate rect before element.remove()
 
 ---
 

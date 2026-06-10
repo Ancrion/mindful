@@ -3060,7 +3060,10 @@ git push --tags</script>
             commit:"b82a829", hash:"https://github.com/Ancrion/mindful/commit/b82a829" },
           { id:"jaro-50", file:"frontend/public/js/index.js",
             desc:"FIX: WIDGET-TAUSCH MIT RECHTEM NACHBAR v1.7.8: ① Bug: grid.insertBefore(element, target) macht nichts wenn element bereits VOR target im DOM, ② Konsequenz: rechter Nachbar konnte nicht getauscht werden, ③ Lösung: element.remove() VOR insertBefore → element ist garantiert nicht mehr im DOM, ④ insertBefore funktioniert immer korrekt, ⑤ Einfacher Fix, große Wirkung",
-            commit:"12392de", hash:"https://github.com/Ancrion/mindful/commit/12392de" }
+            commit:"12392de", hash:"https://github.com/Ancrion/mindful/commit/12392de" },
+          { id:"jaro-51", file:"frontend/public/js/index.js",
+            desc:"ROOT CAUSE: InsertBefore Logik ignoriert horizontale Position v1.7.8: ① Bug: insertBefore = relX < 0.5 || relY < 0.3 → relY < 0.3 überschrieb relX, ② Wirkung: Cursor rechts auf Target → trotzdem insertBefore=true wegen kleinem relY, ③ Lösung: Nur relX < 0.5, ④ Zusätzlich: rect-Berechnung VOR element.remove() um falsche Koordinaten durch Reflow zu vermeiden, ⑤ Debug-Logs helfen den Fix zu bestätigen",
+            commit:"18a8d6b", hash:"https://github.com/Ancrion/mindful/commit/18a8d6b" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
