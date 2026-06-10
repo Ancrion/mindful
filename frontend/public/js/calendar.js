@@ -209,12 +209,14 @@ function renderMonth() {
 function bindMonthClicks() {
   document.querySelectorAll(".month-event, .month-event-all-day").forEach(el => {
     el.addEventListener("click", e => {
+      if (_isDragging) return;
       e.stopPropagation();
       editEvent(parseInt(el.dataset.id));
     });
   });
   document.querySelectorAll(".month-cell").forEach(el => {
     el.addEventListener("click", () => {
+      if (_isDragging) return;
       const d = new Date(el.dataset.date);
       if (!isNaN(d.getTime())) {
         currentDate = d;
@@ -225,10 +227,145 @@ function bindMonthClicks() {
       }
     });
   });
+  setTimeout(initEventDrag, 50);
 }
 
 // ─── Jetzt-Linie ───
 function getNowTop() { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); }
+
+// ─── Drag & Drop (Events verschieben) ───
+let _isDragging = false;
+
+function initEventDrag() {
+  document.querySelectorAll(".week-event").forEach(el => {
+    el.setAttribute("draggable", "true");
+    el.addEventListener("dragstart", (e) => {
+      if (e.target.closest(".ev-resize-handle")) return;
+      _isDragging = true;
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", el.dataset.id);
+      el.classList.add("ev-dragging");
+    });
+    el.addEventListener("dragend", () => {
+      el.classList.remove("ev-dragging");
+      document.querySelectorAll(".ev-drop-target").forEach(c => c.classList.remove("ev-drop-target"));
+      setTimeout(() => { _isDragging = false; }, 0);
+    });
+  });
+
+  document.querySelectorAll(".month-event, .month-event-all-day").forEach(el => {
+    el.setAttribute("draggable", "true");
+    el.addEventListener("dragstart", (e) => {
+      _isDragging = true;
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", el.dataset.id);
+      el.classList.add("ev-dragging");
+    });
+    el.addEventListener("dragend", () => {
+      el.classList.remove("ev-dragging");
+      document.querySelectorAll(".ev-drop-target").forEach(c => c.classList.remove("ev-drop-target"));
+      setTimeout(() => { _isDragging = false; }, 0);
+    });
+  });
+
+  document.querySelectorAll(".week-day-col, .day-col").forEach(el => {
+    el.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      el.classList.add("ev-drop-target");
+    });
+    el.addEventListener("dragleave", () => {
+      el.classList.remove("ev-drop-target");
+    });
+    el.addEventListener("drop", (e) => {
+      e.preventDefault();
+      el.classList.remove("ev-drop-target");
+      const evId = parseInt(e.dataTransfer.getData("text/plain"));
+      if (!evId) return;
+      const ev = events.find(ev => ev.id === evId);
+      if (!ev) return;
+      const newDateStr = el.dataset.date;
+      if (!newDateStr) return;
+
+      const rect = el.getBoundingClientRect();
+      let y = e.clientY - rect.top;
+      y = Math.max(0, Math.min(y, 1439));
+      const totalMinutes = Math.round(y);
+      let hours = Math.floor(totalMinutes / 60);
+      let mins = Math.round(totalMinutes % 60 / 5) * 5;
+      if (mins >= 60) { mins = 0; hours++; }
+      hours = Math.max(0, Math.min(23, hours));
+
+      const newStartStr = `${newDateStr}T${String(hours).padStart(2,"0")}:${String(mins).padStart(2,"0")}:00`;
+      const dur = ev.dauer || 60;
+      const newEnd = new Date(new Date(newStartStr).getTime() + dur * 60000);
+      const newEndStr = `${newDateStr}T${String(newEnd.getHours()).padStart(2,"0")}:${String(newEnd.getMinutes()).padStart(2,"0")}:00`;
+
+      authFetch(`/api/kalender/${evId}`, {
+        method: "PUT",
+        body: JSON.stringify({ start_datum: newStartStr, end_datum: newEndStr }),
+      }).then(res => {
+        if (res && res.ok) {
+          ev.start_datum = newStartStr;
+          ev.end_datum = newEndStr;
+          renderView();
+        }
+      });
+    });
+  });
+
+  document.querySelectorAll(".month-cell").forEach(el => {
+    el.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      el.classList.add("ev-drop-target");
+    });
+    el.addEventListener("dragleave", () => {
+      el.classList.remove("ev-drop-target");
+    });
+    el.addEventListener("drop", (e) => {
+      e.preventDefault();
+      el.classList.remove("ev-drop-target");
+      const evId = parseInt(e.dataTransfer.getData("text/plain"));
+      if (!evId) return;
+      const ev = events.find(ev => ev.id === evId);
+      if (!ev) return;
+      const newDateStr = el.dataset.date;
+      if (!newDateStr) return;
+
+      let newStartStr, newEndStr;
+      if (ev.ganztag) {
+        newStartStr = `${newDateStr}T00:00:00`;
+        newEndStr = `${newDateStr}T23:59:59`;
+      } else if (ev.start_datum) {
+        const oldStart = new Date(ev.start_datum);
+        newStartStr = `${newDateStr}T${String(oldStart.getHours()).padStart(2,"0")}:${String(oldStart.getMinutes()).padStart(2,"0")}:00`;
+        if (ev.end_datum) {
+          const oldEnd = new Date(ev.end_datum);
+          newEndStr = `${newDateStr}T${String(oldEnd.getHours()).padStart(2,"0")}:${String(oldEnd.getMinutes()).padStart(2,"0")}:00`;
+        } else {
+          const dur = ev.dauer || 60;
+          const ne = new Date(new Date(newStartStr).getTime() + dur * 60000);
+          newEndStr = `${newDateStr}T${String(ne.getHours()).padStart(2,"0")}:${String(ne.getMinutes()).padStart(2,"0")}:00`;
+        }
+      } else {
+        newStartStr = `${newDateStr}T00:00:00`;
+        newEndStr = `${newDateStr}T23:59:59`;
+      }
+
+      authFetch(`/api/kalender/${evId}`, {
+        method: "PUT",
+        body: JSON.stringify({ start_datum: newStartStr, end_datum: newEndStr }),
+      }).then(res => {
+        if (res && res.ok) {
+          ev.start_datum = newStartStr;
+          ev.end_datum = newEndStr;
+          renderView();
+        }
+      });
+    });
+  });
+}
 
 // ==========================================================
 // WOCHENANSICHT
@@ -340,6 +477,7 @@ function _onEvResizeEnd() {
 function bindWeekClicks() {
   document.querySelectorAll(".week-event").forEach(el => {
     el.addEventListener("click", e => {
+      if (_isDragging) return;
       e.stopPropagation();
       editEvent(parseInt(el.dataset.id));
     });
@@ -354,6 +492,7 @@ function bindWeekClicks() {
   });
   const existing = document.querySelectorAll(".ev-resize-handle");
   if (existing.length === 0) setTimeout(initEventResize, 50);
+  setTimeout(initEventDrag, 50);
 }
 
 // ==========================================================
@@ -398,6 +537,7 @@ function renderDay(date) {
 function bindDayClicks() {
   document.querySelectorAll(".week-event").forEach(el => {
     el.addEventListener("click", e => {
+      if (_isDragging) return;
       e.stopPropagation();
       editEvent(parseInt(el.dataset.id));
     });
@@ -409,6 +549,7 @@ function bindDayClicks() {
     });
   });
   setTimeout(initEventResize, 50);
+  setTimeout(initEventDrag, 50);
 }
 
 // ==========================================================

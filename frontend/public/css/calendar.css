@@ -640,6 +640,22 @@
 .cal-btn-delete:hover { background: #fff0f0; }
 
 /* ==========================================================
+   DRAG & DROP
+   ========================================================== */
+.week-event.ev-dragging,
+.month-event.ev-dragging,
+.month-event-all-day.ev-dragging {
+  opacity: 0.4;
+}
+.ev-drop-target {
+  background-color: #dbeafe !important;
+}
+
+body.dark .ev-drop-target {
+  background-color: #1e3a5f !important;
+}
+
+/* ==========================================================
    DARK MODE
    ========================================================== */
 body.dark {

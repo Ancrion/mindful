@@ -184,6 +184,29 @@ textarea {
   margin-top: 8px;
 }
 
+.module-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+.module-bottom .module-link {
+  cursor: pointer;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+}
+
+.module-bottom .module-link:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  text-decoration: none;
+}
+
 .module-link {
   display: flex;
   align-items: center;

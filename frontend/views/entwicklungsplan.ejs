@@ -1245,6 +1245,169 @@ window.openWsCtxMenu = function (e, id) {
   flex-direction: column;
   gap: 6px;
 }</script>
+<script type="text/plain" id="jaro-17">// calendar.js – Drag & Drop
+let _isDragging = false;
+
+function initEventDrag() {
+  // Week/Day events: draggable
+  document.querySelectorAll(".week-event").forEach(el => {
+    el.setAttribute("draggable", "true");
+    el.addEventListener("dragstart", (e) => {
+      if (e.target.closest(".ev-resize-handle")) return;
+      _isDragging = true;
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", el.dataset.id);
+      el.classList.add("ev-dragging");
+    });
+    el.addEventListener("dragend", () => {
+      el.classList.remove("ev-dragging");
+      document.querySelectorAll(".ev-drop-target").forEach(c => c.classList.remove("ev-drop-target"));
+      setTimeout(() => { _isDragging = false; }, 0);
+    });
+  });
+
+  // Month events: draggable
+  document.querySelectorAll(".month-event, .month-event-all-day").forEach(el => {
+    el.setAttribute("draggable", "true");
+    el.addEventListener("dragstart", (e) => {
+      _isDragging = true;
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", el.dataset.id);
+      el.classList.add("ev-dragging");
+    });
+    el.addEventListener("dragend", () => {
+      el.classList.remove("ev-dragging");
+      document.querySelectorAll(".ev-drop-target").forEach(c => c.classList.remove("ev-drop-target"));
+      setTimeout(() => { _isDragging = false; }, 0);
+    });
+  });
+
+  // Week/Day cols: drop target
+  document.querySelectorAll(".week-day-col, .day-col").forEach(el => {
+    el.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      el.classList.add("ev-drop-target");
+    });
+    el.addEventListener("dragleave", () => { el.classList.remove("ev-drop-target"); });
+    el.addEventListener("drop", (e) => {
+      e.preventDefault();
+      el.classList.remove("ev-drop-target");
+      const evId = parseInt(e.dataTransfer.getData("text/plain"));
+      if (!evId) return;
+      const ev = events.find(ev => ev.id === evId);
+      if (!ev) return;
+      const newDateStr = el.dataset.date;
+      if (!newDateStr) return;
+      // Berechne neue Uhrzeit aus Y-Position (1px = 1 Minute, 60px = 1h)
+      const rect = el.getBoundingClientRect();
+      let y = e.clientY - rect.top;
+      y = Math.max(0, Math.min(y, 1439));
+      const totalMinutes = Math.round(y);
+      let hours = Math.floor(totalMinutes / 60);
+      let mins = Math.round(totalMinutes % 60 / 5) * 5;
+      if (mins >= 60) { mins = 0; hours++; }
+      hours = Math.max(0, Math.min(23, hours));
+
+      const newStartStr = `${newDateStr}T${String(hours).padStart(2,"0")}:${String(mins).padStart(2,"0")}:00`;
+      const dur = ev.dauer || 60;
+      const newEnd = new Date(new Date(newStartStr).getTime() + dur * 60000);
+      const newEndStr = `${newDateStr}T${String(newEnd.getHours()).padStart(2,"0")}:${String(newEnd.getMinutes()).padStart(2,"0")}:00`;
+
+      authFetch(`/api/kalender/${evId}`, {
+        method: "PUT",
+        body: JSON.stringify({ start_datum: newStartStr, end_datum: newEndStr }),
+      }).then(res => {
+        if (res && res.ok) { ev.start_datum = newStartStr; ev.end_datum = newEndStr; renderView(); }
+      });
+    });
+  });
+
+  // Month cells: drop target
+  document.querySelectorAll(".month-cell").forEach(el => {
+    el.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      el.classList.add("ev-drop-target");
+    });
+    el.addEventListener("dragleave", () => { el.classList.remove("ev-drop-target"); });
+    el.addEventListener("drop", (e) => {
+      e.preventDefault();
+      el.classList.remove("ev-drop-target");
+      const evId = parseInt(e.dataTransfer.getData("text/plain"));
+      if (!evId) return;
+      const ev = events.find(ev => ev.id === evId);
+      if (!ev) return;
+      const newDateStr = el.dataset.date;
+      if (!newDateStr) return;
+
+      let newStartStr, newEndStr;
+      if (ev.ganztag) {
+        newStartStr = `${newDateStr}T00:00:00`;
+        newEndStr = `${newDateStr}T23:59:59`;
+      } else if (ev.start_datum) {
+        const oldStart = new Date(ev.start_datum);
+        newStartStr = `${newDateStr}T${String(oldStart.getHours()).padStart(2,"0")}:${String(oldStart.getMinutes()).padStart(2,"0")}:00`;
+        if (ev.end_datum) {
+          const oldEnd = new Date(ev.end_datum);
+          newEndStr = `${newDateStr}T${String(oldEnd.getHours()).padStart(2,"0")}:${String(oldEnd.getMinutes()).padStart(2,"0")}:00`;
+        } else {
+          const dur = ev.dauer || 60;
+          const ne = new Date(new Date(newStartStr).getTime() + dur * 60000);
+          newEndStr = `${newDateStr}T${String(ne.getHours()).padStart(2,"0")}:${String(ne.getMinutes()).padStart(2,"0")}:00`;
+        }
+      } else {
+        newStartStr = `${newDateStr}T00:00:00`;
+        newEndStr = `${newDateStr}T23:59:59`;
+      }
+
+      authFetch(`/api/kalender/${evId}`, {
+        method: "PUT",
+        body: JSON.stringify({ start_datum: newStartStr, end_datum: newEndStr }),
+      }).then(res => {
+        if (res && res.ok) { ev.start_datum = newStartStr; ev.end_datum = newEndStr; renderView(); }
+      });
+    });
+  });
+}
+
+// In bindWeekClicks/bindDayClicks/bindMonthClicks:
+//   if (_isDragging) return;
+//   setTimeout(initEventDrag, 50);
+// CSS:
+//   .week-event.ev-dragging, .month-event.ev-dragging { opacity: 0.4; }
+//   .ev-drop-target { background-color: #dbeafe !important; }</script>
+<script type="text/plain" id="jaro-18"><!-- sidebar.ejs – Bottom-Bereich -->
+<div class="module-bottom">
+  <a href="/profile" class="module-link">
+    <i class="fas fa-cog"></i> <span>Optionen</span>
+  </a>
+  <button class="module-link module-logout" onclick="logout()">
+    <i class="fas fa-sign-out-alt"></i> <span>Abmelden</span>
+  </button>
+</div>
+
+/* style.css */
+.module-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  margin-top: 8px;
+}
+.module-bottom .module-link {
+  cursor: pointer;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+}
+.module-bottom .module-link:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  text-decoration: none;
+}</script>
 <script type="text/plain" id="omar-1"><!doctype html>
 <html lang="de">
   <head>
@@ -2137,7 +2300,7 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
@@ -2219,7 +2382,13 @@ git push --tags</script>
             commit:"git commit -m \"fix: rewrite todo context menu, add workspace context menu, fix naming conflict\"" },
           { id:"jaro-16", file:"frontend/public/css/style.css (bugs-main, .kanban)",
             desc:"Bug-Seite Full-Screen-Redesign: bugs-main linksbündig mit max-width:1400px, bugs-content + kanban mit flex:1, Kanban-Spalten scrollen einzeln (overflow-y:auto), bugs-main overflow-y:auto.",
-            commit:"git commit -m \"bug page: full-height centered layout with scrollable kanban cols\"" }
+            commit:"git commit -m \"bug page: full-height centered layout with scrollable kanban cols\"" },
+          { id:"jaro-17", file:"frontend/public/js/calendar.js + frontend/public/css/calendar.css",
+            desc:"Kalender-Drag & Drop: initEventDrag() mit HTML5 DnD. Week/Day: vertikale Zeitposition aus Y-Koordinate (1px=1min, 5-Minuten-Snapping). Day-übergreifend via data-date. Month: zwischen Datumszellen mit Zeit-Erhalt. Resize-Handle-Konflikt via .ev-resize-handle-Check verhindert. _isDragging-Flag unterdrückt Klick nach Drag. CSS: .ev-dragging (opacity) + .ev-drop-target (blau).",
+            commit:"git commit -m \"add drag and drop for calendar events (week/day/month views)\"" },
+          { id:"jaro-18", file:"frontend/views/partials/sidebar.ejs + style.css",
+            desc:"Sidebar-Bottom: Optionen-Link (Zahnrad → /profile) + Abmelden-Button (logout()). .module-bottom mit border-top-Trennung, inherit von .module-link. Altes Abmelden-<small> aus .user-info entfernt.",
+            commit:"git commit -m \"add options and logout buttons to sidebar bottom\"" }
         ]
       },
       omar: {
@@ -2304,7 +2473,10 @@ git push --tags</script>
             commit:'git commit -m "feat: workspace hierarchy + changelog page"' },
           { id:"team-4", file:"Kontextmenüs & DnD-Fix",
             desc:"Rechtsklick-Kontextmenü für Todos und Workspaces (Sidebar + Todo-Dropdown). Bugfix: Sidebar-Baum wurde auf Todo-Seite nie gerendert (loadWorkspaces-Konflikt). DnD in Sidebar + Todo-Dropdown. Drop auf 'Alle' = root. 'Zu root machen'-Option.",
-            commit:'git commit -m "fix workspace DnD visual + add root drop zone + make-root context menu option"' }
+            commit:'git commit -m "fix workspace DnD visual + add root drop zone + make-root context menu option"' },
+          { id:"team-5", file:"Kalender-DnD & Sidebar-Buttons",
+            desc:"HTML5-DnD für Kalender-Events: Week/Day vertical repositioning (Y→Uhrzeit, 5-Min-Snapping), cross-day (data-date), Month cross-cell (Datum, Zeit erhalten). Resize-Handle-Konflikt verhindert. Click-suppression via _isDragging-Flag. Sidebar unten: Optionen (Zahnrad → /profile) + Abmelden (logout()) mit border-top-Trennung.",
+            commit:'git commit -m "add drag and drop for calendar events (week/day/month views) + sidebar bottom options/logout buttons"' }
         ]
       }
     };

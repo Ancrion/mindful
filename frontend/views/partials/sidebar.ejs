@@ -15,7 +15,6 @@
       <div class="user-avatar" id="userInitials">JD</div>
       <div class="user-info">
         <strong id="userNameDisplay">...</strong>
-        <small onclick="event.stopPropagation(); logout()">Abmelden</small>
       </div>
     </a>
     <div class="sidebar-ws" id="sidebarWs">
@@ -89,6 +88,14 @@
         <i class="fas fa-clipboard-list"></i> <span>Versionsverlauf</span>
       </a>
     </nav>
+  </div>
+  <div class="module-bottom">
+    <a href="/profile" class="module-link">
+      <i class="fas fa-cog"></i> <span>Optionen</span>
+    </a>
+    <button class="module-link module-logout" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> <span>Abmelden</span>
+    </button>
   </div>
 </aside>
 
