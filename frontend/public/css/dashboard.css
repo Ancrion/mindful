@@ -933,10 +933,14 @@ body.dark .widget-manage-btn:hover {
 
 .cal-widget {
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .cal-head {
   padding: 6px 0;
+  flex-shrink: 0;
 }
 
 .cal-head-row {
@@ -1019,12 +1023,15 @@ body.dark .widget-manage-btn:hover {
   padding: 4px 0;
   border-bottom: 1px solid var(--border);
   margin-bottom: 2px;
+  flex-shrink: 0;
 }
 
 .cal-wgrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
+  flex: 1;
+  grid-auto-rows: 1fr;
 }
 
 .cal-wc {
@@ -1079,6 +1086,7 @@ body.dark .widget-manage-btn:hover {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  flex: 1;
 }
 
 .cal-wev-item {
@@ -1122,6 +1130,10 @@ body.dark .widget-manage-btn:hover {
   font-size: 0.7rem;
   padding: 12px 0;
   font-style: italic;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cal-wev-more {
