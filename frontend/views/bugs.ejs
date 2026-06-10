@@ -25,7 +25,24 @@
               <input type="text" id="bugTitle" placeholder="Kurze Zusammenfassung des Fehlers …" required />
               <button type="submit" class="primary-btn">Melden</button>
             </div>
-            <textarea id="bugDesc" placeholder="Genauere Beschreibung (optional) …" rows="2"></textarea>
+            <div class="bug-form-row" style="margin-top:10px">
+              <select id="bugSeite" class="bug-select">
+                <option value="">– Seite auswählen (optional) –</option>
+                <option value="Dashboard">Dashboard</option>
+                <option value="To-Do">To-Do</option>
+                <option value="Notizen">Notizen</option>
+                <option value="Kalender">Kalender</option>
+                <option value="Pomodoro">Pomodoro</option>
+                <option value="Zeiterfassung">Zeiterfassung</option>
+                <option value="Rangliste">Rangliste</option>
+                <option value="Nachrichten">Nachrichten</option>
+                <option value="Profil">Profil</option>
+                <option value="Projektplan">Projektplan</option>
+                <option value="Bugs">Bugs</option>
+                <option value="Versionsverlauf">Versionsverlauf</option>
+              </select>
+              <textarea id="bugDesc" placeholder="Genauere Beschreibung (optional) …" rows="2" style="flex:1;width:auto;margin-top:0"></textarea>
+            </div>
           </form>
 
           <div class="kanban" id="kanban">

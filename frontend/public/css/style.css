@@ -2050,6 +2050,32 @@ body.dark .search-overlay {
   color: var(--text-secondary);
 }
 .kanban-card-meta i { margin-right: 3px; }
+.bug-select {
+  flex: 0 0 220px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 14px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+.bug-select:focus { border-color: var(--accent); }
+.kanban-card-page {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 2px 8px;
+  border-radius: 5px;
+  margin-bottom: 6px;
+}
+.kanban-card-page i { font-size: 10px; }
 
 /* ─── Changelog / Versionsverlauf ─── */
 .changelog-main {

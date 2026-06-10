@@ -14,11 +14,11 @@ router.get("/", auth, (req, res) => {
 
 router.post("/", auth, (req, res) => {
   try {
-    const { titel, beschreibung } = req.body;
+    const { titel, beschreibung, seite } = req.body;
     if (!titel || !titel.trim())
       return res.status(400).json({ error: "Titel erforderlich" });
 
-    db.prepare("INSERT INTO bug_reports (user_id, titel, beschreibung) VALUES (?, ?, ?)").run(req.user.id, titel.trim(), beschreibung || null);
+    db.prepare("INSERT INTO bug_reports (user_id, titel, beschreibung, seite) VALUES (?, ?, ?, ?)").run(req.user.id, titel.trim(), beschreibung || null, seite || null);
     res.status(201).json({ message: "Bug gemeldet" });
   } catch (err) {
     console.error("Fehler bei Bug-Meldung:", err);

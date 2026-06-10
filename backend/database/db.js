@@ -13,6 +13,13 @@ try {
   // Spalte existiert bereits
 }
 
+// Migration: seite für Bug-Reports
+try {
+  db.exec("ALTER TABLE bug_reports ADD COLUMN seite TEXT DEFAULT NULL");
+} catch (e) {
+  // Spalte existiert bereits
+}
+
 db.exec(`
   -- 1. BENUTZER
   CREATE TABLE IF NOT EXISTS users (
@@ -201,6 +208,7 @@ db.exec(`
     user_id     INTEGER NOT NULL,
     titel       TEXT NOT NULL,
     beschreibung TEXT,
+    seite       TEXT DEFAULT NULL,
     status      TEXT DEFAULT 'offen',
     erledigt    INTEGER DEFAULT 0,
     created_at  TEXT DEFAULT (datetime('now', 'localtime')),
@@ -232,6 +240,7 @@ if (count.c === 0) {
     ["1.1.0", "2026-06-10", "Bug-Report-System", '["Bug-Melden-Seite mit Formular und Kachel-Ansicht","Kanban-Board mit 3 Spalten: Offen / In Arbeit / Abgeschlossen","Drag & Drop zum Verschieben zwischen Status-Spalten","Löschen per rotem X (nur Admin jaro)","Berechtigungssystem: jaro verwaltet, alle anderen melden","Echtzeit-Count pro Status-Spalte"]', '[]', '["1578c48","4e66369"]'],
     ["1.2.0", "2026-06-10", "Workspace-Hierarchie", '["Workspace-Baum mit Eltern/Kind-Struktur (parent_id)","Sidebar mit Expand/Collapse und Einrückung","Drag & Drop zum Verschieben von Workspaces in der Hierarchie","Todo-Filter zeigt alle Todos aus Unter-Workspaces an","Neue Workspaces werden als Kind des ausgewählten erstellt","Beim Löschen werden Kinder an den Großeltern-Workspace gehängt"]', '[]', '["0a40bfb"]'],
     ["1.3.0", "2026-06-10", "Versionsverlauf & Changelog", '["Professionelle Changelog-Seite mit Timeline-Design","Automatische Seed-Einträge aus der Git-Historie (v0.1.0 bis v1.3.0)","Admin-Interface (jaro) zum Erstellen/Bearbeiten/Löschen von Einträgen","Feature-Liste (blau) und Bugfix-Liste (grün) pro Version","Einklappbare Commit-Hashes pro Eintrag","Aktuellste Version wird optisch hervorgehoben","Sidebar-Link für alle sichtbar – kein Login nötig"]', '["Drag & Drop in der Workspace-Hierarchie repariert (addEventListener statt Inline-Handler)"]', '["f5187aa","b214064"]'],
+    ["1.3.1", "2026-06-10", "Seitenauswahl bei Bug-Reports", '["Dropdown zur Auswahl der betroffenen Seite im Bug-Formular (Dashboard, To-Do, Notizen, Kalender, Pomodoro, Zeiterfassung, Rangliste, Nachrichten, Profil, Projektplan, Bugs, Versionsverlauf)","Seiten-Badge auf jeder Bug-Karte (z.B. Dashboard, To-Do)"]', '["Changelog v1.3.0 nachgetragen","Entwicklungsplan team-3 nachgetragen"]', '["1ecbe6e"]'],
   ];
   const tx = db.transaction(() => {
     for (const row of seed) insert.run(...row);

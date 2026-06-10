@@ -37,6 +37,7 @@ function renderKanban(bugs) {
       <div class="kanban-card" draggable="${isJaroUser}" data-id="${b.id}" data-status="${status}">
         ${isJaroUser ? `<button class="kanban-card-delete" data-id="${b.id}" title="Löschen">&times;</button>` : ""}
         <strong class="kanban-card-title">${escapeHtml(b.titel)}</strong>
+        ${b.seite ? `<span class="kanban-card-page"><i class="fa-regular fa-window-maximize"></i> ${escapeHtml(b.seite)}</span>` : ""}
         ${b.beschreibung ? `<p class="kanban-card-desc">${escapeHtml(b.beschreibung)}</p>` : ""}
         <div class="kanban-card-meta">
           <span><i class="fa-regular fa-user"></i> ${escapeHtml(b.user_name)}</span>
@@ -144,12 +145,13 @@ async function submitBug(e) {
   e.preventDefault();
   const titel = document.getElementById("bugTitle").value.trim();
   const beschreibung = document.getElementById("bugDesc").value.trim();
+  const seite = document.getElementById("bugSeite").value;
   if (!titel) return;
 
   const res = await authFetch(API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ titel, beschreibung }),
+    body: JSON.stringify({ titel, beschreibung, seite: seite || null }),
   });
   if (!res || !res.ok) return showToast("Fehler beim Melden", "error");
 
