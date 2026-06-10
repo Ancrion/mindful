@@ -295,25 +295,20 @@ function _getPostRender(widget) {
   }
 }
 
-// ─── Drag & Drop ───
-let _dragId = null;
+// ─── Drag & Drop (Completely Rewritten) ───
+let _dragState = null; // {id, draggedElement}
 let _placeholderEl = null;
-let _draggedCard = null;
 
 function _reflowAll() {
   const grid = document.getElementById("widgetGrid");
   if (!grid) return;
   const allCards = [...grid.querySelectorAll(".widget-card")];
-
   let col = 0;
   for (const card of allCards) {
     const cur = parseInt(card.dataset.widgetSize);
     if (col + cur > 4) {
       const avail = 4 - col;
-      const best =
-        avail >= 4 ? 4 :
-        avail >= 2 ? 2 :
-        1;
+      const best = avail >= 4 ? 4 : avail >= 2 ? 2 : 1;
       if (best !== cur) {
         const w = _widgets.find(x => x.id == parseInt(card.dataset.widgetId));
         if (w) _setWidgetSize(card, w, best);
@@ -327,99 +322,109 @@ function _reflowAll() {
 }
 
 function _onDragStart(e) {
-  _dragId = this.dataset.widgetId;
-  _draggedCard = this;
+  const grid = document.getElementById("widgetGrid");
+  if (!grid) return;
+
+  _dragState = {
+    id: this.dataset.widgetId,
+    draggedElement: this,
+  };
+
   this.classList.add("dragging");
   e.dataTransfer.effectAllowed = "move";
-  e.dataTransfer.setData("text/plain", _dragId);
-  
-  // Create placeholder with slight delay for smoother animation
-  setTimeout(() => {
-    if (_dragId) { // check drag is still active
-      _placeholderEl = document.createElement("div");
-      _placeholderEl.className = `widget-placeholder widget-s${this.dataset.widgetSize}`;
-      this.parentNode.insertBefore(_placeholderEl, this.nextSibling);
-    }
-  }, 50);
+  e.dataTransfer.setData("text/plain", this.dataset.widgetId);
+
+  _placeholderEl = document.createElement("div");
+  _placeholderEl.className = `widget-placeholder widget-s${this.dataset.widgetSize}`;
+  grid.insertBefore(_placeholderEl, this.nextSibling);
 }
 
 function _onDragEnd() {
-  this.classList.remove("dragging");
-  document.querySelectorAll(".widget-card.drag-over").forEach((el) => el.classList.remove("drag-over"));
-  if (_placeholderEl) { 
-    _placeholderEl.style.opacity = "0";
-    setTimeout(() => {
-      if (_placeholderEl) { _placeholderEl.remove(); _placeholderEl = null; }
-    }, 250);
+  if (_dragState?.draggedElement) {
+    _dragState.draggedElement.classList.remove("dragging");
   }
-  _dragId = null;
-  _draggedCard = null;
+  document.querySelectorAll(".widget-card.drag-over").forEach((el) => {
+    el.classList.remove("drag-over");
+  });
+  if (_placeholderEl) {
+    _placeholderEl.remove();
+    _placeholderEl = null;
+  }
+  _dragState = null;
 }
 
 function _onDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = "move";
-  
-  // Only process if not dragging over self
-  if (this.dataset.widgetId === _dragId) return;
-  
+
+  if (!_dragState) return;
+  if (this.dataset.widgetId === _dragState.id) return;
+
   document.querySelectorAll(".widget-card.drag-over").forEach((el) => {
     if (el !== this) el.classList.remove("drag-over");
   });
   this.classList.add("drag-over");
-  
-  if (_placeholderEl && _draggedCard) {
-    // Smooth placeholder movement
-    const rect = this.getBoundingClientRect();
-    const gridRect = this.parentNode.getBoundingClientRect();
-    const cursorX = e.clientX;
-    const elemMidX = rect.left + rect.width / 2;
-    
-    // Insert placeholder before or after based on cursor position
-    if (cursorX < elemMidX) {
-      this.parentNode.insertBefore(_placeholderEl, this);
-    } else {
-      this.parentNode.insertBefore(_placeholderEl, this.nextSibling);
-    }
+
+  if (!_placeholderEl) return;
+  const grid = document.getElementById("widgetGrid");
+  if (!grid) return;
+
+  const rect = this.getBoundingClientRect();
+  const midX = rect.left + rect.width / 2;
+  if (e.clientX < midX) {
+    grid.insertBefore(_placeholderEl, this);
+  } else {
+    grid.insertBefore(_placeholderEl, this.nextSibling);
   }
 }
 
 function _onDrop(e) {
   e.preventDefault();
-  this.classList.remove("drag-over");
-  const fromId = e.dataTransfer.getData("text/plain");
-  if (!fromId || fromId === this.dataset.widgetId) return;
 
-  const fromEl = document.querySelector(`[data-widget-id="${fromId}"]`);
+  if (!_dragState) return;
+
   const grid = document.getElementById("widgetGrid");
-  if (!fromEl || !grid) return;
+  if (!grid) return;
 
-  // Store original order for undo
-  const originalOrder = [...grid.querySelectorAll(".widget-card")].map(el => ({
-    id: parseInt(el.dataset.widgetId),
-    size: parseInt(el.dataset.widgetSize),
-    element: el
-  }));
+  const draggedElement = _dragState.draggedElement;
+  const targetElement = this;
 
-  // Move widget in DOM
-  const allCards = [...grid.querySelectorAll(".widget-card")];
-  const fromIdx = allCards.indexOf(fromEl);
-  const toIdx = allCards.indexOf(this);
+  if (draggedElement === targetElement || !targetElement) return;
 
-  if (fromIdx < toIdx) {
-    this.parentNode.insertBefore(fromEl, this.nextSibling);
-  } else {
-    this.parentNode.insertBefore(fromEl, this);
+  document.querySelectorAll(".widget-card.drag-over").forEach((el) => {
+    el.classList.remove("drag-over");
+  });
+
+  // Save state before change
+  const originalHTML = grid.innerHTML;
+  const originalSizes = {};
+  [...grid.querySelectorAll(".widget-card")].forEach(el => {
+    originalSizes[parseInt(el.dataset.widgetId)] = parseInt(el.dataset.widgetSize);
+  });
+
+  // Remove placeholder
+  if (_placeholderEl) {
+    _placeholderEl.remove();
+    _placeholderEl = null;
   }
 
-  if (_placeholderEl) { _placeholderEl.remove(); _placeholderEl = null; }
+  // Move dragged element to placeholder position
+  const allCards = [...grid.querySelectorAll(".widget-card")];
+  const dragIdx = allCards.indexOf(draggedElement);
+  const targetIdx = allCards.indexOf(targetElement);
 
-  // Reflow all widgets to fill rows
+  if (dragIdx === -1 || targetIdx === -1) return;
+
+  if (dragIdx < targetIdx) {
+    grid.insertBefore(draggedElement, targetElement.nextSibling);
+  } else {
+    grid.insertBefore(draggedElement, targetElement);
+  }
+
   _reflowAll();
 
-  // Save new order
-  const reordered = [...grid.querySelectorAll(".widget-card")];
-  const newOrder = reordered.map((el, i) => ({
+  // Save to server
+  const newOrder = [...grid.querySelectorAll(".widget-card")].map((el, i) => ({
     id: parseInt(el.dataset.widgetId),
     position: i,
   }));
@@ -430,39 +435,46 @@ function _onDrop(e) {
     body: JSON.stringify({ order: newOrder }),
   })
     .then(res => {
-      if (!res || !res.ok) throw new Error(res?.error || "Server error");
-      // Success - update local widget positions
-      for (const o of newOrder) {
-        const w = _widgets.find((x) => x.id == o.id);
+      if (!res?.ok) throw new Error("Server error");
+      newOrder.forEach(o => {
+        const w = _widgets.find(x => x.id == o.id);
         if (w) w.position = o.position;
-      }
-      console.log("✅ Widget order saved successfully");
+      });
+      console.log("✅ Widget order saved");
     })
     .catch(err => {
-      console.error("❌ Widget reorder failed:", err);
-      // Undo: restore original order in DOM
-      originalOrder.forEach(item => {
-        grid.appendChild(item.element);
-      });
-      
-      // Restore original sizes if they were changed by reflow
-      originalOrder.forEach(item => {
-        const card = item.element;
-        const currentSize = parseInt(card.dataset.widgetSize);
-        if (currentSize !== item.size) {
-          card.classList.remove(`widget-s${currentSize}`);
-          card.classList.add(`widget-s${item.size}`);
-          card.dataset.widgetSize = item.size;
+      console.error("❌ Save failed:", err);
+      grid.innerHTML = originalHTML;
+      [...grid.querySelectorAll(".widget-card")].forEach(el => {
+        const id = parseInt(el.dataset.widgetId);
+        const sz = originalSizes[id];
+        el.classList.remove(...Array.from(el.classList).filter(c => c.startsWith("widget-s")));
+        el.classList.add(`widget-s${sz}`);
+        el.dataset.widgetSize = sz;
+        const w = _widgets.find(x => x.id == id);
+        if (w) {
+          const card = el;
+          card.addEventListener("dragstart", _onDragStart);
+          card.addEventListener("dragend", _onDragEnd);
+          card.addEventListener("dragover", _onDragOver);
+          card.addEventListener("drop", _onDrop);
+          const resizeHandle = card.querySelector(".widget-resize-handle");
+          if (resizeHandle) {
+            resizeHandle.addEventListener("mousedown", (e) => _startResize(e, card, w));
+            resizeHandle.addEventListener("touchstart", (e) => _startResize(e, card, w), { passive: false });
+          }
+          const removeBtn = card.querySelector(".widget-remove");
+          if (removeBtn) {
+            removeBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              _removeWidget(w.id);
+            });
+          }
         }
       });
-      
-      // Show error message
-      console.warn("⚠️ Widget-Verschiebung fehlgeschlagen und rückgängig gemacht.");
+      console.warn("⚠️ Widget order reverted");
     });
 }
-
-
-
 // ─── Auto-Refresh ───
 let _refreshTimers = {};
 
