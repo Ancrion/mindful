@@ -690,7 +690,7 @@ body.dark .widget-manage-btn:hover {
 
 /* ─── Dashboard Welcome ─── */
 .dashboard-welcome {
-  padding: 24px 24px 16px;
+  padding: 32px 24px 24px;
 }
 .dashboard-welcome h1 {
   margin: 0;
@@ -713,7 +713,7 @@ body.dark .widget-manage-btn:hover {
     font-size: 22px;
   }
   .dashboard-welcome {
-    padding: 16px 16px 12px;
+    padding: 24px 16px 16px;
   }
   .widget-grid-header {
     padding: 0 16px;
