@@ -3048,7 +3048,10 @@ git push --tags</script>
             commit:"f768261", hash:"https://github.com/Ancrion/mindful/commit/f768261" },
           { id:"jaro-46", file:"frontend/public/js/index.js",
             desc:"WIDGET DRAG-OVER POSITIONING UX IMPROVEMENT v1.7.8: ① Bug-Fix: Widgets sprangen nach unten-links beim Drag von linker Seite, ② Ursache: Placeholder-Logik berücksichtigte nur relX nicht relY, ③ Neue Logik: insertBefore = (relX < 0.5 || relY < 0.3), ④ Relative Position in Target berechnet: relX = (clientX - rect.left) / rect.width, ⑤ UX: Intuitives Verschieben auch bei Widgets am Ende der Reihe",
-            commit:"f46886a", hash:"https://github.com/Ancrion/mindful/commit/f46886a" }
+            commit:"f46886a", hash:"https://github.com/Ancrion/mindful/commit/f46886a" },
+          { id:"jaro-47", file:"frontend/public/css/dashboard.css + frontend/public/js/index.js",
+            desc:"WIDGET NEIGHBOR JUMP FIX v1.7.8: ① Bug-Fix: Rechter Nachbar springt nach rechts während Drag, ② Ursache: Gezogenes Element nahm immer noch Platz im Grid ein, ③ Lösung: .dragging mit position: absolute aus Grid-Fluss genommen, ④ .widget-grid erhält position: relative, ⑤ In _onDragStart: Element-Position berechnet + inline styles (left/top/width/height) gesetzt, ⑥ In _onDragEnd + Drop-Handler: Inline-Styles entfernt",
+            commit:"636acf6", hash:"https://github.com/Ancrion/mindful/commit/636acf6" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",

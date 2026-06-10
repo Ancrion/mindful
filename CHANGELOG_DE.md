@@ -29,6 +29,15 @@
   - Placeholder wird NACH Target eingefügt, nur wenn Cursor auf rechter/unterer Hälfte ist
   - UX: Intuitiveres Verschieben, besonders bei Widgets am Ende der Reihe
 
+- **Fixed: Nachbar-Widget springt nach rechts während Drag**:
+  - Problem: Das gezogene Widget nahm während Drag immer noch Platz im Grid ein → Nachbarn sprangen nach rechts
+  - Ursache: `.dragging` Klasse hatte nur `opacity: 0.5`, aber Element war noch im Dokumentfluss
+  - Lösung: Gezogenes Element wird mit `position: absolute` aus dem Grid-Fluss genommen
+  - `.widget-grid` erhält `position: relative` damit absolute Positioning korrekt funktioniert
+  - In `_onDragStart()`: Element-Position berechnet und inline-Styles gesetzt (left, top, width, height)
+  - In `_onDragEnd()` und Grid-Drop-Handler: Inline-Styles wieder entfernt
+  - UX: Nachbar-Widgets bleiben an Ort und Stelle, Grid-Layout ist stabil
+
 - **Sauberer Code**:
   - Entfernt redundante `_onDrop()` Funktion auf Card-Level
   - Nur noch Ein Drop-Handler (auf Grid) statt mehrere
@@ -36,17 +45,22 @@
 
 - **Getestete Funktionalität**:
   - ✅ Widgets lassen sich ziehen und droppingpunkte sind intuitiv
+  - ✅ Nachbar-Widgets springen nicht mehr nach rechts während Drag
   - ✅ Placeholder wird aktualisiert beim Drag über andere Widgets
   - ✅ Drop wird korrekt erkannt und verarbeitet
   - ✅ Widgets sind nach Drop sichtbar (nicht mehr grau ausgegraut)
   - ✅ Neue Reihenfolge wird zur API gesendet
   - ✅ Server speichert Änderung (`{ok: true}`)
   - ✅ Verschieben von vorletztem zu letztem Widget funktioniert intuitiv
+  - ✅ Grid-Layout bleibt stabil während Drag
 
 ### Technische Details:
 - `_initGridDragDrop(grid)` neu hinzugefügt
+- `.widget-grid` erhält `position: relative` als Positioning-Kontext für absolute Elemente
+- `.widget-card.dragging` hat `position: absolute` → aus Grid-Fluss genommen
+- In `_onDragStart()`: Element-Position berechnet relativ zum Grid: `left = rect.left - gridRect.left`, `top = rect.top - gridRect.top`
 - Grid-Level `dragover` handler: `e.preventDefault()` + `dropEffect = "move"`
-- Grid-Level `drop` handler: Entfernt `.dragging`, Führt Insert + Reflow + API-Save durch
+- Grid-Level `drop` handler: Entfernt Inline-Styles, `.dragging`, Führt Insert + Reflow + API-Save durch
 - Card-Level `dragover` handler: Nutzt relative Position `(e.clientX - rect.left) / rect.width` und `(e.clientY - rect.top) / rect.height`
 - Insertion-Logik: `insertBefore = relX < 0.5 || relY < 0.3` (linke/obere Hälfte)
 
@@ -56,6 +70,7 @@
 🔗 [`5ad238c`](https://github.com/Ancrion/mindful/commit/5ad238c) - chore: Clean up debug logs and remove redundant _onDrop function
 🔗 [`f768261`](https://github.com/Ancrion/mindful/commit/f768261) - fix: Remove dragging class on drop to prevent widgets from staying opaque
 🔗 [`f46886a`](https://github.com/Ancrion/mindful/commit/f46886a) - improve: Better drag-over positioning using X and Y relative position to prevent widgets jumping
+🔗 [`636acf6`](https://github.com/Ancrion/mindful/commit/636acf6) - fix: Remove dragged widget from grid flow with position absolute to prevent neighbor jumping
 
 ---
 
