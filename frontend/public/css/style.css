@@ -1055,6 +1055,37 @@ body.dark .search-overlay {
   color: var(--text-secondary);
 }
 
+.ws-sb-expand {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.12s;
+}
+.ws-sb-expand:hover { background: var(--surface-2); }
+.ws-sb-expand i { transition: transform 0.18s; font-size: 10px; color: var(--text-secondary); }
+.ws-sb-expand-placeholder { visibility: hidden; }
+.ws-sb-dd-item.collapsed > .ws-sb-expand i { transform: rotate(0deg); }
+.ws-sb-dd-item:not(.collapsed) > .ws-sb-expand i { transform: rotate(90deg); }
+.ws-sb-dd-indent { flex-shrink: 0; }
+.ws-sb-dd-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ws-sb-dd-item.ws-dragging { opacity: 0.3; }
+.ws-sb-dd-item.ws-drag-over {
+  background: var(--accent-light) !important;
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+}
+
 .ws-sb-dd-divider {
   height: 1px;
   background: var(--border-soft);

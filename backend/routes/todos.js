@@ -24,7 +24,13 @@ router.get("/", auth, (req, res) => {
       query += " AND t.status = ?";
       params.push(req.query.status);
     }
-    if (req.query.workspace_id) {
+    if (req.query.workspace_ids) {
+      const ids = req.query.workspace_ids.split(",").map(Number).filter(n => !isNaN(n));
+      if (ids.length) {
+        query += ` AND t.workspace_id IN (${ids.map(() => "?").join(",")})`;
+        params.push(...ids);
+      }
+    } else if (req.query.workspace_id) {
       query += " AND t.workspace_id = ?";
       params.push(req.query.workspace_id);
     }

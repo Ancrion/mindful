@@ -47,6 +47,8 @@ async function init() {
     const globalId = e.detail.workspaceId;
     if (globalId !== currentWorkspaceId) {
       currentWorkspaceId = globalId;
+      const ids = e.detail.workspaceIds || [];
+      if (ids.length) localStorage.setItem("mindful_workspace_ids", JSON.stringify(ids));
       document.getElementById("wsSearch").value = "";
       showSkeleton();
       loadWorkspaces();
@@ -65,8 +67,17 @@ function hideSkeleton() {
 }
 
 async function loadTodos() {
-  let url = `${API_BASE}/todos?status=${effectiveFilter()}`;
-  if (currentWorkspaceId) url += `&workspace_id=${currentWorkspaceId}`;
+    let url = `${API_BASE}/todos?status=${effectiveFilter()}`;
+    if (currentWorkspaceId) {
+      // Nutze workspace_ids aus localStorage (vom Sidebar-Selektions-Event gesetzt)
+      const stored = localStorage.getItem("mindful_workspace_ids");
+      if (stored) {
+        const ids = JSON.parse(stored);
+        if (ids.length) url += `&workspace_ids=${ids.join(",")}`;
+      } else {
+        url += `&workspace_id=${currentWorkspaceId}`;
+      }
+    }
 
   const res = await authFetch(url);
   if (!res || !res.ok) return;
@@ -378,7 +389,15 @@ async function loadWorkspaces() {
 
 async function loadStatusCounts() {
   let url = `${API_BASE}/todos?status=alle`;
-  if (currentWorkspaceId) url += `&workspace_id=${currentWorkspaceId}`;
+  if (currentWorkspaceId) {
+    const stored = localStorage.getItem("mindful_workspace_ids");
+    if (stored) {
+      const ids = JSON.parse(stored);
+      if (ids.length) url += `&workspace_ids=${ids.join(",")}`;
+    } else {
+      url += `&workspace_id=${currentWorkspaceId}`;
+    }
+  }
   const res = await authFetch(url);
   if (!res || !res.ok) return;
   const todos = await res.json();

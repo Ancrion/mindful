@@ -6,6 +6,13 @@ const db = new Database(path.join(__dirname, "mindful.db"));
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
+// Migration: parent_id für Workspace-Hierarchie
+try {
+  db.exec("ALTER TABLE workspaces ADD COLUMN parent_id INTEGER DEFAULT NULL");
+} catch (e) {
+  // Spalte existiert bereits
+}
+
 db.exec(`
   -- 1. BENUTZER
   CREATE TABLE IF NOT EXISTS users (

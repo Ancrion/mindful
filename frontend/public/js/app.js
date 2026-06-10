@@ -142,29 +142,154 @@ function loadDarkMode() {
 window.currentWorkspaceId = null;
 window.workspaceCache = [];
 
+function buildWsTree(flat) {
+  const map = {};
+  const roots = [];
+  flat.forEach(w => { w._children = []; map[w.id] = w; });
+  flat.forEach(w => {
+    if (w.parent_id && map[w.parent_id]) {
+      map[w.parent_id]._children.push(w);
+    } else {
+      roots.push(w);
+    }
+  });
+  return roots;
+}
+
+function flattenWsTree(roots) {
+  const result = [];
+  function walk(nodes, level) {
+    nodes.forEach(n => {
+      n._level = level;
+      result.push(n);
+      if (n._children.length) walk(n._children, level + 1);
+    });
+  }
+  walk(roots, 0);
+  return result;
+}
+
+function getDescendantIds(id) {
+  const ids = [id];
+  const childrenMap = {};
+  window.workspaceCache.forEach(w => {
+    if (!childrenMap[w.parent_id]) childrenMap[w.parent_id] = [];
+    childrenMap[w.parent_id].push(w.id);
+  });
+  function collect(parentId) {
+    (childrenMap[parentId] || []).forEach(childId => {
+      ids.push(childId);
+      collect(childId);
+    });
+  }
+  collect(id);
+  return ids;
+}
+
 async function loadWorkspaces() {
   const res = await authFetch(`${API_BASE}/workspaces`);
   if (!res || !res.ok) return;
   window.workspaceCache = await res.json();
+  window._wsTree = buildWsTree(window.workspaceCache);
   renderWsSidebarList();
 }
 
 function renderWsSidebarList() {
   const list = document.getElementById("wsSbList");
   if (!list) return;
-  list.innerHTML = window.workspaceCache.map(w => {
+  const flat = flattenWsTree(window._wsTree);
+
+  list.innerHTML = flat.map(w => {
     const active = window.currentWorkspaceId == w.id;
     const color = WORKSPACE_COLORS[w.farbe] || "#ccc";
-    return `<div class="ws-sb-dd-item${active ? " active" : ""}" data-id="${w.id}" onclick="event.stopPropagation();selectWsSidebar(${w.id})">
+    const hasChildren = w._children.length > 0;
+    const expandBtn = hasChildren
+      ? `<span class="ws-sb-expand" onclick="event.stopPropagation();toggleWsExpand(this)"><i class="fas fa-chevron-right"></i></span>`
+      : `<span class="ws-sb-expand ws-sb-expand-placeholder"></span>`;
+    return `<div class="ws-sb-dd-item${active ? " active" : ""}" data-id="${w.id}" data-level="${w._level}" draggable="true"
+              onclick="event.stopPropagation();selectWsSidebar(${w.id})"
+              ondragstart="wsDragStart(event, ${w.id})"
+              ondragover="wsDragOver(event)"
+              ondrop="wsDrop(event, ${w.id})">
+      <span class="ws-sb-dd-indent" style="padding-left:${w._level * 18}px"></span>
+      ${expandBtn}
       <span class="ws-sb-dd-dot" style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></span>
-      <span>${w.name}</span>
+      <span class="ws-sb-dd-name">${w.name}</span>
       <span class="ws-sb-check"><i class="fas fa-check"></i></span>
     </div>`;
   }).join("");
-  // Update the "Alle" active state
+
   const allItem = document.querySelector('#sidebarWs .ws-sb-dd-item[data-id=""]');
   if (allItem) allItem.classList.toggle("active", !window.currentWorkspaceId);
 }
+
+// Expand / Collapse
+window.toggleWsExpand = function (btn) {
+  const item = btn.closest(".ws-sb-dd-item");
+  const id = item.dataset.id;
+  const collapsed = item.classList.toggle("collapsed");
+  const icon = btn.querySelector("i");
+  if (icon) icon.style.transform = collapsed ? "rotate(0deg)" : "rotate(90deg)";
+  // Hide/show children
+  let next = item.nextElementSibling;
+  while (next && next.dataset.level > item.dataset.level) {
+    next.style.display = collapsed ? "none" : "";
+    next = next.nextElementSibling;
+  }
+};
+
+// Drag & Drop
+let _wsDragId = null;
+
+window.wsDragStart = function (e, id) {
+  _wsDragId = id;
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", id);
+  e.target.closest(".ws-sb-dd-item").classList.add("ws-dragging");
+};
+
+document.addEventListener("dragend", function () {
+  document.querySelectorAll(".ws-sb-dd-item").forEach(el => el.classList.remove("ws-dragging", "ws-drag-over"));
+  _wsDragId = null;
+});
+
+window.wsDragOver = function (e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+  e.currentTarget.classList.add("ws-drag-over");
+};
+
+window.wsDrop = async function (e, targetId) {
+  e.preventDefault();
+  e.currentTarget.classList.remove("ws-drag-over");
+  const dragId = _wsDragId || parseInt(e.dataTransfer.getData("text/plain"));
+  if (!dragId || dragId == targetId) return;
+
+  const res = await authFetch(`${API_BASE}/workspaces/${dragId}/move`, {
+    method: "PUT",
+    body: JSON.stringify({ parent_id: targetId }),
+  });
+  if (!res || !res.ok) return showToast("Fehler beim Verschieben", "error");
+  showToast("Verschoben", "success");
+  await loadWorkspaces();
+  window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId } }));
+};
+
+window.toggleWsFromCalendar = function (e) {
+  const dd = document.getElementById("wsSbDropdown");
+  const wasOpen = dd.classList.contains("open");
+  document.querySelectorAll(".ws-sb-dropdown").forEach(d => d.classList.remove("open"));
+  if (wasOpen) return;
+
+  dd.classList.add("open");
+  const rect = e.currentTarget.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  dd.style.top = (rect.bottom + 2) + "px";
+  dd.style.left = cx + "px";
+  dd.style.transform = "translateX(-50%)";
+  dd.style.right = "auto";
+  dd.style.bottom = "auto";
+};
 
 window.toggleWsFromCalendar = function (e) {
   const dd = document.getElementById("wsSbDropdown");
@@ -185,7 +310,11 @@ window.toggleWsFromCalendar = function (e) {
 window.selectWsSidebar = function (id) {
   if (id === "") id = null;
   window.currentWorkspaceId = id;
+
+  const selectedIds = id ? getDescendantIds(id) : [];
+
   localStorage.setItem("mindful_workspace", id || "");
+  localStorage.setItem("mindful_workspace_ids", JSON.stringify(selectedIds));
 
   const dot = document.getElementById("wsSbDot");
   const name = document.getElementById("wsSbName");
@@ -211,7 +340,7 @@ window.selectWsSidebar = function (id) {
   const items = document.querySelectorAll("#wsSbList .ws-sb-dd-item, #sidebarWs .ws-sb-dd-item[data-id='']");
   items.forEach(el => el.classList.toggle("active", el.dataset.id == id));
 
-  window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: id } }));
+  window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: id, workspaceIds: selectedIds } }));
 };
 
 window.quickCreateWsSidebar = async function () {
@@ -220,9 +349,12 @@ window.quickCreateWsSidebar = async function () {
   const farbe = activeDot ? activeDot.dataset.color : "orange";
   if (!name) { showToast("Bitte einen Namen eingeben", "error"); return; }
 
+  // Wenn ein Workspace ausgewählt ist, wird der neue als Kind erstellt
+  const parent_id = window.currentWorkspaceId || null;
+
   const res = await authFetch(`${API_BASE}/workspaces`, {
     method: "POST",
-    body: JSON.stringify({ name, farbe }),
+    body: JSON.stringify({ name, farbe, parent_id }),
   });
   if (res && res.ok) {
     const data = await res.json();
@@ -539,7 +671,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderUserInfo(user);
     loadWallpaper();
     loadDarkMode();
-    loadWorkspaces();
+    await loadWorkspaces();
     const saved = localStorage.getItem("mindful_workspace");
     if (saved) {
       selectWsSidebar(parseInt(saved));
