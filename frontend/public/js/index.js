@@ -112,52 +112,55 @@ function renderWidgets() {
      e.dataTransfer.dropEffect = "move";
    });
    
-   grid.addEventListener("drop", (e) => {
-     e.preventDefault();
-     
-     if (!_drag) return;
-     
-     const { element, placeholder } = _drag;
-     const nextNode = placeholder.nextSibling;
-     placeholder.remove();
-     
-     if (nextNode) {
-       grid.insertBefore(element, nextNode);
-     } else {
-       grid.appendChild(element);
-     }
-     
-     // Reflow
-     _reflowAll();
-     
-     // Save order
-     const newOrder = [...grid.querySelectorAll(".widget-card")].map((el, i) => ({
-       id: parseInt(el.dataset.widgetId),
-       position: i
-     }));
-     
-     apiFetch("dashboard/widgets/order", {
-       method: "PUT",
-       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({ order: newOrder })
-     })
-       .then(res => {
-         if (!res) throw new Error("No response");
-         newOrder.forEach(o => {
-           const w = _widgets.find(x => x.id == o.id);
-           if (w) w.position = o.position;
-         });
-       })
-       .catch(err => {
-         console.error("💥 Widget order save failed:", err);
-       });
-     
-     document.querySelectorAll(".widget-card.drag-over").forEach(el => {
-       el.classList.remove("drag-over");
-     });
-     
-     _drag = null;
-   });
+    grid.addEventListener("drop", (e) => {
+      e.preventDefault();
+      
+      if (!_drag) return;
+      
+      const { element, placeholder } = _drag;
+      const nextNode = placeholder.nextSibling;
+      placeholder.remove();
+      
+      // Remove dragging state
+      element.classList.remove("dragging");
+      
+      if (nextNode) {
+        grid.insertBefore(element, nextNode);
+      } else {
+        grid.appendChild(element);
+      }
+      
+      // Reflow
+      _reflowAll();
+      
+      // Save order
+      const newOrder = [...grid.querySelectorAll(".widget-card")].map((el, i) => ({
+        id: parseInt(el.dataset.widgetId),
+        position: i
+      }));
+      
+      apiFetch("dashboard/widgets/order", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order: newOrder })
+      })
+        .then(res => {
+          if (!res) throw new Error("No response");
+          newOrder.forEach(o => {
+            const w = _widgets.find(x => x.id == o.id);
+            if (w) w.position = o.position;
+          });
+        })
+        .catch(err => {
+          console.error("💥 Widget order save failed:", err);
+        });
+      
+      document.querySelectorAll(".widget-card.drag-over").forEach(el => {
+        el.classList.remove("drag-over");
+      });
+      
+      _drag = null;
+    });
  }
 
 function _rerenderWidget(typ) {
