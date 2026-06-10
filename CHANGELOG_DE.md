@@ -19,7 +19,7 @@
 
 ### 📝 Commits
 
-🔗 [`9945e41`](https://github.com/Ancrion/mindful/commit/9945e41) - feat: Compact calendar widget - smaller default size and compact UI
+🔗 [`e869377`](https://github.com/Ancrion/mindful/commit/e869377) - feat: Compact calendar widget - smaller default size and compact UI
 
 ---
 
