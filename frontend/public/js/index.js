@@ -127,12 +127,35 @@ function renderWidgets() {
         const draggedIdx = allCards.indexOf(element);
         const targetIdx = allCards.indexOf(dropTarget);
         
+        // FLIP: Record positions before DOM change
+        const rectMap = new Map(allCards.map(el => [el, el.getBoundingClientRect()]));
+        
         element.remove();
         if (targetIdx > draggedIdx) {
           grid.insertBefore(element, dropTarget.nextSibling);
         } else {
           grid.insertBefore(element, dropTarget);
         }
+        
+        // FLIP: Animate from old positions to new
+        requestAnimationFrame(() => {
+          const newCards = [...grid.querySelectorAll(".widget-card")];
+          newCards.forEach((el, i) => {
+            const oldRect = rectMap.get(el);
+            if (!oldRect) return;
+            const newRect = el.getBoundingClientRect();
+            const dx = oldRect.left - newRect.left;
+            const dy = oldRect.top - newRect.top;
+            if (dx || dy) {
+              el.style.transition = "none";
+              el.style.transform = `translate(${dx}px, ${dy}px)`;
+              requestAnimationFrame(() => {
+                el.style.transition = "";
+                el.style.transform = "";
+              });
+            }
+          });
+        });
       }
       
       // Reflow
