@@ -131,22 +131,26 @@ function renderWidgets() {
       element.classList.remove("dragging");
       
       if (dropTarget && dropTarget !== element) {
-        const rect = dropTarget.getBoundingClientRect();
-        const relX = (e.clientX - rect.left) / rect.width;
-        const relY = (e.clientY - rect.top) / rect.height;
-        const insertBefore = relX < 0.5;
+        const allCards = [...grid.querySelectorAll(".widget-card")];
+        const draggedIdx = allCards.indexOf(element);
+        const targetIdx = allCards.indexOf(dropTarget);
         
-        console.log("📍 INSERT", {
-          insertBefore,
-          relX: relX.toFixed(2),
-          relY: relY.toFixed(2),
+        console.log("📍 SWAP", {
+          draggedId: element.dataset.widgetId,
           targetId: dropTarget.dataset.widgetId,
-          nextSibling: dropTarget.nextSibling?.dataset?.widgetId || null
+          draggedIdx,
+          targetIdx,
+          insertAfter: targetIdx > draggedIdx
         });
         
         element.remove();
-        const refNode = insertBefore ? dropTarget : dropTarget.nextSibling;
-        grid.insertBefore(element, refNode);
+        if (targetIdx > draggedIdx) {
+          // dragged was BEFORE target → insert AFTER target
+          grid.insertBefore(element, dropTarget.nextSibling);
+        } else {
+          // dragged was AFTER target → insert BEFORE target
+          grid.insertBefore(element, dropTarget);
+        }
         
         console.log("✅ DOM after:", [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId));
       } else {
