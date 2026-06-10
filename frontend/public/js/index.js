@@ -117,15 +117,22 @@ function renderWidgets() {
       
       if (!_drag) return;
       
-      const { element, dropTarget, insertBefore } = _drag;
+      const { element } = _drag;
       
       // Remove dragging state
       element.classList.remove("dragging");
       
-      // Remove element from DOM first, then insert at new position
-      // This makes insertBefore work reliably even when element is already before target
+      // Find target card directly from drop event (not from dragover)
+      const dropTarget = e.target.closest(".widget-card");
+      
       if (dropTarget && dropTarget !== element) {
         element.remove();
+        // Calculate relative position to determine before/after
+        const rect = dropTarget.getBoundingClientRect();
+        const relX = (e.clientX - rect.left) / rect.width;
+        const relY = (e.clientY - rect.top) / rect.height;
+        const insertBefore = relX < 0.5 || relY < 0.3;
+        
         if (insertBefore) {
           grid.insertBefore(element, dropTarget);
         } else {
@@ -424,15 +431,6 @@ function _onDragOver(e) {
       if (el !== target) el.classList.remove("drag-over");
     });
     target.classList.add("drag-over");
-    
-    // Store target for drop
-    _drag.dropTarget = target;
-    
-    // Calculate relative position
-    const rect = target.getBoundingClientRect();
-    const relX = (e.clientX - rect.left) / rect.width;
-    const relY = (e.clientY - rect.top) / rect.height;
-    _drag.insertBefore = relX < 0.5 || relY < 0.3;
   }
 }
 
