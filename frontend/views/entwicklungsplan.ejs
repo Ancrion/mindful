@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/accessibility.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
     <link
       rel="stylesheet"
@@ -1928,6 +1929,44 @@ body.dark {
 .gloss::after { content: ''; animation: shine 3s infinite; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); }
 </script>
 
+<script type="text/plain" id="jaro-30">/* PHASE 4 - ACCESSIBILITY WCAG 2.1 AA v1.7.0 */
+
+/* Focus States */
+*:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+/* Skip Links */
+.skip-link { position: absolute; top: -40px; background: var(--color-primary); color: white; padding: var(--space-3) var(--space-4); }
+.skip-link:focus { top: var(--space-2); }
+
+/* Screen Reader Only */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+/* Color Contrast */
+body { color: var(--text-primary); background-color: var(--bg-primary); /* 8.59:1 contrast */ }
+
+/* Disabled States */
+button:disabled { opacity: 0.6; cursor: not-allowed; background-color: var(--bg-secondary); }
+input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Form Accessibility */
+label { display: block; margin-bottom: var(--space-2); font-weight: var(--weight-medium); }
+.required::after { content: "*"; color: var(--color-error); }
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+/* ARIA Attributes */
+[role="alert"] { padding: var(--space-4); border-radius: var(--radius-md); border-left: 4px solid var(--color-primary); }
+
+/* Heading Hierarchy */
+h1 { font-size: var(--text-4xl); font-weight: var(--weight-extrabold); }
+h2 { font-size: var(--text-3xl); font-weight: var(--weight-bold); }
+
+/* Table Accessibility */
+table { border-collapse: collapse; width: 100%; }
+th { background-color: var(--bg-secondary); font-weight: var(--weight-bold); }
+</script>
+
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -1940,6 +1979,7 @@ body.dark {
     <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/accessibility.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
     <link
       rel="stylesheet"
@@ -2056,6 +2096,7 @@ document.addEventListener("DOMContentLoaded", loadLeaderboard);</script>
     <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/accessibility.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
     <link
       rel="stylesheet"
@@ -2182,6 +2223,7 @@ document.addEventListener("DOMContentLoaded", loadProfile);</script>
     <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/accessibility.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%%= Date.now() %>" />
     <link
       rel="stylesheet"
@@ -2834,7 +2876,7 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23","jaro-24","jaro-25","jaro-26","jaro-27","jaro-28","jaro-29",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15","jaro-16","jaro-17","jaro-18","jaro-19","jaro-20","jaro-21","jaro-22","jaro-23","jaro-24","jaro-25","jaro-26","jaro-27","jaro-28","jaro-29","jaro-30",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
@@ -2955,7 +2997,10 @@ git push --tags</script>
             commit:"git commit -m \"feat: PHASE 2 - Professional Component Library with layouts and animations\"" },
           { id:"jaro-29", file:"frontend/public/css/polish.css (NEU) in alle Views",
             desc:"PHASE 3 - VISUAL POLISH v1.7.0: ① Glassmorphism effects (blur, transparency, frosted glass), ② Gradient effects (backgrounds, text, borders), ③ Enhanced shadow system (soft, hard, colored, depth), ④ Neumorphic effects & gloss shine, ⑤ Advanced border treatments (dashed, dotted, accent), ⑥ Backdrop & blur effects, ⑦ Overlay effects, ⑧ Divider & separator styling",
-            commit:"git commit -m \"feat: PHASE 3 - Professional Design System v2.0 Visual Polish with effects\"" }
+            commit:"git commit -m \"feat: PHASE 3 - Professional Design System v2.0 Visual Polish with effects\"" },
+          { id:"jaro-30", file:"frontend/public/css/accessibility.css (NEU) in alle Views",
+            desc:"PHASE 4 - ACCESSIBILITY WCAG 2.1 AA v1.7.0: ① Focus states for all interactive elements (visible keyboard navigation), ② Skip links (skip to main content), ③ Screen reader only text (.sr-only), ④ Color contrast compliance (4.5:1 minimum), ⑤ Disabled state styling, ⑥ Keyboard navigation support, ⑦ Form labels & error messaging, ⑧ ARIA attributes support, ⑨ Respect prefers-reduced-motion, ⑩ Dark mode accessibility, ⑪ High contrast mode support, ⑫ Heading hierarchy, ⑬ Table semantics",
+            commit:"git commit -m \"feat: PHASE 4 - Accessibility Standards WCAG 2.1 AA Compliance\"" }
         ]
       },
       omar: {
