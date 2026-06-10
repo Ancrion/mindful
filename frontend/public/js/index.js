@@ -120,14 +120,6 @@ function renderWidgets() {
       const { element } = _drag;
       const dropTarget = e.target.closest(".widget-card");
       
-      console.log("🔻 DROP", {
-        draggedId: element.dataset.widgetId,
-        dropTarget: dropTarget?.dataset?.widgetId,
-        eTarget: e.target.className?.slice(0, 60),
-        domBefore: [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId)
-      });
-      
-      // Remove dragging state
       element.classList.remove("dragging");
       
       if (dropTarget && dropTarget !== element) {
@@ -135,26 +127,12 @@ function renderWidgets() {
         const draggedIdx = allCards.indexOf(element);
         const targetIdx = allCards.indexOf(dropTarget);
         
-        console.log("📍 SWAP", {
-          draggedId: element.dataset.widgetId,
-          targetId: dropTarget.dataset.widgetId,
-          draggedIdx,
-          targetIdx,
-          insertAfter: targetIdx > draggedIdx
-        });
-        
         element.remove();
         if (targetIdx > draggedIdx) {
-          // dragged was BEFORE target → insert AFTER target
           grid.insertBefore(element, dropTarget.nextSibling);
         } else {
-          // dragged was AFTER target → insert BEFORE target
           grid.insertBefore(element, dropTarget);
         }
-        
-        console.log("✅ DOM after:", [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId));
-      } else {
-        console.log("⏭️ No valid drop target", { dropTarget, same: dropTarget === element });
       }
       
       // Reflow
@@ -409,10 +387,6 @@ function _reflowAll() {
 
 function _onDragStart(e) {
   const element = this;
-  const grid = document.getElementById("widgetGrid");
-  
-  console.log("🎯 DRAG START:", element.dataset.widgetId);
-  console.log("📋 DOM order:", [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId));
   
   element.classList.add("dragging");
   e.dataTransfer.effectAllowed = "move";
@@ -422,12 +396,6 @@ function _onDragStart(e) {
 }
 
 function _onDragEnd() {
-  const grid = document.getElementById("widgetGrid");
-  console.log("❌ DRAG END", {
-    _drag: _drag ? "exists" : "null",
-    domFinal: grid ? [...grid.querySelectorAll(".widget-card")].map(c => c.dataset.widgetId) : "no grid"
-  });
-  
   if (_drag?.element) {
     _drag.element.classList.remove("dragging");
   }
@@ -449,17 +417,6 @@ function _onDragOver(e) {
   const { element } = _drag;
   
   if (target !== element) {
-    const rect = target.getBoundingClientRect();
-    const relX = (e.clientX - rect.left) / rect.width;
-    const relY = (e.clientY - rect.top) / rect.height;
-    
-    console.log("🔄 OVER", {
-      targetId: target.dataset.widgetId,
-      relX: relX.toFixed(2),
-      relY: relY.toFixed(2),
-      wouldInsertBefore: relX < 0.5
-    });
-    
     document.querySelectorAll(".widget-card.drag-over").forEach(el => {
       if (el !== target) el.classList.remove("drag-over");
     });

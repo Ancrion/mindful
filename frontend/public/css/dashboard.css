@@ -94,11 +94,25 @@ body.dark .widget-manage-btn:hover {
   border: 1px solid var(--card-border);
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  transition: box-shadow 0.3s ease, opacity 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
+  transition: box-shadow 0.3s ease, opacity 0.3s ease, transform 0.25s ease, border-color 0.3s ease;
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
+}
+
+.widget-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  z-index: 1000;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  border-color: var(--accent);
+}
+
+.widget-card.drag-over {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-alpha, rgba(110, 138, 184, 0.3)), 0 8px 16px rgba(0,0,0,0.1);
+  transform: scale(1.02);
 }
 
 
@@ -108,19 +122,6 @@ body.dark .widget-manage-btn:hover {
 .widget-card.widget-s2 { grid-column: span 2; }
 .widget-card.widget-s3 { grid-column: span 3; }
 .widget-card.widget-s4 { grid-column: span 4; }
-
-.widget-card.dragging {
-  opacity: 0.6;
-  transform: scale(0.98);
-  z-index: 1000;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-}
-
-.widget-card.drag-over {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-alpha, rgba(110, 138, 184, 0.3)), 0 8px 16px rgba(0,0,0,0.1);
-  transform: scale(1);
-}
 
 .widget-card.resizing {
   user-select: none;
