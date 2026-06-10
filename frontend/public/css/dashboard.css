@@ -83,6 +83,7 @@ body.dark .widget-manage-btn:hover {
   gap: 20px;
   padding: 24px;
   align-items: stretch;
+  position: relative;
 }
 
 .widget-grid:empty {
@@ -108,6 +109,13 @@ body.dark .widget-manage-btn:hover {
   min-height: 100px;
   transition: all 0.25s ease;
   animation: placeholder-pulse 2s ease-in-out infinite;
+  position: absolute;
+  pointer-events: none;
+  display: none;
+}
+
+.widget-placeholder.visible {
+  display: block;
 }
 
 @keyframes placeholder-pulse {
@@ -115,10 +123,10 @@ body.dark .widget-manage-btn:hover {
   50% { background: var(--accent-alpha, rgba(110, 138, 184, 0.15)); }
 }
 
-.widget-placeholder.widget-s1 { grid-column: span 1; }
-.widget-placeholder.widget-s2 { grid-column: span 2; }
-.widget-placeholder.widget-s3 { grid-column: span 3; }
-.widget-placeholder.widget-s4 { grid-column: span 4; }
+.widget-placeholder.widget-s1 { width: calc(25% - 20px); }
+.widget-placeholder.widget-s2 { width: calc(50% - 20px); }
+.widget-placeholder.widget-s3 { width: calc(75% - 20px); }
+.widget-placeholder.widget-s4 { width: 100%; }
 
 /* Widget size classes */
 .widget-card.widget-s1 { grid-column: span 1; }

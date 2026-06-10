@@ -117,16 +117,21 @@ function renderWidgets() {
       
       if (!_drag) return;
       
-      const { element, placeholder } = _drag;
-      const nextNode = placeholder.nextSibling;
+      const { element, placeholder, dropTarget, insertBefore } = _drag;
       placeholder.remove();
       
       // Remove dragging state
       element.classList.remove("dragging");
       
-      if (nextNode) {
-        grid.insertBefore(element, nextNode);
+      // Insert element at the right position based on drag interaction
+      if (dropTarget) {
+        if (insertBefore) {
+          grid.insertBefore(element, dropTarget);
+        } else {
+          grid.insertBefore(element, dropTarget.nextSibling);
+        }
       } else {
+        // No specific target, just append to end
         grid.appendChild(element);
       }
       
@@ -390,9 +395,18 @@ function _onDragStart(e) {
   e.dataTransfer.effectAllowed = "move";
   e.dataTransfer.setData("text/plain", element.dataset.widgetId);
   
+  // Create invisible placeholder just to track drag position
   const placeholder = document.createElement("div");
   placeholder.className = `widget-placeholder widget-s${element.dataset.widgetSize}`;
-  grid.insertBefore(placeholder, element.nextSibling);
+  
+  // Position placeholder at element's current position (absolute, doesn't affect layout)
+  const rect = element.getBoundingClientRect();
+  const gridRect = grid.getBoundingClientRect();
+  placeholder.style.left = (rect.left - gridRect.left) + "px";
+  placeholder.style.top = (rect.top - gridRect.top) + "px";
+  placeholder.classList.add("visible");
+  
+  grid.appendChild(placeholder);
   
   _drag = { element, placeholder, startSize: parseInt(element.dataset.widgetSize) };
 }
@@ -423,31 +437,30 @@ function _onDragOver(e) {
   const target = this;
   const { element, placeholder } = _drag;
   
-  // Feedback
+  // Visual feedback - highlight target
   if (target !== element) {
     document.querySelectorAll(".widget-card.drag-over").forEach(el => {
       if (el !== target) el.classList.remove("drag-over");
     });
     target.classList.add("drag-over");
     
-    // Move placeholder - use both X and Y position for better UX
+    // Update placeholder position visually (absolute positioned)
     const grid = document.getElementById("widgetGrid");
     const rect = target.getBoundingClientRect();
+    const gridRect = grid.getBoundingClientRect();
+    
+    // Store the target for drop handler to know where to insert
+    _drag.dropTarget = target;
     
     // Calculate relative position in target (0-1 scale)
     const relX = (e.clientX - rect.left) / rect.width;
     const relY = (e.clientY - rect.top) / rect.height;
-    
-    // If cursor is on left half OR top half, insert before target
-    // Otherwise insert after target
-    // This prevents widgets jumping down when dragging from left side
     const insertBefore = relX < 0.5 || relY < 0.3;
+    _drag.insertBefore = insertBefore;
     
-    if (insertBefore) {
-      grid.insertBefore(placeholder, target);
-    } else {
-      grid.insertBefore(placeholder, target.nextSibling);
-    }
+    // Update placeholder position
+    placeholder.style.left = (rect.left - gridRect.left) + "px";
+    placeholder.style.top = (rect.top - gridRect.top) + "px";
   }
 }
 
