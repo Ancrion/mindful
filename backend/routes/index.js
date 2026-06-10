@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const adminOnly = require("../middleware/admin");
 
 // ─── VIEW ROUTEN (EJS Seiten) ───
 router.get("/", auth, (req, res) => {
@@ -28,8 +29,7 @@ router.get("/messages", auth, (req, res) => res.render("messages", { currentPage
 router.get("/nachrichten", auth, (req, res) => res.render("messages", { currentPage: "messages" }));
 router.get("/profile", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
-router.get("/entwicklungsplan", auth, (req, res) => {
-  if (req.user.name !== "jaro") return res.redirect("/");
+router.get("/entwicklungsplan", auth, adminOnly, (req, res) => {
   res.render("entwicklungsplan", { currentPage: "entwicklungsplan" });
 });
 router.get("/bugs", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));

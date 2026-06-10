@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
 const auth = require("../middleware/auth");
+const adminOnly = require("../middleware/admin");
 
 function isJaro(user) {
-  return user && user.name === "jaro";
+  return user && user.is_admin;
 }
 
 router.get("/", auth, (req, res) => {

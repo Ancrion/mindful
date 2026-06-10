@@ -16,7 +16,7 @@ router.get("/", auth, (req, res) => {
         `SELECT u.id, u.name, COUNT(*) AS value
          FROM todos t
          JOIN users u ON t.user_id = u.id
-         WHERE t.status = 'erledigt' AND date(t.erledigt, 'unixepoch') = date(?)
+         WHERE t.status = 'erledigt' AND date(COALESCE(t.erledigt_at, t.erstellt)) = date(?)
          GROUP BY u.id
          ORDER BY value DESC`,
       )

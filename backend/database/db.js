@@ -27,6 +27,27 @@ try {
   // Index existiert bereits
 }
 
+// Migration: erledigt_at Spalte für Leaderboard-Tracking
+try {
+  db.exec("ALTER TABLE todos ADD COLUMN erledigt_at TEXT DEFAULT NULL");
+} catch (e) {
+  // Spalte existiert bereits
+}
+
+// Migration: is_admin Spalte für Role-Based Authorization
+try {
+  db.exec("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0");
+} catch (e) {
+  // Spalte existiert bereits
+}
+
+// Migration: Set 'jaro' as admin (for backward compatibility)
+try {
+  db.prepare("UPDATE users SET is_admin = 1 WHERE name = ?").run("jaro");
+} catch (e) {
+  // User doesn't exist yet
+}
+
 db.exec(`
   -- 1. BENUTZER
   CREATE TABLE IF NOT EXISTS users (

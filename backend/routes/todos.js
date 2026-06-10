@@ -129,7 +129,8 @@ router.put("/:id", auth, (req, res) => {
 
     db.prepare(
       `UPDATE todos SET 
-        titel = ?, beschreibung = ?, faellig = ?, status = ?, erledigt = ?, workspace_id = ?, prioritaet = ?, schritte = ? 
+        titel = ?, beschreibung = ?, faellig = ?, status = ?, erledigt = ?, workspace_id = ?, prioritaet = ?, schritte = ?, 
+        erledigt_at = ?
        WHERE id = ? AND user_id = ?`,
     ).run(
       titel ?? todo.titel,
@@ -140,6 +141,7 @@ router.put("/:id", auth, (req, res) => {
       workspace_id ?? todo.workspace_id,
       prioritaet ?? todo.prioritaet,
       schritte ?? todo.schritte,
+      status === "erledigt" && todo.status !== "erledigt" ? new Date().toISOString() : null,
       req.params.id,
       req.user.id,
     );

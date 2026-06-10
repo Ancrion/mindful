@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
 const auth = require("../middleware/auth");
+const adminOnly = require("../middleware/admin");
 
 router.get("/", (req, res) => {
   try {
@@ -18,10 +19,8 @@ router.get("/", (req, res) => {
   }
 });
 
-router.post("/", auth, (req, res) => {
+router.post("/", auth, adminOnly, (req, res) => {
   try {
-    if (req.user.name !== "jaro")
-      return res.status(403).json({ error: "Nur jaro kann Einträge erstellen" });
     const { version, datum, titel, features, fixes, commits } = req.body;
     if (!version || !datum || !titel)
       return res.status(400).json({ error: "Version, Datum und Titel erforderlich" });
@@ -41,10 +40,8 @@ router.post("/", auth, (req, res) => {
   }
 });
 
-router.put("/:id", auth, (req, res) => {
+router.put("/:id", auth, adminOnly, (req, res) => {
   try {
-    if (req.user.name !== "jaro")
-      return res.status(403).json({ error: "Nur jaro kann Einträge bearbeiten" });
     const { version, datum, titel, features, fixes, commits } = req.body;
     db.prepare(
       "UPDATE changelog SET version=?, datum=?, titel=?, features=?, fixes=?, commits=? WHERE id=?"
@@ -62,10 +59,8 @@ router.put("/:id", auth, (req, res) => {
   }
 });
 
-router.delete("/:id", auth, (req, res) => {
+router.delete("/:id", auth, adminOnly, (req, res) => {
   try {
-    if (req.user.name !== "jaro")
-      return res.status(403).json({ error: "Nur jaro kann Einträge löschen" });
     db.prepare("DELETE FROM changelog WHERE id = ?").run(req.params.id);
     res.json({ message: "Changelog-Eintrag gelöscht" });
   } catch (err) {
