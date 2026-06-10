@@ -1,7 +1,24 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.5
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.6
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
+
+---
+
+## 🚀 v1.7.6 - Kalender Widget füllt Card-Höhe aus
+
+**Veröffentlichung**: 10.06.2026
+
+### ✨ Verbesserungen
+
+- **Kalender dehnt sich auf volle Card-Höhe**: `.cal-widget` ist jetzt `display:flex; flex-direction:column; height:100%` → kein leerer Raum unten mehr
+- **Grid-Reihen verteilen gleichmäßig**: `.cal-wgrid` mit `flex:1 + grid-auto-rows:1fr` → Juni zieht jetzt unten runter statt frei zu lassen
+- **Monat/Woche/Tag alle gestreckt**: Week-View (1 Reihe) wird volle Höhe, Day-View (`.cal-wev-list`) ebenfalls flex:1
+- **Leerer-Status zentriert**: `.cal-wev-empty` mit flex + align-items:center → "Keine Termine" schwebt mittig
+
+### 📝 Commits
+
+🔗 [`45f002f`](https://github.com/Ancrion/mindful/commit/45f002f) - feat: Make calendar widget fill card height with flex:1 + grid-auto-rows:1fr
 
 ---
 
@@ -766,7 +783,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Versionen** | 19 |
+| **Versionen** | 20 |
 | **Commits** | 75+ |
 | **Features hinzugefügt** | 100+ |
 | **Bugs behoben** | 35+ |

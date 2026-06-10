@@ -3024,7 +3024,10 @@ git push --tags</script>
             commit:"c674ad5", hash:"https://github.com/Ancrion/mindful/commit/c674ad5" },
           { id:"jaro-38", file:"frontend/public/js/index.js + frontend/public/css/dashboard.css",
             desc:"KALENDER ANSICHTSWAHL IN HEADER-LEISTE ZENTRIERT v1.7.5: ① View-Buttons in _buildCard() für calendar-Widget direkt in .widget-header injiziert (statt in _buildCalendarBody), ② .cal-view-switch aus .cal-head-row entfernt, ③ Absolute Zentrierung: position:absolute + left:50% + transform:translateX(-50%) in .widget-header .cal-view-switch, ④ Größere .cal-view-btn (0.6rem + padding 3px 8px + border-radius 8px), ⑤ z-index:1 auf widget-handle + widget-remove für Klickbarkeit",
-            commit:"38c96a1", hash:"https://github.com/Ancrion/mindful/commit/38c96a1" }
+            commit:"38c96a1", hash:"https://github.com/Ancrion/mindful/commit/38c96a1" },
+          { id:"jaro-39", file:"frontend/public/css/dashboard.css",
+            desc:"KALENDER FÜLLT CARD-HÖHE v1.7.6: ① .cal-widget display:flex + height:100% → dehnt sich, ② .cal-head + .cal-days flex-shrink:0, ③ .cal-wgrid flex:1 + grid-auto-rows:1fr → Reihen verteilen Höhe gleichmäßig, ④ .cal-wev-list flex:1 → Day-View auch gestreckt, ⑤ .cal-wev-empty flex + center → Text mittig",
+            commit:"45f002f", hash:"https://github.com/Ancrion/mindful/commit/45f002f" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
