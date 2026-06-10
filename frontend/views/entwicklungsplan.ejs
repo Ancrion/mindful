@@ -3042,7 +3042,13 @@ git push --tags</script>
             commit:"8f5636a", hash:"https://github.com/Ancrion/mindful/commit/8f5636a" },
           { id:"jaro-44", file:"frontend/public/js/index.js",
             desc:"WIDGET DRAG-DROP EVENT-HANDLING FIX v1.7.8: ① Neue _initGridDragDrop() registriert dragover+drop auf Grid-Container statt Cards, ② Bug-Fix: Drop-Event wurde nicht ausgelöst weil Cards während Drag bewegt werden, ③ Grid empfängt alle Events unabhängig vom DOM-Umzug, ④ Entfernt redundante _onDrop() Funktion auf Card-Level, ⑤ Code aufgeräumt, Debug-Logs entfernt",
-            commit:"13001b2", hash:"https://github.com/Ancrion/mindful/commit/13001b2" }
+            commit:"13001b2", hash:"https://github.com/Ancrion/mindful/commit/13001b2" },
+          { id:"jaro-45", file:"frontend/public/js/index.js",
+            desc:"WIDGET DRAGGING STATE FIX v1.7.8: ① Bug-Fix: .dragging Klasse (opacity 0.5) bleibt nach Drop, ② Ursache: dragend wird VOR drop aufgerufen, ③ Lösung: element.classList.remove('dragging') im Grid-Drop-Handler, ④ Widgets sind nach Drop wieder vollständig sichtbar, ⑤ Testiert mit allen Drag-Szenarien",
+            commit:"f768261", hash:"https://github.com/Ancrion/mindful/commit/f768261" },
+          { id:"jaro-46", file:"frontend/public/js/index.js",
+            desc:"WIDGET DRAG-OVER POSITIONING UX IMPROVEMENT v1.7.8: ① Bug-Fix: Widgets sprangen nach unten-links beim Drag von linker Seite, ② Ursache: Placeholder-Logik berücksichtigte nur relX nicht relY, ③ Neue Logik: insertBefore = (relX < 0.5 || relY < 0.3), ④ Relative Position in Target berechnet: relX = (clientX - rect.left) / rect.width, ⑤ UX: Intuitives Verschieben auch bei Widgets am Ende der Reihe",
+            commit:"f46886a", hash:"https://github.com/Ancrion/mindful/commit/f46886a" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",

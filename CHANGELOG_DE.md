@@ -5,9 +5,9 @@
 
 ---
 
-## 🐛 v1.7.8 - Widget Drag-Drop Event-Handling Fix
+## 🐛 v1.7.8 - Widget Drag-Drop Event-Handling & UX Fixes
 
-**Bugfix**: 10.06.2026
+**Bugfixes & Improvements**: 10.06.2026
 
 ### 🔧 Bugfixes & Improvements
 
@@ -17,28 +17,45 @@
   - Lösung: Neue `_initGridDragDrop()` Funktion registriert Handler auf **Grid-Container selbst**
   - Grid empfängt alle `dragover` und `drop` Events, egal wo Drag stattfindet
   
+- **Fixed: Widgets bleiben nach Drop halbdurchsichtig**:
+  - Problem: `.dragging` Klasse (opacity: 0.5) wurde in `_onDragEnd()` entfernt, aber `dragend` wird VOR `drop` aufgerufen
+  - Lösung: `.dragging` Klasse wird jetzt auch im Grid-Drop-Handler entfernt
+  - Widgets sind nach Drop wieder vollständig sichtbar
+
+- **Improved: Intuitiveres Drag-Over-Verhalten**:
+  - Problem: Widgets sprangen nach unten-links, wenn man sie von der linken Seite des Targets zog
+  - Ursache: Placeholder-Platzierung berücksichtigte nur X-Position (horizontal), nicht Y-Position (vertikal)
+  - Lösung: Neue Logik nutzt relative Position (relX, relY) im Target-Element
+  - Placeholder wird NACH Target eingefügt, nur wenn Cursor auf rechter/unterer Hälfte ist
+  - UX: Intuitiveres Verschieben, besonders bei Widgets am Ende der Reihe
+
 - **Sauberer Code**:
   - Entfernt redundante `_onDrop()` Funktion auf Card-Level
   - Nur noch Ein Drop-Handler (auf Grid) statt mehrere
   - Debug-Logs aufgeräumt (nur wichtige Fehler-Logs bleiben)
 
 - **Getestete Funktionalität**:
-  - ✅ Widgets lassen sich ziehen
+  - ✅ Widgets lassen sich ziehen und droppingpunkte sind intuitiv
   - ✅ Placeholder wird aktualisiert beim Drag über andere Widgets
   - ✅ Drop wird korrekt erkannt und verarbeitet
+  - ✅ Widgets sind nach Drop sichtbar (nicht mehr grau ausgegraut)
   - ✅ Neue Reihenfolge wird zur API gesendet
   - ✅ Server speichert Änderung (`{ok: true}`)
+  - ✅ Verschieben von vorletztem zu letztem Widget funktioniert intuitiv
 
 ### Technische Details:
 - `_initGridDragDrop(grid)` neu hinzugefügt
 - Grid-Level `dragover` handler: `e.preventDefault()` + `dropEffect = "move"`
-- Grid-Level `drop` handler: Führt Insert + Reflow + API-Save durch
-- Card-Level `dragover` handler bleibt nur für visuelles Feedback (`.drag-over` Klasse)
+- Grid-Level `drop` handler: Entfernt `.dragging`, Führt Insert + Reflow + API-Save durch
+- Card-Level `dragover` handler: Nutzt relative Position `(e.clientX - rect.left) / rect.width` und `(e.clientY - rect.top) / rect.height`
+- Insertion-Logik: `insertBefore = relX < 0.5 || relY < 0.3` (linke/obere Hälfte)
 
 ### 📝 Commits
 
 🔗 [`13001b2`](https://github.com/Ancrion/mindful/commit/13001b2) - fix: Add grid-level dragover/drop handlers for proper drag-drop
 🔗 [`5ad238c`](https://github.com/Ancrion/mindful/commit/5ad238c) - chore: Clean up debug logs and remove redundant _onDrop function
+🔗 [`f768261`](https://github.com/Ancrion/mindful/commit/f768261) - fix: Remove dragging class on drop to prevent widgets from staying opaque
+🔗 [`f46886a`](https://github.com/Ancrion/mindful/commit/f46886a) - improve: Better drag-over positioning using X and Y relative position to prevent widgets jumping
 
 ---
 
