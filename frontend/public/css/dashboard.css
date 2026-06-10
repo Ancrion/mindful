@@ -83,6 +83,7 @@ body.dark .widget-manage-btn:hover {
   gap: 20px;
   padding: 24px;
   align-items: stretch;
+  position: relative;
 }
 
 .widget-grid:empty {
@@ -131,6 +132,8 @@ body.dark .widget-manage-btn:hover {
   transform: scale(0.95);
   z-index: 1000;
   box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  position: absolute;
+  pointer-events: none;
 }
 
 .widget-card.drag-over {
