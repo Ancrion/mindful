@@ -133,6 +133,7 @@ function startTimer() {
   elPause.style.display = "inline-flex";
   elCard.classList.add("pomo-running");
   _pomoTimer = setInterval(tick, POMO_TICK);
+  savePomoState(true);
   playSound("start");
 }
 
@@ -143,12 +144,14 @@ function pauseTimer() {
   elStart.style.display = "inline-flex";
   elPause.style.display = "none";
   elCard.classList.remove("pomo-running");
+  savePomoState(false);
 }
 
 function resetTimer() {
   pauseTimer();
   _pomoRemaining = _pomoDuration * 60;
   updateDisplay();
+  clearPomoState();
 }
 
 // ─── Click-to-edit Pomodoro Time ───
@@ -211,6 +214,20 @@ function tick() {
   updateDisplay();
 }
 
+function savePomoState(running) {
+  const state = {
+    running,
+    remaining: _pomoRemaining,
+    duration: _pomoDuration,
+    startedAt: running ? Date.now() : null,
+  };
+  try { localStorage.setItem("pomoState", JSON.stringify(state)); } catch {}
+}
+
+function clearPomoState() {
+  try { localStorage.removeItem("pomoState"); } catch {}
+}
+
 function completeTimer() {
   clearInterval(_pomoTimer);
   _pomoTimer = null;
@@ -230,6 +247,8 @@ function completeTimer() {
   playSound("complete");
   showNotification("Session abgeschlossen! Gut gemacht.");
   loadStats();
+
+  clearPomoState();
 
   // Auto-reset for next session
   _pomoRemaining = _pomoDuration * 60;

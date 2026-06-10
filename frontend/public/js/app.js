@@ -84,6 +84,7 @@ window.logout = async function () {
     await fetch(`${API_BASE}/auth/logout`, { method: "POST", credentials: "include" });
   } catch {}
   localStorage.removeItem("token");
+  stopGlobalTimer();
   window.location.replace("/login");
 };
 
@@ -470,38 +471,46 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-// ─── Global Timer ───
+// ─── Global Timer (Pomodoro-basiert) ───
 let _globalTimerInterval = null;
-let _globalTimerSeconds = 0;
+let _globalTimerRemaining = 0;
 
-async function loadActiveSession() {
-  try {
-    const res = await authFetch(`${API_BASE}/todos?status=in%20arbeit`);
-    if (!res || !res.ok) return;
-    const todos = await res.json();
-    if (todos.length > 0) {
-      startGlobalTimer(todos[0]);
-    }
-  } catch {}
-}
-
-function startGlobalTimer(todo) {
+function initGlobalTimer() {
   const el = document.getElementById("globalTimer");
   const display = document.getElementById("globalTimerDisplay");
   if (!el || !display) return;
 
-  if (todo.pomo_seconds) {
-    _globalTimerSeconds = todo.pomo_seconds;
+  const raw = localStorage.getItem("pomoState");
+  if (!raw) { el.style.display = "none"; return; }
+
+  let state;
+  try { state = JSON.parse(raw); } catch { el.style.display = "none"; return; }
+
+  if (!state.running) { el.style.display = "none"; return; }
+
+  const elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
+  _globalTimerRemaining = Math.max(0, state.remaining - elapsed);
+
+  if (_globalTimerRemaining <= 0) {
+    localStorage.removeItem("pomoState");
+    el.style.display = "none";
+    return;
   }
 
   el.style.display = "flex";
-  el.title = "Aktive Aufgabe: " + (todo.titel || "");
-  el.onclick = () => { window.location.href = "/todo"; };
+  el.title = "Pomodoro läuft";
+  el.onclick = () => { window.location.href = "/pomodoro"; };
   updateGlobalDisplay();
   clearInterval(_globalTimerInterval);
   _globalTimerInterval = setInterval(() => {
-    _globalTimerSeconds++;
-    updateGlobalDisplay();
+    _globalTimerRemaining--;
+    if (_globalTimerRemaining <= 0) {
+      _globalTimerRemaining = 0;
+      updateGlobalDisplay();
+      stopGlobalTimer();
+    } else {
+      updateGlobalDisplay();
+    }
   }, 1000);
 }
 
@@ -510,18 +519,18 @@ function stopGlobalTimer() {
   if (el) el.style.display = "none";
   clearInterval(_globalTimerInterval);
   _globalTimerInterval = null;
-  _globalTimerSeconds = 0;
+  _globalTimerRemaining = 0;
 }
 
 function updateGlobalDisplay() {
   const display = document.getElementById("globalTimerDisplay");
   if (!display) return;
-  const m = String(Math.floor(_globalTimerSeconds / 60)).padStart(2, "0");
-  const s = String(_globalTimerSeconds % 60).padStart(2, "0");
+  const m = String(Math.floor(_globalTimerRemaining / 60)).padStart(2, "0");
+  const s = String(_globalTimerRemaining % 60).padStart(2, "0");
   display.textContent = `${m}:${s}`;
 }
 
-window.startGlobalTimer = startGlobalTimer;
+window.initGlobalTimer = initGlobalTimer;
 window.stopGlobalTimer = stopGlobalTimer;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -535,6 +544,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (saved) {
       selectWsSidebar(parseInt(saved));
     }
-    loadActiveSession();  // <-- ADD THIS LINE
+    initGlobalTimer();
   }
 });
