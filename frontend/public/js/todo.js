@@ -87,10 +87,8 @@ async function loadTodos() {
   const res = await authFetch(url);
   if (!res || !res.ok) return;
 
-  const todos = await res.json();
-  const list = document.getElementById("taskList");
-
-  if (todos.length === 0) {
+  const todos = await safeJson(res);
+  if (!todos) return;
     hideSkeleton();
     const isFiltered = currentWorkspaceId || currentStatusFilter !== "offen";
     list.innerHTML = `<div class="empty-state">
@@ -213,7 +211,8 @@ function switchFilter(status) {
 async function fetchTodoById(id) {
   const res = await authFetch(`${API_BASE}/todos?status=alle`);
   if (!res || !res.ok) return null;
-  const todos = await res.json();
+  const todos = await safeJson(res);
+  if (!todos || !Array.isArray(todos)) return null;
   return todos.find((t) => t.id == id) || null;
 }
 

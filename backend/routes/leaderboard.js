@@ -35,10 +35,10 @@ router.get("/", auth, (req, res) => {
 
     const tracked = db
       .prepare(
-        `SELECT u.id, u.name, COALESCE(SUM(t.duration_seconds), 0) AS value
+        `SELECT u.id, u.name, COALESCE(SUM(te.duration_seconds), 0) AS value
          FROM time_entries te
          JOIN users u ON te.user_id = u.id
-         WHERE date(te.created_at) = date(?)
+         WHERE te.completed_at IS NOT NULL AND date(COALESCE(te.completed_at, te.end_time)) = date(?)
          GROUP BY u.id
          ORDER BY value DESC`,
       )

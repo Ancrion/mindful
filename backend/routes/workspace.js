@@ -2,6 +2,12 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
 
+// ─── Workspace Color Validation ───
+const ALLOWED_COLORS = ["orange", "blue", "green", "pink", "red", "purple", "teal", "yellow"];
+function validateColor(color) {
+  return ALLOWED_COLORS.includes(color);
+}
+
 router.get("/", (req, res) => {
   try {
     const workspaces = db.prepare("SELECT * FROM workspaces WHERE user_id = ? ORDER BY id").all(req.user.id);
@@ -16,6 +22,11 @@ router.post("/", (req, res) => {
   try {
     const { name, farbe, parent_id } = req.body;
     if (!name) return res.status(400).json({ error: "Name ist erforderlich" });
+    
+    // Validate color
+    if (farbe && !validateColor(farbe)) {
+      return res.status(400).json({ error: `Ungültige Farbe. Erlaubt: ${ALLOWED_COLORS.join(", ")}` });
+    }
 
     if (parent_id) {
       const parent = db.prepare("SELECT id FROM workspaces WHERE id = ? AND user_id = ?").get(parent_id, req.user.id);
@@ -36,6 +47,11 @@ router.post("/", (req, res) => {
 router.put("/:id", (req, res) => {
   try {
     const { name, farbe, parent_id } = req.body;
+
+    // Validate color if provided
+    if (farbe && !validateColor(farbe)) {
+      return res.status(400).json({ error: `Ungültige Farbe. Erlaubt: ${ALLOWED_COLORS.join(", ")}` });
+    }
 
     if (parent_id !== undefined) {
       const parent = db.prepare("SELECT id FROM workspaces WHERE id = ? AND user_id = ?").get(parent_id, req.user.id);
@@ -76,6 +92,11 @@ router.delete("/:id", (req, res) => {
   try {
     const ws = db.prepare("SELECT * FROM workspaces WHERE id = ? AND user_id = ?").get(req.params.id, req.user.id);
     if (!ws) return res.status(404).json({ error: "Workspace nicht gefunden" });
+
+    // Delete cascade: Todos, Notizen, Events mit diesem workspace_id
+    db.prepare("DELETE FROM todos WHERE workspace_id = ? AND user_id = ?").run(req.params.id, req.user.id);
+    db.prepare("DELETE FROM notizen WHERE workspace_id = ? AND user_id = ?").run(req.params.id, req.user.id);
+    db.prepare("DELETE FROM events WHERE workspace_id = ? AND user_id = ?").run(req.params.id, req.user.id);
 
     // Kinder an den Parent des gelöschten Workspaces hängen
     db.prepare("UPDATE workspaces SET parent_id = ? WHERE parent_id = ? AND user_id = ?").run(ws.parent_id, req.params.id, req.user.id);

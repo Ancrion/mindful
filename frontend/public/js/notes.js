@@ -91,10 +91,11 @@ async function init() {
     const res = await authFetch(`${API_BASE}/ordner`, {
       method: "POST",
       body: JSON.stringify({ name: folderName, farbe: "color-sage" }),
-    });
-    if (!res || !res.ok) return;
-    const { id: folderId } = await res.json();
-    await uploadFilesToFolder(folderId, input.files);
+     });
+     if (!res || !res.ok) return;
+     const data = await safeJson(res);
+     if (!data || !data.id) return;
+     await uploadFilesToFolder(data.id, input.files);
     input.value = "";
   });
 
@@ -158,9 +159,9 @@ async function loadData() {
     authFetch(`${API_BASE}/dokumente`),
   ]);
 
-  if (foldersRes) allFolders = await foldersRes.json();
-  if (notesRes) allNotes = await notesRes.json();
-  if (docsRes) allDocuments = await docsRes.json();
+  if (foldersRes) allFolders = await safeJson(foldersRes) || [];
+  if (notesRes) allNotes = await safeJson(notesRes) || [];
+  if (docsRes) allDocuments = await safeJson(docsRes) || [];
 
   renderTree();
 }
@@ -476,10 +477,12 @@ window.createNewNote = async function (folderId) {
   });
 
   if (res && res.ok) {
-    const newNote = await res.json();
-    if (folderId) localStorage.setItem("folder-expanded-" + folderId, "true");
-    await loadData();
-    openNote(newNote);
+    const newNote = await safeJson(res);
+    if (newNote && newNote.id) {
+      if (folderId) localStorage.setItem("folder-expanded-" + folderId, "true");
+      await loadData();
+      openNote(newNote);
+    }
   }
 };
 
@@ -518,10 +521,13 @@ window.renameNote = async function (noteId, currentName) {
     if (noteId === currentNoteId) {
       document.getElementById("noteTitle").value = name;
     }
-    const updated = await res.json();
-    const idx = allNotes.findIndex((n) => n.id === noteId);
-    if (idx !== -1) allNotes[idx] = updated;
-    renderTree();
+    const updated = await safeJson(res);
+    if (updated && updated.id) {
+      const idx = allNotes.findIndex((n) => n.id === noteId);
+      if (idx !== -1) allNotes[idx] = updated;
+      renderTree();
+    }
+  }
   }
 };
 

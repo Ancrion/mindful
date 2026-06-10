@@ -3,6 +3,12 @@ const router = express.Router();
 const db = require("../database/db");
 const auth = require("../middleware/auth");
 
+// ─── Input Validation ───
+function validateDurationSeconds(duration) {
+  const num = Number(duration);
+  return !isNaN(num) && num > 0 && num < 86400; // 0 - 24 hours
+}
+
 router.post("/start", auth, (req, res) => {
   try {
     const { todo_id, description } = req.body;
@@ -31,8 +37,8 @@ router.post("/stop", auth, (req, res) => {
     const start = new Date(active.start_time);
     const duration = Math.round((now - start) / 1000);
     db.prepare(
-      "UPDATE time_entries SET end_time = ?, duration_seconds = ? WHERE id = ? AND user_id = ?"
-    ).run(now.toISOString(), duration, active.id, req.user.id);
+      "UPDATE time_entries SET end_time = ?, duration_seconds = ?, completed_at = ? WHERE id = ? AND user_id = ?"
+    ).run(now.toISOString(), duration, now.toISOString(), active.id, req.user.id);
     const entry = db.prepare("SELECT * FROM time_entries WHERE id = ?").get(active.id);
     res.json(entry);
   } catch (err) {
@@ -97,6 +103,12 @@ router.put("/:id", auth, (req, res) => {
     const { description, duration_seconds, todo_id } = req.body;
     const entry = db.prepare("SELECT * FROM time_entries WHERE id = ? AND user_id = ?").get(req.params.id, req.user.id);
     if (!entry) return res.status(404).json({ error: "Eintrag nicht gefunden" });
+    
+    // Validate duration if provided
+    if (duration_seconds !== undefined && !validateDurationSeconds(duration_seconds)) {
+      return res.status(400).json({ error: "Ungültige Dauer (0 bis 86400 Sekunden)" });
+    }
+    
     db.prepare(
       "UPDATE time_entries SET description = COALESCE(?, description), duration_seconds = COALESCE(?, duration_seconds), todo_id = COALESCE(?, todo_id) WHERE id = ? AND user_id = ?"
     ).run(description || null, duration_seconds || null, todo_id || null, req.params.id, req.user.id);

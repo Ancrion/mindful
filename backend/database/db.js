@@ -41,6 +41,13 @@ try {
   // Spalte existiert bereits
 }
 
+// Migration: completed_at für Zeit-Einträge (Leaderboard-Tracking)
+try {
+  db.exec("ALTER TABLE time_entries ADD COLUMN completed_at TEXT DEFAULT NULL");
+} catch (e) {
+  // Spalte existiert bereits
+}
+
 // Migration: Set 'jaro' as admin (for backward compatibility)
 try {
   db.prepare("UPDATE users SET is_admin = 1 WHERE name = ?").run("jaro");

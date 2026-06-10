@@ -22,10 +22,22 @@ async function apiFetch(endpoint, options = {}) {
     const url = `${API_BASE}/${endpoint}`;
     if (!options.method) options.method = "GET";
     const res = await authFetch(url, options);
-    if (!res) return null;
-    return res.json();
+    if (!res) {
+      console.error(`apiFetch: No response for ${endpoint}`);
+      return null;
+    }
+    if (!res.ok) {
+      console.error(`apiFetch: ${res.status} ${res.statusText} for ${endpoint}`);
+      return null;
+    }
+    const data = await res.json();
+    if (!data) {
+      console.error(`apiFetch: Empty response for ${endpoint}`);
+      return null;
+    }
+    return data;
   } catch (err) {
-    console.error("apiFetch Fehler:", err);
+    console.error(`apiFetch Fehler (${endpoint}):`, err.message);
     return null;
   }
 }

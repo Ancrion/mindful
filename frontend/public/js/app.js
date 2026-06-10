@@ -1,5 +1,16 @@
 const API_BASE = "/api";
 
+// ─── Safe JSON Helper (for all files) ───
+async function safeJson(response) {
+  if (!response) return null;
+  try {
+    return await response.json();
+  } catch (err) {
+    console.error("JSON parsing error:", err);
+    return null;
+  }
+}
+
 const WORKSPACE_COLORS = {
   orange: "#f19a3d",
   blue: "#4c91ff",
