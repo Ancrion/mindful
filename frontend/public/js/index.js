@@ -149,6 +149,9 @@ function _buildCard(widget) {
     <div class="widget-header">
       <span class="widget-handle"><i class="fas fa-grip-vertical"></i></span>
       <h3 class="widget-title"><i class="fas ${info.icon}"></i> ${info.name}</h3>
+      ${widget.typ === "calendar" ? `<div class="cal-view-switch">${["month","week","day"].map(v =>
+        `<button class="cal-view-btn${_calendarWidgetView === v ? " active" : ""}" data-view="${v}">${v === "month" ? "Monat" : v === "week" ? "Woche" : "Tag"}</button>`
+      ).join("")}</div>` : ""}
       <button class="widget-remove" title="Widget entfernen">&times;</button>
     </div>
     <div class="widget-body">${bodyHTML}</div>
@@ -829,7 +832,6 @@ function _buildCalendarBody() {
       <div class="cal-head-row">
         <button class="cal-nav" data-dir="-1"><i class="fas fa-chevron-left"></i></button>
         <span class="cal-title">${title}</span>
-        <div class="cal-view-switch">${viewBtns}</div>
         <button class="cal-nav" data-dir="1"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>

@@ -339,6 +339,7 @@ body.dark .widget-manage-btn:hover {
   border-bottom: 1px solid var(--card-border);
   cursor: grab;
   user-select: none;
+  position: relative;
 }
 
 .widget-header:active {
@@ -352,6 +353,7 @@ body.dark .widget-manage-btn:hover {
   transition: opacity 0.2s;
   display: flex;
   align-items: center;
+  z-index: 1;
 }
 
 .widget-card:hover .widget-handle {
@@ -385,6 +387,7 @@ body.dark .widget-manage-btn:hover {
   opacity: 0;
   transition: opacity 0.2s, color 0.2s, background 0.2s;
   line-height: 1;
+  z-index: 1;
 }
 
 .widget-card:hover .widget-remove {
@@ -973,18 +976,25 @@ body.dark .widget-manage-btn:hover {
   flex-shrink: 0;
 }
 
+.widget-header .cal-view-switch {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .cal-view-btn {
   background: none;
   border: 1px solid transparent;
   cursor: pointer;
-  font-size: 0.55rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-muted);
-  padding: 2px 6px;
-  border-radius: 6px;
+  padding: 3px 8px;
+  border-radius: 8px;
   transition: 0.15s;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  line-height: 1;
 }
 .cal-view-btn:hover {
   background: var(--surface-2);
