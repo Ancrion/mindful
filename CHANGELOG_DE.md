@@ -1,11 +1,11 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.0
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.1
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
 
 ---
 
-## 🚀 v1.7.1 - Kalender Widget kompakter & kleiner
+## 🚀 v1.7.1 - Kalender Widget kompakter & kleiner + Ansichtswahl
 
 **Veröffentlichung**: 10.06.2026
 
@@ -16,10 +16,17 @@
 - **Optimierte Abstände**: Kalender-Kopf (8px statt 12px), Widget-Body (12px statt 16px), Zellen-Gap (1px statt 2px)
 - **Feinere Typografie**: Titel 0.8rem, Tageszahlen 0.7rem, Wochentage 0.6rem, Letter-Spacing 0.3px
 - **Kleinere Interaktionselemente**: Today-Kreis 22px (statt 28px), Dots 4px (statt 5px)
+- **Ansichtswahl (Monat/Woche/Tag)**: Drei Buttons im Widget-Kopf zum Umschalten
+  - **Monat**: Kompakter Monatskalender mit Event-Dots (wie gehabt)
+  - **Woche**: 7-Tage-Ansicht mit Datum und Event-Dots, Navigation springt um 7 Tage
+  - **Tag**: Detailansicht mit listenartigen Terminen (max. 5) inkl. Uhrzeit und Farbe; Klick auf Tag in Monat/Woche wechselt in Tag-Ansicht
+- **Navigation angepasst**: Pfeiltasten springen je nach Ansicht um Monat/Woche/Tag
 
 ### 📝 Commits
 
 🔗 [`e869377`](https://github.com/Ancrion/mindful/commit/e869377) - feat: Compact calendar widget - smaller default size and compact UI
+
+🔗 [`732ce3e`](https://github.com/Ancrion/mindful/commit/732ce3e) - feat: Add view switching (Monat/Woche/Tag) to calendar widget
 
 ---
 
