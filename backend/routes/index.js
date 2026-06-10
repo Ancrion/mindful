@@ -31,6 +31,7 @@ router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "
 router.get("/entwicklungsplan", auth, (req, res) => res.render("entwicklungsplan", { currentPage: "entwicklungsplan" }));
 router.get("/bugs", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
+router.get("/changelog", (req, res) => res.render("changelog", { currentPage: "changelog" }));
 
 // ─── HEALTH CHECK ───
 router.get("/health", (req, res) => {
