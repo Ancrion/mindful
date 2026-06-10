@@ -3033,7 +3033,10 @@ git push --tags</script>
             commit:"94bf4f2", hash:"https://github.com/Ancrion/mindful/commit/94bf4f2" },
           { id:"jaro-41", file:"frontend/public/css/dashboard.css + frontend/public/js/index.js",
             desc:"WIDGET-SYSTEM SMOOTH UX v1.7.7: ① Placeholder-Puls-Animation + 0.3s Transitions, ② Größere Box-Shadow beim Drag (0.12-0.15 opacity), ③ 3px Accent-Border bei drag-over, ④ 50ms Placeholder-Delay verhindert Flackern, ⑤ Cursor-Position-basierte Insertion (vor/nach), ⑥ Fade-out beim Drop, ⑦ API Error-Handling mit .catch()",
-            commit:"7d17edc", hash:"https://github.com/Ancrion/mindful/commit/7d17edc" }
+            commit:"7d17edc", hash:"https://github.com/Ancrion/mindful/commit/7d17edc" },
+          { id:"jaro-42", file:"frontend/public/js/index.js",
+            desc:"WIDGET DRAG-DROP UNDO & ERROR-HANDLING v1.7.7-Hotfix: ① _onDrop() speichert originalOrder + Größen, ② Bei API-Fehler: Reverts DOM + UI + Größen, ③ _setWidgetSize() mit Optimistic Update + Rollback, ④ _saveOrder() auch mit Undo, ⑤ Validiert res.ok statt nur error, ⑥ Widgets springen nicht mehr zurück bei Fehler",
+            commit:"f63471d", hash:"https://github.com/Ancrion/mindful/commit/f63471d" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",

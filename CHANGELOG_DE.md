@@ -1,7 +1,31 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.7
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.7 Hotfix
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
+
+---
+
+## 🐛 v1.7.7 Hotfix - Widget Drag-Drop Fehler-Handling
+
+**Hotfix**: 10.06.2026
+
+### 🔧 Bugfixes
+
+- **Widgets springen nicht mehr zurück bei Fehler**: 
+  - Undo-Logik speichert ursprüngliche Reihenfolge + Größen vor dem Drop
+  - Bei API-Fehler: DOM und UI werden automatisch zurückgesetzt
+  - Benutzer sieht, dass es fehlgeschlagen ist (Console-Log)
+- **Robustes Error-Handling**:
+  - `_onDrop()`: Speichert `originalOrder` mit Element-Referenzen + Größen
+  - `_setWidgetSize()`: Optimistic Update mit Rollback bei Fehler
+  - `_saveOrder()`: Auch mit Undo bei Tastatur-Navigation
+  - Validiert API-Response auf `res.ok` (nicht nur error-Feld)
+- **Konsistente Widget-Größen**: Wenn Resize fehlschlägt, wird UI reverted
+- **Better Logging**: ✅/❌ Emoticons in Console für visuelles Feedback
+
+### 📝 Commits
+
+🔗 [`f63471d`](https://github.com/Ancrion/mindful/commit/f63471d) - fix: Robust widget drag-drop with undo on failure and proper error handling
 
 ---
 
