@@ -1,7 +1,40 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.3
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.4
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
+
+---
+
+## 🚀 v1.7.4 - Willkommen-Text bündig zu Widgets + verschoben
+
+**Veröffentlichung**: 10.06.2026
+
+### ✨ Verbesserungen
+
+- **Willkommen-Text nach unten versetzt**: "Willkommen zurück" + Subtitle aus der `.topbar` herausgezogen, jetzt eigenständig zwischen Breadcrumb und Widgets
+- **Bündig zu Widgets**: Gleicher `padding-left: 24px` wie das Widget-Grid – perfekte linke Ausrichtung
+- **Kompaktere Topbar**: `.topbar` margin-bottom von 32px auf 8px reduziert (da der Text nicht mehr drin ist)
+- **Responsive**: Padding passt sich bei <768px auf 16px an
+
+### 📝 Commits
+
+🔗 [`9c96662`](https://github.com/Ancrion/mindful/commit/9c96662) - feat: Move welcome text down and align left with widgets
+
+---
+
+## 🚀 v1.7.3 - Kalender Widget Ansichtswahl in Kopfzeile + Datum-Fix
+
+**Veröffentlichung**: 10.06.2026
+
+### ✨ Verbesserungen
+
+- **Ansichtswahl in Kopfzeile**: Die Buttons Monat/Woche/Tag sind jetzt direkt in der `.cal-head-row` neben dem Datum und den Navigationspfeilen – kompakter und intuitiver
+- **Doppeltes Datum entfernt**: In der Tag-Ansicht wird das Datum nur noch einmal angezeigt (in der Kopfzeile mit Wochentag, z. B. "Dienstag, 10. Juni 2026") – keine separate `.cal-wday-head`-Zeile mehr
+- **Schmaleres Layout**: `.cal-head` padding reduziert, kompaktere View-Buttons mit Border + uppercase
+
+### 📝 Commits
+
+🔗 [`b3ff9bf`](https://github.com/Ancrion/mindful/commit/b3ff9bf) - feat: Move calendar view switcher to head-row and remove duplicate date in day view
 
 ---
 
@@ -28,22 +61,6 @@
 ### 📝 Commits
 
 🔗 [`c14d332`](https://github.com/Ancrion/mindful/commit/c14d332) - feat: Flexible widget grid with auto-fit on drag-drop and equal row heights
-
----
-
-## 🚀 v1.7.3 - Kalender Widget Ansichtswahl in Kopfzeile + Datum-Fix
-
-**Veröffentlichung**: 10.06.2026
-
-### ✨ Verbesserungen
-
-- **Ansichtswahl in Kopfzeile**: Die Buttons Monat/Woche/Tag sind jetzt direkt in der `.cal-head-row` neben dem Datum und den Navigationspfeilen – kompakter und intuitiver
-- **Doppeltes Datum entfernt**: In der Tag-Ansicht wird das Datum nur noch einmal angezeigt (in der Kopfzeile mit Wochentag, z. B. "Dienstag, 10. Juni 2026") – keine separate `.cal-wday-head`-Zeile mehr
-- **Schmaleres Layout**: `.cal-head` padding reduziert, kompaktere View-Buttons mit Border + uppercase
-
-### 📝 Commits
-
-🔗 [`b3ff9bf`](https://github.com/Ancrion/mindful/commit/b3ff9bf) - feat: Move calendar view switcher to head-row and remove duplicate date in day view
 
 ---
 
@@ -725,7 +742,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Versionen** | 17 |
+| **Versionen** | 18 |
 | **Commits** | 75+ |
 | **Features hinzugefügt** | 100+ |
 | **Bugs behoben** | 35+ |
