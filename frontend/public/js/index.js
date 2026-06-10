@@ -121,12 +121,8 @@ function renderWidgets() {
       const nextNode = placeholder.nextSibling;
       placeholder.remove();
       
-      // Remove dragging state and inline styles
+      // Remove dragging state
       element.classList.remove("dragging");
-      element.style.left = "";
-      element.style.top = "";
-      element.style.width = "";
-      element.style.height = "";
       
       if (nextNode) {
         grid.insertBefore(element, nextNode);
@@ -390,18 +386,7 @@ function _onDragStart(e) {
   
   console.log("🎯 Drag start:", element.dataset.widgetId);
   
-  // Store position before adding dragging class
-  const rect = element.getBoundingClientRect();
-  const gridRect = grid.getBoundingClientRect();
-  
   element.classList.add("dragging");
-  
-  // Position element absolutely relative to grid
-  element.style.left = (rect.left - gridRect.left) + "px";
-  element.style.top = (rect.top - gridRect.top) + "px";
-  element.style.width = rect.width + "px";
-  element.style.height = rect.height + "px";
-  
   e.dataTransfer.effectAllowed = "move";
   e.dataTransfer.setData("text/plain", element.dataset.widgetId);
   
@@ -417,11 +402,6 @@ function _onDragEnd() {
   
   if (_drag?.element) {
     _drag.element.classList.remove("dragging");
-    // Remove inline styles that were set for absolute positioning
-    _drag.element.style.left = "";
-    _drag.element.style.top = "";
-    _drag.element.style.width = "";
-    _drag.element.style.height = "";
   }
   if (_drag?.placeholder) {
     _drag.placeholder.remove();
