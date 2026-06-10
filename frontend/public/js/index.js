@@ -430,12 +430,20 @@ function _onDragOver(e) {
     });
     target.classList.add("drag-over");
     
-    // Move placeholder
+    // Move placeholder - use both X and Y position for better UX
     const grid = document.getElementById("widgetGrid");
     const rect = target.getBoundingClientRect();
-    const midX = rect.left + rect.width / 2;
     
-    if (e.clientX < midX) {
+    // Calculate relative position in target (0-1 scale)
+    const relX = (e.clientX - rect.left) / rect.width;
+    const relY = (e.clientY - rect.top) / rect.height;
+    
+    // If cursor is on left half OR top half, insert before target
+    // Otherwise insert after target
+    // This prevents widgets jumping down when dragging from left side
+    const insertBefore = relX < 0.5 || relY < 0.3;
+    
+    if (insertBefore) {
       grid.insertBefore(placeholder, target);
     } else {
       grid.insertBefore(placeholder, target.nextSibling);
