@@ -2357,21 +2357,71 @@ body.dark .ws-ctx-menu .ctx-item.ctx-danger:hover { background: #2d1515; }
   margin-top: 10px;
   font-size: 12px;
 }
-.cl-commits summary {
+.cl-commits-summary {
   cursor: pointer;
   color: var(--text-secondary);
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  transition: color 0.2s;
 }
-.cl-commits code {
-  display: block;
-  font-size: 11px;
-  font-family: "SF Mono","Fira Code",monospace;
-  background: var(--bg);
-  padding: 4px 8px;
+.cl-commits-summary:hover {
+  color: var(--text-primary);
+}
+.cl-commits-summary i {
+  font-size: 10px;
+}
+.cl-commits-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px;
+  background-color: var(--surface-2);
+  border-radius: 6px;
+}
+.cl-commit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: var(--surface);
+  border: 1px solid var(--border-primary);
   border-radius: 4px;
-  margin: 4px 0;
-  color: var(--text-secondary);
-  word-break: break-all;
+  font-size: 11px;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.cl-commit-link:hover {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(242, 75, 61, 0.2);
+}
+.cl-commit-link code {
+  font-family: "SF Mono","Fira Code",monospace;
+  font-size: 10px;
+  font-weight: 600;
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+.cl-commit-link i {
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+.cl-entry-actions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-primary);
+  display: flex;
+  gap: 8px;
 }
 
 /* Weather Widget Autocomplete */

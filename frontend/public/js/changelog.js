@@ -31,10 +31,15 @@ function renderCl() {
           <span class="cl-version-badge">v${escHtml(e.version)}</span>
           <span class="cl-date">${formatClDate(e.datum)}</span>
         </div>
-        <h3 class="cl-entry-title">${escHtml(e.titel)}</h3>
-        ${renderClList(e.features, "Neu", "cl-feature")}
-        ${renderClList(e.fixes, "Behoben", "cl-fix")}
-        ${e.commits && e.commits.length ? `<details class="cl-commits"><summary>Commits (${e.commits.length})</summary><code>${e.commits.map(c => escHtml(c)).join("</code><code>")}</code></details>` : ""}
+         <h3 class="cl-entry-title">${escHtml(e.titel)}</h3>
+         ${renderClList(e.features, "Neu", "cl-feature")}
+         ${renderClList(e.fixes, "Behoben", "cl-fix")}
+         ${renderCommitsList(e.commits)}
+         <div class="cl-entry-actions">
+           <a href="https://github.com/Ancrion/mindful/releases/tag/v${escHtml(e.version)}" target="_blank" class="btn btn-secondary btn-sm">
+             <i class="fas fa-external-link-alt"></i> Auf GitHub anzeigen
+           </a>
+         </div>
       </div>
     </div>`;
   }).join("");
@@ -46,6 +51,27 @@ function renderClList(items, label, cls) {
     <li class="cl-list-label ${cls}">${label}</li>
     ${items.map(i => `<li>${escHtml(i)}</li>`).join("")}
   </ul>`;
+}
+
+function renderCommitsList(commits) {
+  if (!commits || !commits.length) return "";
+  const baseUrl = "https://github.com/Ancrion/mindful/commit";
+  return `
+    <details class="cl-commits">
+      <summary class="cl-commits-summary">
+        <i class="fas fa-code-branch"></i>
+        Commits (${commits.length})
+      </summary>
+      <div class="cl-commits-list">
+        ${commits.map(c => `
+          <a href="${baseUrl}/${escHtml(c)}" target="_blank" class="cl-commit-link" title="Commit auf GitHub anzeigen">
+            <code>${escHtml(c.substring(0, 7))}</code>
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        `).join("")}
+      </div>
+    </details>
+  `;
 }
 
 function escHtml(s) {
