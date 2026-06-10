@@ -15,13 +15,16 @@
 - **Bündig zu Widgets**: Gleicher `padding-left: 24px` wie das Widget-Grid – perfekte linke Ausrichtung
 - **Mehr Abstand nach oben**: `padding-top: 24px` damit der Text nicht an der Breadcrumb-Leiste klebt
 - **Kompaktere Topbar**: `.topbar` margin-bottom von 32px auf 8px reduziert (da der Text nicht mehr drin ist)
-- **Responsive**: Padding passt sich bei <768px auf 16px an
+- **Responsive**: Padding passt sich bei <768px auf 24px/16px an
+- **Vertikal zentriert**: Abstand oben (32px) und unten (24px) so gewählt, dass der Text in der Mitte zwischen Breadcrumb und erstem Widget schwebt
 
 ### 📝 Commits
 
 🔗 [`9c96662`](https://github.com/Ancrion/mindful/commit/9c96662) - feat: Move welcome text down and align left with widgets
 
 🔗 [`5a14451`](https://github.com/Ancrion/mindful/commit/5a14451) - fix: Increase welcome text top padding to 24px
+
+🔗 [`c674ad5`](https://github.com/Ancrion/mindful/commit/c674ad5) - fix: Center welcome text vertically between breadcrumb and widgets
 
 ---
 
