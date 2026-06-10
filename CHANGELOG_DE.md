@@ -1,7 +1,25 @@
-# 📋 Changelog - Mindful v0.1.0 bis v1.7.4
+# 📋 Changelog - Mindful v0.1.0 bis v1.7.5
 
 > Vollständige, deutsche Dokumentation aller Versionen mit verlinkten Git-Commits.  
 > Klicke auf einen Commit-Hash, um die Änderungen auf GitHub anzuschauen.
+
+---
+
+## 🚀 v1.7.5 - Kalender Widget Ansichtswahl in Header-Leiste zentriert
+
+**Veröffentlichung**: 10.06.2026
+
+### ✨ Verbesserungen
+
+- **Ansichtswahl in der Kalender-Header-Leiste**: Monat/Woche/Tag-Buttons sind jetzt in der `.widget-header`-Leiste neben "Kalender" – zentriert zwischen Titel und Schließen-Button
+- **Absolute Zentrierung**: `.cal-view-switch` per `position: absolute; left: 50%; transform: translateX(-50%)` perfekt mittig im Header
+- **Größere Buttons**: `.cal-view-btn` auf 0.6rem + padding 3px 8px + border-radius 8px (besser klickbar)
+- **Keine doppelten Buttons mehr**: `.cal-view-switch` wurde aus `.cal-head-row` entfernt – nur noch im Header
+- **z-index Fix**: widget-remove + widget-handle haben z-index:1, damit sie über dem absolut positionierten View-Switch klickbar sind
+
+### 📝 Commits
+
+🔗 [`38c96a1`](https://github.com/Ancrion/mindful/commit/38c96a1) - feat: Move calendar view switcher to widget header bar centered
 
 ---
 
@@ -748,7 +766,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Versionen** | 18 |
+| **Versionen** | 19 |
 | **Commits** | 75+ |
 | **Features hinzugefügt** | 100+ |
 | **Bugs behoben** | 35+ |
