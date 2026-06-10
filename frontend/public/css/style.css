@@ -1086,6 +1086,43 @@ body.dark .search-overlay {
   outline-offset: -2px;
 }
 
+/* ─── Workspace-Kontextmenü ─── */
+.ws-ctx-menu {
+  position: fixed;
+  z-index: 10001;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  padding: 4px;
+  min-width: 180px;
+  display: none;
+}
+.ws-ctx-menu.open { display: block; }
+.ws-ctx-menu .ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  transition: background 0.1s ease;
+  user-select: none;
+}
+.ws-ctx-menu .ctx-item:hover { background: var(--surface-2); }
+.ws-ctx-menu .ctx-item i {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.ws-ctx-menu .ctx-item.ctx-danger { color: #EF4444; }
+.ws-ctx-menu .ctx-item.ctx-danger i { color: #EF4444; }
+.ws-ctx-menu .ctx-item.ctx-danger:hover { background: #fef2f2; }
+body.dark .ws-ctx-menu .ctx-item.ctx-danger:hover { background: #2d1515; }
+
 .ws-sb-dd-divider {
   height: 1px;
   background: var(--border-soft);

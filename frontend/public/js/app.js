@@ -224,6 +224,11 @@ function renderWsSidebarList() {
       e.stopPropagation();
       window.selectWsSidebar(parseInt(el.dataset.id));
     });
+    el.addEventListener("contextmenu", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.openWsCtxMenu(e, parseInt(el.dataset.id));
+    });
   });
   list.querySelectorAll(".ws-sb-expand[data-expand]").forEach(el => {
     el.addEventListener("click", e => {
@@ -287,6 +292,74 @@ window.wsDrop = async function (e, targetId) {
   await loadWorkspaces();
   window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId } }));
 };
+
+/* ─── Workspace-Kontextmenü ─── */
+let _wsCtxId = null;
+
+window.openWsCtxMenu = function (e, id) {
+  _wsCtxId = id;
+  const menu = document.getElementById("wsCtxMenu");
+  menu.querySelector("[data-action='add-child']").onclick = () => {
+    closeWsCtxMenu();
+    document.getElementById("wsSbNewName").value = "";
+    document.getElementById("wsSbNewName").focus();
+    document.getElementById("wsSbDropdown").classList.add("open");
+    document.getElementById("wsSbNewName").dataset.parentId = id;
+  };
+  menu.querySelector("[data-action='rename']").onclick = () => {
+    closeWsCtxMenu();
+    const ws = window.workspaceCache.find(w => w.id === id);
+    if (!ws) return;
+    const name = prompt("Neuen Namen eingeben:", ws.name);
+    if (!name || name === ws.name) return;
+    renameWs(id, name);
+  };
+  menu.querySelector("[data-action='delete']").onclick = () => {
+    closeWsCtxMenu();
+    if (!confirm("Workspace wirklich löschen? Unter-Workspaces werden an den nächsthöheren Parent gehängt.")) return;
+    deleteWs(id);
+  };
+
+  const x = Math.min(e.clientX, window.innerWidth - menu.offsetWidth - 8);
+  const y = Math.min(e.clientY, window.innerHeight - menu.offsetHeight - 8);
+  menu.style.left = x + "px";
+  menu.style.top = y + "px";
+  menu.classList.add("open");
+};
+
+function closeWsCtxMenu() {
+  const menu = document.getElementById("wsCtxMenu");
+  if (menu) menu.classList.remove("open");
+  _wsCtxId = null;
+}
+
+document.addEventListener("click", closeWsCtxMenu);
+document.addEventListener("contextmenu", (e) => {
+  if (!e.target.closest(".ws-sb-dd-item")) closeWsCtxMenu();
+});
+
+async function renameWs(id, name) {
+  const res = await authFetch(`${API_BASE}/workspaces/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ name }),
+  });
+  if (!res || !res.ok) return showToast("Fehler beim Umbenennen", "error");
+  showToast("Umbenannt", "success");
+  await loadWorkspaces();
+  window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId } }));
+}
+
+async function deleteWs(id) {
+  const res = await authFetch(`${API_BASE}/workspaces/${id}`, { method: "DELETE" });
+  if (!res || !res.ok) return showToast("Fehler beim Löschen", "error");
+  showToast("Gelöscht", "success");
+  if (window.currentWorkspaceId === id) {
+    window.currentWorkspaceId = null;
+    localStorage.removeItem("mindful_workspace");
+  }
+  await loadWorkspaces();
+  window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId } }));
+}
 
 window.toggleWsFromCalendar = function (e) {
   const dd = document.getElementById("wsSbDropdown");
@@ -362,12 +435,13 @@ window.quickCreateWsSidebar = async function () {
   const farbe = activeDot ? activeDot.dataset.color : "orange";
   if (!name) { showToast("Bitte einen Namen eingeben", "error"); return; }
 
-  // Wenn ein Workspace ausgewählt ist, wird der neue als Kind erstellt
-  const parent_id = window.currentWorkspaceId || null;
+  const input = document.getElementById("wsSbNewName");
+  const parentId = input.dataset.parentId || window.currentWorkspaceId || null;
+  delete input.dataset.parentId;
 
   const res = await authFetch(`${API_BASE}/workspaces`, {
     method: "POST",
-    body: JSON.stringify({ name, farbe, parent_id }),
+    body: JSON.stringify({ name, farbe, parent_id: parentId }),
   });
   if (res && res.ok) {
     const data = await res.json();

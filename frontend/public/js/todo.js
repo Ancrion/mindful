@@ -10,6 +10,7 @@ function effectiveFilter() {
 async function init() {
   await setupUser();
   await loadWorkspaces();
+  await loadTodoWorkspaces();
   showSkeleton();
   await loadTodos();
 
@@ -49,7 +50,7 @@ async function init() {
       if (ids.length) localStorage.setItem("mindful_workspace_ids", JSON.stringify(ids));
       document.getElementById("wsSearch").value = "";
       showSkeleton();
-      loadWorkspaces();
+      loadTodoWorkspaces();
       loadTodos();
     }
   });
@@ -341,7 +342,7 @@ async function setupUser() {
   }
 }
 
-async function loadWorkspaces() {
+async function loadTodoWorkspaces() {
   const res = await authFetch(`${API_BASE}/workspaces`);
   if (!res || !res.ok) return;
   const workspaces = await res.json();
@@ -441,6 +442,7 @@ window.quickCreateWorkspace = async function () {
     const data = await res.json();
     currentWorkspaceId = data.id;
     loadWorkspaces();
+    loadTodoWorkspaces();
     loadTodos();
     document.getElementById("wsDropdown").classList.remove("open");
     document.getElementById("wsSelector").classList.remove("open");
@@ -461,6 +463,7 @@ window.selectWorkspace = (id) => {
   document.querySelector('.status-tile[onclick*="offen"]')?.classList.add("active");
   showSkeleton();
   loadWorkspaces();
+  loadTodoWorkspaces();
   loadTodos();
   document.getElementById("wsDropdown").classList.remove("open");
   document.getElementById("wsSelector").classList.remove("open");

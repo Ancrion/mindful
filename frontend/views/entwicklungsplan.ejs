@@ -1173,6 +1173,47 @@ async function updateEmail() {
   }
   showMsg("E-Mail erfolgreich gespeichert!", "success");
 }</script>
+<script type="text/plain" id="jaro-15">// todo.js: contextmenu-Event per addEventListener (statt oncontextume-Inline)
+document.addEventListener("contextmenu", (e) => {
+  const taskEl = e.target.closest(".task-item");
+  if (!taskEl) { closeCtxMenu(); return; }
+  e.preventDefault();
+  e.stopPropagation();
+  // Kontextmenü anzeigen mit Bearbeiten/Erledigt/Löschen
+  const menu = document.getElementById("ctxMenu");
+  menu.querySelector("[data-action='edit']").onclick = () => { closeCtxMenu(); taskEl.click(); };
+  menu.querySelector("[data-action='toggle-done']").onclick = () => { closeCtxMenu(); toggleDone(id); };
+  menu.querySelector("[data-action='delete']").onclick = () => { closeCtxMenu(); deleteTask(); };
+  menu.style.left = Math.min(e.clientX, ...) + "px";
+  menu.style.top = Math.min(e.clientY, ...) + "px";
+  menu.classList.add("open");
+});
+
+// app.js: Kontextmenü für Workspace-Sidebar
+window.openWsCtxMenu = function (e, id) {
+  const menu = document.getElementById("wsCtxMenu");
+  menu.querySelector("[data-action='add-child']").onclick = () => {
+    closeWsCtxMenu();
+    document.getElementById("wsSbNewName").focus();
+    document.getElementById("wsSbNewName").dataset.parentId = id;
+    document.getElementById("wsSbDropdown").classList.add("open");
+  };
+  menu.querySelector("[data-action='rename']").onclick = () => {
+    closeWsCtxMenu();
+    const name = prompt("Neuen Namen:", workspaceCache.find(w=>w.id===id)?.name);
+    if (name) renameWs(id, name);
+  };
+  menu.querySelector("[data-action='delete']").onclick = () => {
+    closeWsCtxMenu();
+    if (confirm("Wirklich löschen?")) deleteWs(id);
+  };
+  menu.style.left = e.clientX + "px";
+  menu.style.top = e.clientY + "px";
+  menu.classList.add("open");
+};
+// renameWs + deleteWs: API-Calls + loadWorkspaces + workspacechange-Event
+// Bugfix: loadWorkspaces in todo.js umbenannt zu loadTodoWorkspaces
+// → app.js-Version wird nicht mehr überschattet → Sidebar-Baum erscheint</script>
 <script type="text/plain" id="omar-1"><!doctype html>
 <html lang="de">
   <head>
@@ -1995,12 +2036,37 @@ git push --tags</script>
 #        fixes, commits als JSON)
 # - API: GET (public), POST/PUT/DELETE (nur jaro)
 # - Timeline-UI mit vertikaler Zeitachse
-# - Admin-Interface: EintrÃ¤ge hinzufÃ¼gen/bearbeiten/lÃ¶schen
 # - Seed: 7 EintrÃ¤ge aus Git-Historie
+# - Hinweis: Admin-Interface entfernt (commit 434350c)
 #
 # Commit: jaro "feat: workspace hierarchy (parent_id, ...)"
 # Commit: jaro "feat: add professional changelog/release notes page"
 # Commit: jaro "fix: replace inline drag handlers with addEventListener"</script>
+<script type="text/plain" id="team-4"># KontextmenÃ¼s & DnD-Fix (jaro)
+#
+# TODO-KONTEXTMENÃ:
+# - Rechtsklick auf Task: Bearbeiten / Erledigt umschalten / LÃ¶schen
+# - Per addEventListener statt oncontextmenu-Inline-Attribut
+# - ZuverlÃ¤ssiger bei dynamisch gerenderten HTML-Templates
+#
+# WORKSPACE-KONTEXTMENÃ:
+# - Rechtsklick auf Workspace in Sidebar: Unter-Workspace
+#   anlegen / Umbenennen / LÃ¶schen
+# - Rename: prompt() + PUT /api/workspaces/:id
+# - Delete: confirm() + DELETE /api/workspaces/:id
+# - Add-child: setzt dataset.parentId auf den Input + Ã¶ffnet
+#   das Sidebar-Dropdown fÃ¼r die Namenseingabe
+#
+# BUGFIX: loadWorkspaces-Konflikt
+# - todo.js definierte eigene loadWorkspaces(), die app.js-Version
+#   Ã¼berschattete â†’ renderWsSidebarList() wurde nie auf der
+#   Todo-Seite aufgerufen â†’ Sidebar-Baum war leer
+# - Fix: todo.js-Funktion umbenannt zu loadTodoWorkspaces()
+# - App.js loadWorkspaces() wird jetzt auch auf Todo-Seite korrekt
+#   ausgefÃ¼hrt â†’ Sidebar-Baum + DnD + KontextmenÃ¼ funktionieren
+#
+# Commit: jaro "fix: rewrite todo context menu as addEventListener
+#   (more reliable), inline drag handlers for workspace sidebar"</script>
 
     <script>
     // ═══════════════════════════════════════════════
@@ -2010,12 +2076,12 @@ git push --tags</script>
     const CODE_IDS = [
       "ilhan-1",
       "sascha-1","sascha-2",
-      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14",
+      "jaro-1","jaro-2","jaro-3","jaro-4","jaro-5","jaro-6","jaro-7","jaro-8","jaro-9","jaro-10","jaro-11","jaro-12","jaro-13","jaro-14","jaro-15",
       "omar-1","omar-2","omar-3","omar-4",
       "aisha-1","aisha-2","aisha-3",
       "mo-1","mo-2","mo-3","mo-4","mo-5",
       "yaman-1","yaman-2","yaman-3","yaman-4",
-      "team-1","team-2","team-3"
+      "team-1","team-2","team-3","team-4"
     ];
 
     // ═══════════════════════════════════════════════
@@ -2086,7 +2152,10 @@ git push --tags</script>
             commit:"git commit -m \"add forgot/reset password routes with nodemailer and email field in profile\"" },
           { id:"jaro-14", file:"frontend/views/profile.ejs + profile.js",
             desc:"E-Mail-Sektion im Profil: anzeigen + speichern. updateEmail()-Funktion in profile.js.",
-            commit:"git commit -m \"add email display and edit section to profile page\"" }
+            commit:"git commit -m \"add email display and edit section to profile page\"" },
+          { id:"jaro-15", file:"frontend/public/js/todo.js + app.js",
+            desc:"Rechtsklick-Kontextmenü für Todos (Bearbeiten/Erledigt/Löschen) per addEventListener. Kontextmenü für Workspaces (Unter-Workspace/Umbenennen/Löschen). Bugfix: loadWorkspaces-Konflikt zwischen app.js und todo.js – Sidebar-Baum wurde nie auf der Todo-Seite gerendert. DnD inkl. Inline-Handler.",
+            commit:"git commit -m \"fix: rewrite todo context menu, add workspace context menu, fix naming conflict\"" }
         ]
       },
       omar: {
@@ -2168,7 +2237,10 @@ git push --tags</script>
             commit:'git commit -m "feat: add bug report kanban board"' },
           { id:"team-3", file:"Workspace-Hierarchie + Changelog",
             desc:"Workspace-Baum (parent_id, Expand/Collapse, Drag & Drop) + Versionsverlauf-Seite mit Timeline-Design und Admin-Interface",
-            commit:'git commit -m "feat: workspace hierarchy + changelog page"' }
+            commit:'git commit -m "feat: workspace hierarchy + changelog page"' },
+          { id:"team-4", file:"Kontextmenüs & DnD-Fix",
+            desc:"Rechtsklick-Kontextmenü für Todos und Workspaces. Bugfix: Sidebar-Baum wurde auf der Todo-Seite nie gerendert (loadWorkspaces-Konflikt). DnD funktioniert jetzt überall.",
+            commit:'git commit -m "fix: context menus for todos and workspaces, fix workspace tree on todo page"' }
         ]
       }
     };
