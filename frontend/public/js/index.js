@@ -117,22 +117,18 @@ function renderWidgets() {
       
       if (!_drag) return;
       
-      const { element, placeholder, dropTarget, insertBefore } = _drag;
-      placeholder.remove();
+      const { element, dropTarget, insertBefore } = _drag;
       
       // Remove dragging state
       element.classList.remove("dragging");
       
-      // Insert element at the right position based on drag interaction
-      if (dropTarget) {
+      // Move element to new position
+      if (dropTarget && dropTarget !== element) {
         if (insertBefore) {
           grid.insertBefore(element, dropTarget);
         } else {
           grid.insertBefore(element, dropTarget.nextSibling);
         }
-      } else {
-        // No specific target, just append to end
-        grid.appendChild(element);
       }
       
       // Reflow
@@ -387,7 +383,6 @@ function _reflowAll() {
 
 function _onDragStart(e) {
   const element = this;
-  const grid = document.getElementById("widgetGrid");
   
   console.log("🎯 Drag start:", element.dataset.widgetId);
   
@@ -395,20 +390,7 @@ function _onDragStart(e) {
   e.dataTransfer.effectAllowed = "move";
   e.dataTransfer.setData("text/plain", element.dataset.widgetId);
   
-  // Create invisible placeholder just to track drag position
-  const placeholder = document.createElement("div");
-  placeholder.className = `widget-placeholder widget-s${element.dataset.widgetSize}`;
-  
-  // Position placeholder at element's current position (absolute, doesn't affect layout)
-  const rect = element.getBoundingClientRect();
-  const gridRect = grid.getBoundingClientRect();
-  placeholder.style.left = (rect.left - gridRect.left) + "px";
-  placeholder.style.top = (rect.top - gridRect.top) + "px";
-  placeholder.classList.add("visible");
-  
-  grid.appendChild(placeholder);
-  
-  _drag = { element, placeholder, startSize: parseInt(element.dataset.widgetSize) };
+  _drag = { element };
 }
 
 function _onDragEnd() {
@@ -416,9 +398,6 @@ function _onDragEnd() {
   
   if (_drag?.element) {
     _drag.element.classList.remove("dragging");
-  }
-  if (_drag?.placeholder) {
-    _drag.placeholder.remove();
   }
   
   document.querySelectorAll(".widget-card.drag-over").forEach(el => {
@@ -435,7 +414,7 @@ function _onDragOver(e) {
   if (!_drag) return;
   
   const target = this;
-  const { element, placeholder } = _drag;
+  const { element } = _drag;
   
   // Visual feedback - highlight target
   if (target !== element) {
@@ -444,23 +423,14 @@ function _onDragOver(e) {
     });
     target.classList.add("drag-over");
     
-    // Update placeholder position visually (absolute positioned)
-    const grid = document.getElementById("widgetGrid");
-    const rect = target.getBoundingClientRect();
-    const gridRect = grid.getBoundingClientRect();
-    
-    // Store the target for drop handler to know where to insert
+    // Store target for drop
     _drag.dropTarget = target;
     
-    // Calculate relative position in target (0-1 scale)
+    // Calculate relative position
+    const rect = target.getBoundingClientRect();
     const relX = (e.clientX - rect.left) / rect.width;
     const relY = (e.clientY - rect.top) / rect.height;
-    const insertBefore = relX < 0.5 || relY < 0.3;
-    _drag.insertBefore = insertBefore;
-    
-    // Update placeholder position
-    placeholder.style.left = (rect.left - gridRect.left) + "px";
-    placeholder.style.top = (rect.top - gridRect.top) + "px";
+    _drag.insertBefore = relX < 0.5 || relY < 0.3;
   }
 }
 
