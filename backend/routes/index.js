@@ -35,16 +35,12 @@ router.get("/entwicklungsplan", auth, adminOnly, (req, res) => {
 router.get("/bugs", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/changelog", (req, res) => {
-  const path = require("path");
-  const fs = require("fs");
-  const md = require("markdown-it")({ html: true, linkify: true });
   try {
-    const mdFile = path.join(__dirname, "..", "..", "CHANGELOG_DE.md");
-    const raw = fs.readFileSync(mdFile, "utf8");
-    const clHtml = md.render(raw);
-    res.render("changelog", { currentPage: "changelog", clHtml });
+    const { parseEntries } = require("../lib/changelog-parser");
+    const clEntries = parseEntries();
+    res.render("changelog", { currentPage: "changelog", clEntries });
   } catch {
-    res.render("changelog", { currentPage: "changelog", clHtml: "<p>Fehler beim Laden.</p>" });
+    res.render("changelog", { currentPage: "changelog", clEntries: [] });
   }
 });
 router.get("/admin", auth, adminOnly, (req, res) => res.render("admin", { currentPage: "admin" }));
