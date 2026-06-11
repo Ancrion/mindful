@@ -3090,7 +3090,16 @@ git push --tags</script>
             commit:"79dd5d5", hash:"https://github.com/Ancrion/mindful/commit/79dd5d5" },
           { id:"jaro-60", file:"frontend/public/js/todo.js",
             desc:"TODOLIST-LOAD-FIX v1.7.9: In loadTodos() wurde `list` (Line 94+107) nie definiert → ReferenceError beim Rendern der Aufgabenliste, da `list.innerHTML` auf undefined zugreift. Wurde durch den Syntaxfehler (jaro-59) verdeckt. Fix: `const list = document.getElementById(\"taskList\")` am Funktionsanfang hinzugefügt",
-            commit:"49a5ba2+", hash:"https://github.com/Ancrion/mindful/commit/49a5ba2" }
+            commit:"49a5ba2+", hash:"https://github.com/Ancrion/mindful/commit/49a5ba2" },
+          { id:"jaro-61", file:"frontend/public/css/todo.css",
+            desc:"CSS-BUTTON-FIX v1.7.9: todo.css überschrieb .btn-primary mit background: var(--text) (#1d1d1f = black) → Button war schwarz statt orange. Fix: Überflüssigen .btn-primary-Block aus todo.css entfernt – components.css mit --color-primary (#f24b3d) greift jetzt.",
+            commit:"49a5ba2+", hash:"https://github.com/Ancrion/mindful/commit/49a5ba2" },
+          { id:"jaro-62", file:"frontend/public/js/todo.js",
+            desc:"EMPTY-STATE-FIX v1.7.9: loadTodos() prüfte if (!todos) – aber leeres Array [] ist truthy → Empty-State wurde nie angezeigt. Fix: if (!todos || !todos.length)",
+            commit:"49a5ba2+", hash:"https://github.com/Ancrion/mindful/commit/49a5ba2" },
+          { id:"jaro-63", file:"backend/data/changelog-seed.json (JSON-REFACTOR)",
+            desc:"CHANGELOG-JSON v1.7.9: Changelog auf JSON-only umgestellt (kein DB mehr, auto-sync via git pull). Alle alten Einträge v0.1.0–v1.7.7 aus CHANGELOG_DE.md in changelog-seed.json überführt.",
+            commit:"abecf60", hash:"https://github.com/Ancrion/mindful/commit/abecf60" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
