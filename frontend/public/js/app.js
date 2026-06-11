@@ -52,7 +52,8 @@ async function checkAuthStatus() {
   const res = await authFetch(`${API_BASE}/auth/me`);
   const isPublic =
     window.location.pathname.includes("/login") ||
-    window.location.pathname.includes("/register");
+    window.location.pathname.includes("/register") ||
+    window.location.pathname === "/changelog";
 
   if (!res || !res.ok) {
     if (!isPublic) window.location.replace("/login");
