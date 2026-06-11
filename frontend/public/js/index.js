@@ -296,6 +296,7 @@ function _getWidgetBody(widget) {
     case "stats": return _buildStatsBody();
     case "tasks": return _buildTasksBody();
     case "notes": return _buildNotesBody();
+    case "upcoming": return _buildEventsBody();
     case "events": return _buildEventsBody();
     case "docs": return _buildDocsBody();
     case "pomodoro": return _buildPomoBody();
