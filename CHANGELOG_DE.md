@@ -50,6 +50,7 @@
 - **Cache-Fix: JS/CSS-Updates sofort**: `express.static` mit `maxAge: 0`. Zusammen mit `Cache-Control: no-store` werden aktualisierte JS/CSS-Dateien ohne Hard Refresh ausgeliefert.
 - **Fixed: "Alle Bereiche" Click-Handler**: Inline `onclick` durch `addEventListener` ersetzt, mit `id="wsSbAllItem"`. Gleiche Event-Behandlung wie Workspace-Items → sofortige UI-Aktualisierung ohne Hard Refresh nötig.
 - **Workspace-Wechsel: Visuelle Rückmeldung**: Toast-Notification beim Wechseln des Arbeitsbereichs: „Zu [Name] gewechselt” bei spezifischem Workspace, „Alle Bereiche” bei Auswahl von Allen.
+- **Fixed: Envelope-Icon nicht mittig in collapsed Sidebar**: `.module-icon-wrap` bekam `width: 20px` und `justify-content/align-items: center` — identisch zum bare `<i>` der anderen Nav-Icons. Das Envelope-Icon zentriert sich jetzt in der collapsed Sidebar genauso wie Dashboard, Tasks etc.
 
 ---
 
