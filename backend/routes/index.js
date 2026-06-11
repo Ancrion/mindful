@@ -37,11 +37,11 @@ router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: 
 router.get("/changelog", (req, res) => {
   const path = require("path");
   const fs = require("fs");
-  const { marked } = require("marked");
+  const md = require("markdown-it")({ html: true, linkify: true });
   try {
     const mdFile = path.join(__dirname, "..", "..", "CHANGELOG_DE.md");
     const raw = fs.readFileSync(mdFile, "utf8");
-    const clHtml = marked.parse(raw);
+    const clHtml = md.render(raw);
     res.render("changelog", { currentPage: "changelog", clHtml });
   } catch {
     res.render("changelog", { currentPage: "changelog", clHtml: "<p>Fehler beim Laden.</p>" });
