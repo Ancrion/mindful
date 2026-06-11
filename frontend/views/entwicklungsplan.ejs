@@ -3097,6 +3097,9 @@ git push --tags</script>
           { id:"jaro-62", file:"frontend/public/js/todo.js",
             desc:"EMPTY-STATE-FIX v1.7.9: loadTodos() prüfte if (!todos) – aber leeres Array [] ist truthy → Empty-State wurde nie angezeigt. Fix: Array.isArray-Guard + separater Length-Check. Verhindert auch falschen Empty-State bei Error-Objekten.",
             commit:"fe96b72", hash:"https://github.com/Ancrion/mindful/commit/fe96b72" },
+          { id:"jaro-64", file:"frontend/public/js/index.js + frontend/public/css/dashboard.css",
+            desc:"DASHBOARD-EMPTY-STATE v1.7.9: Neues Design für leeres Dashboard – zentrierte Karte mit Icon-Kreis, Überschrift, Beschreibung, großem btn-lg und Hint-Text. Inklusive Dark Mode.",
+            commit:"67b4fd0", hash:"https://github.com/Ancrion/mindful/commit/67b4fd0" },
           { id:"jaro-63", file:"backend/data/changelog-seed.json (JSON-REFACTOR)",
             desc:"CHANGELOG-JSON v1.7.9: Changelog auf JSON-only umgestellt (kein DB mehr, auto-sync via git pull). Alle alten Einträge v0.1.0–v1.7.7 aus CHANGELOG_DE.md in changelog-seed.json überführt.",
             commit:"abecf60", hash:"https://github.com/Ancrion/mindful/commit/abecf60" }
