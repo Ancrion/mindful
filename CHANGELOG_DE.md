@@ -34,6 +34,7 @@
 
 - **adminOnly Middleware**: Unterscheidet jetzt API vs View-Routen, redirectet zu `/login` statt JSON bei nicht-Admin-Webseitenaufrufen
 - **Fixed: todo.js und notes.js Syntaxfehler**: Beide Dateien hatten überflüssige `}`-Klammern → Script wurde gar nicht geladen → "Neues To-Do"-Button und Notizen-Funktionen waren tot. Entfernt.
+- **Fixed: Aufgabenliste lädt nicht**: In `loadTodos()` fehlte `const list = document.getElementById("taskList")` → ReferenceError. Wurde durch den Syntaxfehler verdeckt, da das Script vorher nie ausgeführt wurde.
 
 ---
 

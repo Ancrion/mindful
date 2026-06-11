@@ -3087,7 +3087,10 @@ git push --tags</script>
             commit:"c2c7f06+", hash:"https://github.com/Ancrion/mindful/commit/c2c7f06" },
           { id:"jaro-59", file:"frontend/public/js/todo.js + frontend/public/js/notes.js",
             desc:"JS-SYNTAX-FIXES v1.7.9: ① todo.js: `if (!todos) return;` hatte keine Klammern → Empty-State-Block lag als Dead-Code daneben + überflüssiges `}` → SyntaxError → Script nie geladen → \"Neues To-Do\"-Button tot, ② notes.js: Doppeltes `}` in renameNote → gleicher Effekt, Notizen-Seite tot, ③ Beide gefixt: todo.js Klammern gesetzt, notes.js extra `}` entfernt",
-            commit:"79dd5d5", hash:"https://github.com/Ancrion/mindful/commit/79dd5d5" }
+            commit:"79dd5d5", hash:"https://github.com/Ancrion/mindful/commit/79dd5d5" },
+          { id:"jaro-60", file:"frontend/public/js/todo.js",
+            desc:"TODOLIST-LOAD-FIX v1.7.9: In loadTodos() wurde `list` (Line 94+107) nie definiert → ReferenceError beim Rendern der Aufgabenliste, da `list.innerHTML` auf undefined zugreift. Wurde durch den Syntaxfehler (jaro-59) verdeckt. Fix: `const list = document.getElementById(\"taskList\")` am Funktionsanfang hinzugefügt",
+            commit:"49a5ba2+", hash:"https://github.com/Ancrion/mindful/commit/49a5ba2" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",

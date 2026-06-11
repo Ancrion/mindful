@@ -73,6 +73,7 @@ function hideSkeleton() {
 
 async function loadTodos() {
     let url = `${API_BASE}/todos?status=${effectiveFilter()}`;
+    const list = document.getElementById("taskList");
     if (currentWorkspaceId) {
       // Nutze workspace_ids aus localStorage (vom Sidebar-Selektions-Event gesetzt)
       const stored = localStorage.getItem("mindful_workspace_ids");
