@@ -35,14 +35,16 @@ router.get("/entwicklungsplan", auth, adminOnly, (req, res) => {
 router.get("/bugs", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/changelog", (req, res) => {
-  const db = require("../database/db");
-  const entries = db.prepare("SELECT * FROM changelog ORDER BY id DESC").all();
-  entries.forEach(e => {
-    try { e.features = JSON.parse(e.features); } catch { e.features = []; }
-    try { e.fixes = JSON.parse(e.fixes); } catch { e.fixes = []; }
-    try { e.commits = JSON.parse(e.commits); } catch { e.commits = []; }
-  });
-  res.render("changelog", { currentPage: "changelog", clEntries: entries });
+  const path = require("path");
+  const fs = require("fs");
+  try {
+    const dataFile = path.join(__dirname, "..", "data", "changelog-seed.json");
+    const raw = fs.readFileSync(dataFile, "utf8");
+    const clEntries = JSON.parse(raw);
+    res.render("changelog", { currentPage: "changelog", clEntries });
+  } catch {
+    res.render("changelog", { currentPage: "changelog", clEntries: [] });
+  }
 });
 router.get("/admin", auth, adminOnly, (req, res) => res.render("admin", { currentPage: "admin" }));
 
