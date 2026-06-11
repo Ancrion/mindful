@@ -32,7 +32,8 @@
 
 ### 🔧 Bugfixes & Improvements
 
-- **adminOnly Middlewayre**: Unterscheidet jetzt API vs View-Routen, redirectet zu `/login` statt JSON bei nicht-Admin-Webseitenaufrufen
+- **adminOnly Middleware**: Unterscheidet jetzt API vs View-Routen, redirectet zu `/login` statt JSON bei nicht-Admin-Webseitenaufrufen
+- **Fixed: todo.js und notes.js Syntaxfehler**: Beide Dateien hatten überflüssige `}`-Klammern → Script wurde gar nicht geladen → "Neues To-Do"-Button und Notizen-Funktionen waren tot. Entfernt.
 
 ---
 

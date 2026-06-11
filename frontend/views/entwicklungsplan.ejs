@@ -3084,7 +3084,10 @@ git push --tags</script>
             commit:"7d488a8+f63ea67", hash:"https://github.com/Ancrion/mindful/commit/f63ea67" },
           { id:"jaro-58", file:"backend/routes/admin.js (NEU) + frontend/views/admin.ejs (NEU) + frontend/public/js/admin.js (NEU)",
             desc:"ADMIN-PANEL v1.7.9: ① Neue Route /admin mit auth+adminOnly Middleware, ② Benutzer-Tabelle mit ID/Name/Admin-Status/Registrierung/Todos/Bugs, ③ Admin-Toggle (ausser selbst), Löschen (Doppel-Bestätigung, ausser selbst), Passwort-Reset, ④ Neue API /api/admin/*, ⑤ adminOnly Middleware unterscheidet jetzt API vs View (redirect bei View, JSON bei API), ⑥ Sidebar-Link nur für Admin",
-            commit:"c2c7f06+", hash:"https://github.com/Ancrion/mindful/commit/c2c7f06" }
+            commit:"c2c7f06+", hash:"https://github.com/Ancrion/mindful/commit/c2c7f06" },
+          { id:"jaro-59", file:"frontend/public/js/todo.js + frontend/public/js/notes.js",
+            desc:"JS-SYNTAX-FIXES v1.7.9: ① todo.js: `if (!todos) return;` hatte keine Klammern → Empty-State-Block lag als Dead-Code daneben + überflüssiges `}` → SyntaxError → Script nie geladen → \"Neues To-Do\"-Button tot, ② notes.js: Doppeltes `}` in renameNote → gleicher Effekt, Notizen-Seite tot, ③ Beide gefixt: todo.js Klammern gesetzt, notes.js extra `}` entfernt",
+            commit:"79dd5d5", hash:"https://github.com/Ancrion/mindful/commit/79dd5d5" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
