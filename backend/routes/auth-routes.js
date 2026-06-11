@@ -227,7 +227,7 @@ router.get("/me", (req, res) => {
     } catch {}
   }
   if (!userId) return res.json(null);
-  const user = db.prepare("SELECT id, name, email, wallpaper, avatar FROM users WHERE id = ?").get(userId);
+  const user = db.prepare("SELECT id, name, wallpaper, avatar FROM users WHERE id = ?").get(userId);
   if (!user) return res.json(null);
   res.json(user);
 });
