@@ -37,13 +37,14 @@ router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: 
 router.get("/changelog", (req, res) => {
   const path = require("path");
   const fs = require("fs");
+  const { marked } = require("marked");
   try {
-    const dataFile = path.join(__dirname, "..", "data", "changelog-seed.json");
-    const raw = fs.readFileSync(dataFile, "utf8");
-    const clEntries = JSON.parse(raw);
-    res.render("changelog", { currentPage: "changelog", clEntries });
+    const mdFile = path.join(__dirname, "..", "..", "CHANGELOG_DE.md");
+    const raw = fs.readFileSync(mdFile, "utf8");
+    const clHtml = marked.parse(raw);
+    res.render("changelog", { currentPage: "changelog", clHtml });
   } catch {
-    res.render("changelog", { currentPage: "changelog", clEntries: [] });
+    res.render("changelog", { currentPage: "changelog", clHtml: "<p>Fehler beim Laden.</p>" });
   }
 });
 router.get("/admin", auth, adminOnly, (req, res) => res.render("admin", { currentPage: "admin" }));

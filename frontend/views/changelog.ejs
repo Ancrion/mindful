@@ -14,6 +14,19 @@
     <link rel="stylesheet" href="/css/accessibility.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+      .changelog-body { max-width: 800px; margin: 40px auto; padding: 0 24px; line-height: 1.7; }
+      .changelog-body h1 { font-size: 1.8rem; margin-bottom: 4px; }
+      .changelog-body h1 span { color: var(--color-primary); }
+      .changelog-body h2 { font-size: 1.3rem; margin: 32px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border-primary); }
+      .changelog-body h3 { font-size: 1.1rem; margin: 24px 0 4px; }
+      .changelog-body ul { padding-left: 20px; }
+      .changelog-body li { margin-bottom: 4px; }
+      .changelog-body a { color: var(--color-primary); }
+      .changelog-body code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+      .changelog-body hr { margin: 32px 0; border: none; border-top: 1px solid var(--border-secondary); }
+      body.dark .changelog-body code { background: var(--surface); }
+    </style>
   </head>
   <body>
     <div class="app-layout">
@@ -25,68 +38,10 @@
           <p class="subtitle">Alle Änderungen und Neuerungen in Mindful.</p>
         </header>
 
-        <div class="changelog-timeline" id="changelogTimeline">
-          <% if (typeof clEntries !== 'undefined' && clEntries.length) { %>
-            <% clEntries.forEach(function(e, i) { %>
-            <div class="cl-entry <%= i === 0 ? 'latest' : '' %>">
-              <div class="cl-entry-line">
-                <div class="cl-dot"></div>
-                <% if (i !== 0) { %><div class="cl-line"></div><% } %>
-              </div>
-              <div class="cl-entry-card">
-                <div class="cl-entry-head">
-                  <span class="cl-version-badge">v<%= e.version %></span>
-                  <span class="cl-date"><%= new Date(e.datum + 'T00:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' }) %></span>
-                </div>
-                <h3 class="cl-entry-title"><%= e.titel %></h3>
-                <% if (e.features && e.features.length) { %>
-                <ul class="cl-list">
-                  <li class="cl-list-label cl-feature">Neu</li>
-                  <% e.features.forEach(function(f) { %>
-                    <li><%= f %></li>
-                  <% }); %>
-                </ul>
-                <% } %>
-                <% if (e.fixes && e.fixes.length) { %>
-                <ul class="cl-list">
-                  <li class="cl-list-label cl-fix">Behoben</li>
-                  <% e.fixes.forEach(function(f) { %>
-                    <li><%= f %></li>
-                  <% }); %>
-                </ul>
-                <% } %>
-                <% if (e.commits && e.commits.length) { %>
-                <details class="cl-commits">
-                  <summary class="cl-commits-summary">
-                    <i class="fas fa-code-branch"></i> Commits (<%= e.commits.length %>)
-                  </summary>
-                  <div class="cl-commits-list">
-                    <% e.commits.forEach(function(c) { %>
-                      <a href="https://github.com/Ancrion/mindful/commit/<%= c %>" target="_blank" class="cl-commit-link" title="Commit auf GitHub anzeigen">
-                        <code><%= c.substring(0, 7) %></code>
-                        <i class="fas fa-external-link-alt"></i>
-                      </a>
-                    <% }); %>
-                  </div>
-                </details>
-                <% } %>
-                <div class="cl-entry-actions">
-                  <a href="https://github.com/Ancrion/mindful/commits" target="_blank" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-code-branch"></i> Commits auf GitHub
-                  </a>
-                </div>
-              </div>
-            </div>
-            <% }); %>
-          <% } else { %>
-            <p class="loading">Lade Versionsverlauf …</p>
-          <% } %>
-        </div>
+        <div class="changelog-body"><%- clHtml %></div>
       </main>
-
     </div>
 
     <script src="/js/app.js?v=<%= Date.now() %>"></script>
-    <script src="/js/changelog.js?v=<%= Date.now() %>"></script>
   </body>
 </html>
