@@ -251,7 +251,12 @@ textarea {
   overflow: visible;
 }
 .msg-top-link {
-  margin: 4px 0 8px;
+  margin: 0 0 2px;
+  min-height: 32px;
+}
+.header-badge {
+  top: -4px;
+  right: -6px;
 }
 .sidebar-badge {
   position: absolute;

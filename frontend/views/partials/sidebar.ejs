@@ -10,15 +10,15 @@
       <button class="sidebar-toggle" id="darkModeToggle" onclick="toggleDarkMode()" title="Dark Mode">
         <i class="fas fa-moon"></i>
       </button>
+      <a href="/messages" class="sidebar-toggle msg-header-link" id="msgHeaderLink" title="Nachrichten">
+        <span class="module-icon-wrap"><i class="fas fa-envelope"></i><span class="msg-badge sidebar-badge header-badge" id="sidebarUnreadBadge" style="display:none"></span></span>
+      </a>
     </div>
     <a href="/profile" class="module-user">
       <div class="user-avatar" id="userInitials">JD</div>
       <div class="user-info">
         <strong id="userNameDisplay">...</strong>
       </div>
-    </a>
-    <a href="/messages" class="module-link msg-top-link <%= currentPage === 'messages' ? 'active' : '' %>">
-      <span class="module-icon-wrap"><i class="fas fa-envelope"></i><span class="msg-badge sidebar-badge" id="sidebarUnreadBadge" style="display:none"></span></span> <span>Nachrichten</span>
     </a>
     <div class="sidebar-ws" id="sidebarWs">
       <div class="ws-sb-trigger" onclick="toggleWsSidebar(event)" title="Workspace wechseln">
