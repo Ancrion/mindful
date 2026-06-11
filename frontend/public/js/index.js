@@ -62,8 +62,11 @@ async function initDashboard() {
 
 // ─── Widget Loading ───
 async function loadWidgets() {
+  console.log("[DEBUG] loadWidgets starting");
   let data = await apiFetch("dashboard/widgets");
+  console.log("[DEBUG] loadWidgets raw data:", data);
   _widgets = Array.isArray(data) ? data : [];
+  console.log("[DEBUG] _widgets length:", _widgets.length);
   renderWidgets();
 }
 
@@ -72,7 +75,7 @@ function renderWidgets() {
    if (!grid) return;
    grid.innerHTML = "";
    _widgets.sort((a, b) => a.position - b.position);
-    if (_widgets.length === 0) {
+   if (!_widgets.length) {
       grid.innerHTML = `<div class="widget-empty">
         <div class="widget-empty-card">
           <div class="widget-empty-icon">
@@ -89,12 +92,17 @@ function renderWidgets() {
       return;
     }
    for (const w of _widgets) {
-     const card = _buildCard(w);
-     if (card) grid.appendChild(card);
+     try {
+       const card = _buildCard(w);
+       if (card) grid.appendChild(card);
+       else console.warn("renderWidgets: _buildCard returned null for", w.typ);
+     } catch (err) {
+       console.error("renderWidgets: _buildCard fehlgeschlagen für", w.typ, err);
+     }
    }
    
    // Initialize grid as drop target
-   _initGridDragDrop(grid);
+   if (grid.children.length > 0) _initGridDragDrop(grid);
  }
  
  function _initGridDragDrop(grid) {
