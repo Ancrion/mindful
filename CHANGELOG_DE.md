@@ -82,6 +82,12 @@
   - Nur noch eine `_drag` Variable mit `{ element, dropTarget, insertBefore }`
   - Debug-Logs aufgeräumt (nur wichtige Fehler-Logs bleiben)
 
+- **Fixed: Sidebar-Bottom Optionen/Abmelden versetzt bei Expansion**:
+  - Problem: `<button>` (Abmelden) hatte Browser-default-Styles (font-family, padding, background)
+  - `<a>` (Optionen) hatte andere Defaults → beide nicht deckungsgleich
+  - Lösung: `.module-bottom .module-link` mit `font: inherit`, `border: none`, `background: none`, `padding: 0 10px`
+  - Beide jetzt visuell identisch, keine Versetzung
+
 - **Getestete Funktionalität**:
   - ✅ Widget ist in der Hand des Mauszeiger während Drag
   - ✅ Drag über andere Widgets funktioniert
@@ -119,6 +125,7 @@
 🔗 [`9f64d54`](https://github.com/Ancrion/mindful/commit/9f64d54) - refactor: Remove debug logs, enhance visual drag-drop feedback with scale + border effects
 🔗 [`fc47729`](https://github.com/Ancrion/mindful/commit/fc47729) - feat: Add FLIP animation for smooth widget swap transitions
 🔗 [`cf4013c`](https://github.com/Ancrion/mindful/commit/cf4013c) - fix: draggable="1" invalid in HTML5, needs draggable="true"; backend returns boolean
+🔗 [`7d488a8`](https://github.com/Ancrion/mindful/commit/7d488a8) - fix: Reset button default styles in .module-bottom (font:inherit, border:none, bg:none) for alignment with Optionen link
 
 ---
 

@@ -3078,7 +3078,10 @@ git push --tags</script>
             commit:"a3d7c4e", hash:"https://github.com/Ancrion/mindful/commit/a3d7c4e" },
           { id:"jaro-56", file:"frontend/public/js/bugs.js + backend/routes/bugs.js",
             desc:"ADMIN-RECHTE FIX (TEIL 2 - ROOT CAUSE) v1.7.8: ① Backend gab isJaro: 1 (Integer) statt isJaro: true (Boolean) zurück, ② Frontend rendert draggable=\"${isJaroUser}\" → draggable=\"1\", ③ HTML5 akzeptiert NUR \"true\"/\"false\", \"1\" = \"auto\" → <div> default NOT draggable, ④ Drag kann nie starten! ⑤ Fix: Backend return !!(...) für Boolean, Frontend draggable=\"${isJaroUser ? 'true' : 'false'}\"",
-            commit:"cf4013c", hash:"https://github.com/Ancrion/mindful/commit/cf4013c" }
+            commit:"cf4013c", hash:"https://github.com/Ancrion/mindful/commit/cf4013c" },
+          { id:"jaro-57", file:"frontend/public/css/style.css",
+            desc:"SIDEBAR-BOTTOM FIX v1.7.8: ① <button> (Abmelden) hatte Browser-default font-family/padding/background, <a> (Optionen) hatte andere Defaults, ② Beide waren nicht deckungsgleich → versetzt bei Expansion, ③ Fix: .module-bottom .module-link: font:inherit, border:none, background:none, padding:0 10px",
+            commit:"7d488a8", hash:"https://github.com/Ancrion/mindful/commit/7d488a8" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
