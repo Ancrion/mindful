@@ -89,7 +89,8 @@ async function loadTodos() {
   if (!res || !res.ok) return;
 
   const todos = await safeJson(res);
-  if (!todos || !todos.length) {
+  if (!todos || !Array.isArray(todos)) return;
+  if (!todos.length) {
     hideSkeleton();
     const isFiltered = currentWorkspaceId || currentStatusFilter !== "offen";
     list.innerHTML = `<div class="empty-state">
