@@ -484,6 +484,14 @@ window.selectWsSidebar = function (id) {
 
   window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId, workspaceIds: selectedIds } }));
   loadSidebarUnread();
+
+  // Visuelle Rückmeldung
+  if (id) {
+    const ws = window.workspaceCache?.find(w => w.id == id);
+    if (ws) showToast(`Zu „${ws.name}” gewechselt`, "success");
+  } else {
+    showToast("Alle Bereiche", "info");
+  }
 };
 
 window.quickCreateWsSidebar = async function () {
