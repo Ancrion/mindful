@@ -35,6 +35,7 @@ router.get("/entwicklungsplan", auth, adminOnly, (req, res) => {
 router.get("/bugs", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/changelog", (req, res) => res.render("changelog", { currentPage: "changelog" }));
+router.get("/admin", auth, adminOnly, (req, res) => res.render("admin", { currentPage: "admin" }));
 
 // ─── HEALTH CHECK ───
 router.get("/health", (req, res) => {

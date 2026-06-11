@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/design-system.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/components.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/accessibility.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="admin-main">
+        <header class="admin-header">
+          <h1><i class="fas fa-shield-alt"></i> Admin-<span>Panel</span></h1>
+          <p class="subtitle">Benutzer verwalten, Rechte setzen, System verwalten.</p>
+        </header>
+
+        <div class="admin-content">
+          <div class="admin-toolbar">
+            <div class="admin-stats" id="adminStats">
+              <span class="admin-stat"><strong id="statUsers">0</strong> Benutzer</span>
+              <span class="admin-stat"><strong id="statAdmins">0</strong> Admins</span>
+            </div>
+            <button class="admin-refresh-btn" onclick="loadAdminUsers()" title="Aktualisieren">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="adminTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Admin</th>
+                  <th>Registriert</th>
+                  <th>Todos</th>
+                  <th>Bugs</th>
+                  <th>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="adminUserList"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/admin.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

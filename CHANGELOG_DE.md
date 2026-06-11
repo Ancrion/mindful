@@ -5,6 +5,37 @@
 
 ---
 
+---
+
+## 🛡️ v1.7.9 - Admin-Panel & Benutzerverwaltung
+
+**Neues Feature**: 11.06.2026
+
+### ✨ Neue Funktionen
+
+- **Admin-Panel unter `/admin`**:
+  - Neue Route + EJS-View + CSS für Admin-Bereich
+  - Nur für Admins zugänglich (auth + adminOnly Middleware)
+  - Sidebar-Link erscheint nur für Admin-User `jaro`
+  
+- **Benutzerverwaltung**:
+  - Tabelle aller Benutzer mit ID, Name, Admin-Status, Registrierungsdatum, Todos, Bugs
+  - Admin-Rechte erteilen/entziehen per Klick (ausser sich selbst)
+  - Benutzer löschen (Doppel-Bestätigung; nicht sich selbst)
+  - Passwort zurücksetzen (prompt oder Standard `mindful2024`)
+
+- **Neue API-Endpunkte** unter `/api/admin/`:
+  - `GET /users` – Alle Benutzer auflisten
+  - `PUT /users/:id/toggle-admin` – Admin-Status umschalten
+  - `DELETE /users/:id` – Benutzer löschen
+  - `PUT /users/:id/reset-password` – Passwort zurücksetzen
+
+### 🔧 Bugfixes & Improvements
+
+- **adminOnly Middlewayre**: Unterscheidet jetzt API vs View-Routen, redirectet zu `/login` statt JSON bei nicht-Admin-Webseitenaufrufen
+
+---
+
 ## 🐛 v1.7.8 - Widget Drag-Drop Event-Handling & UX Fixes
 
 **Bugfixes & Improvements**: 10.06.2026
@@ -1032,7 +1063,7 @@
 
 ---
 
-**Zuletzt aktualisiert**: 10.06.2026  
+**Zuletzt aktualisiert**: 11.06.2026  
 **Größe**: ~2.400 Zeilen Dokumentation  
 **Status**: Production Ready ✅
 

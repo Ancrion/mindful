@@ -3081,7 +3081,10 @@ git push --tags</script>
             commit:"cf4013c", hash:"https://github.com/Ancrion/mindful/commit/cf4013c" },
           { id:"jaro-57", file:"frontend/views/partials/sidebar.ejs + frontend/public/css/style.css",
             desc:"SIDEBAR-BOTTOM FIX v1.7.8: ① <button> (Abmelden) hat Browser-Defaults (appearance, font, vertical-align) die <a> nicht hat → nicht einheitlich, ② CSS-Reset (font:inherit etc.) allein reichte nicht, ③ Fix: <button> → <a href=\"javascript:void(0)\">, beide jetzt identische <a>-Tags, ④ .module-bottom .module-link: text-decoration:none",
-            commit:"7d488a8+f63ea67", hash:"https://github.com/Ancrion/mindful/commit/f63ea67" }
+            commit:"7d488a8+f63ea67", hash:"https://github.com/Ancrion/mindful/commit/f63ea67" },
+          { id:"jaro-58", file:"backend/routes/admin.js (NEU) + frontend/views/admin.ejs (NEU) + frontend/public/js/admin.js (NEU)",
+            desc:"ADMIN-PANEL v1.7.9: ① Neue Route /admin mit auth+adminOnly Middleware, ② Benutzer-Tabelle mit ID/Name/Admin-Status/Registrierung/Todos/Bugs, ③ Admin-Toggle (ausser selbst), Löschen (Doppel-Bestätigung, ausser selbst), Passwort-Reset, ④ Neue API /api/admin/*, ⑤ adminOnly Middleware unterscheidet jetzt API vs View (redirect bei View, JSON bei API), ⑥ Sidebar-Link nur für Admin",
+            commit:"c2c7f06+", hash:"https://github.com/Ancrion/mindful/commit/c2c7f06" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
