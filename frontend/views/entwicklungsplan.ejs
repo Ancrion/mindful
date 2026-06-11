@@ -3095,8 +3095,8 @@ git push --tags</script>
             desc:"CSS-BUTTON-FIX v1.7.9: todo.css überschrieb .btn-primary mit background: var(--text) (#1d1d1f = black) → Button war schwarz statt orange. Fix: Überflüssigen .btn-primary-Block aus todo.css entfernt – components.css mit --color-primary (#f24b3d) greift jetzt.",
             commit:"49a5ba2+", hash:"https://github.com/Ancrion/mindful/commit/49a5ba2" },
           { id:"jaro-62", file:"frontend/public/js/todo.js",
-            desc:"EMPTY-STATE-FIX v1.7.9: loadTodos() prüfte if (!todos) – aber leeres Array [] ist truthy → Empty-State wurde nie angezeigt. Fix: if (!todos || !todos.length)",
-            commit:"49a5ba2+", hash:"https://github.com/Ancrion/mindful/commit/49a5ba2" },
+            desc:"EMPTY-STATE-FIX v1.7.9: loadTodos() prüfte if (!todos) – aber leeres Array [] ist truthy → Empty-State wurde nie angezeigt. Fix: Array.isArray-Guard + separater Length-Check. Verhindert auch falschen Empty-State bei Error-Objekten.",
+            commit:"fe96b72", hash:"https://github.com/Ancrion/mindful/commit/fe96b72" },
           { id:"jaro-63", file:"backend/data/changelog-seed.json (JSON-REFACTOR)",
             desc:"CHANGELOG-JSON v1.7.9: Changelog auf JSON-only umgestellt (kein DB mehr, auto-sync via git pull). Alle alten Einträge v0.1.0–v1.7.7 aus CHANGELOG_DE.md in changelog-seed.json überführt.",
             commit:"abecf60", hash:"https://github.com/Ancrion/mindful/commit/abecf60" }

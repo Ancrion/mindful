@@ -36,7 +36,7 @@
 - **Fixed: todo.js und notes.js Syntaxfehler**: Beide Dateien hatten überflüssige `}`-Klammern → Script wurde gar nicht geladen → "Neues To-Do"-Button und Notizen-Funktionen waren tot. Entfernt.
 - **Fixed: Aufgabenliste lädt nicht**: In `loadTodos()` fehlte `const list = document.getElementById("taskList")` → ReferenceError. Wurde durch den Syntaxfehler verdeckt, da das Script vorher nie ausgeführt wurde.
 - **Fixed: Button schwarz statt orange**: `todo.css` überschrieb `.btn-primary` mit `background: var(--text)` (near-black) → überflüssiger CSS-Block entfernt, orange Farbe aus `components.css` greift jetzt.
-- **Fixed: Empty-State („Alles erledigt!") nie angezeigt**: `loadTodos()` prüfte `if (!todos)`, aber leeres Array `[]` ist truthy → auf `if (!todos || !todos.length)` geändert.
+- **Fixed: Empty-State („Alles erledigt!") nie angezeigt**: `loadTodos()` prüfte `if (!todos)`, aber leeres Array `[]` ist truthy → auf `Array.isArray`-Check + separaten Length-Check geändert.
 - **Changelog auf JSON-only umgestellt**: Quelle ist `backend/data/changelog-seed.json` – kein DB mehr, auto-sync via `git pull`, alle alten Einträge (v0.1.0–v1.7.7) wiederhergestellt.
 
 ---
