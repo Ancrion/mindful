@@ -41,7 +41,7 @@ router.use("/leaderboard", auth, leaderboardRoutes);
 router.use("/users", auth, usersRoutes);
 router.use("/messages", auth, messagesRoutes);
 router.use("/bugs", auth, bugsRoutes);
-router.use("/changelog", auth, changelogRoutes);
+router.use("/changelog", changelogRoutes);
 router.use("/admin", auth, adminRoutes);
 
 // Health Check
