@@ -244,6 +244,11 @@ textarea {
   position: relative;
   display: inline-flex;
 }
+.module-link .module-icon-wrap {
+  opacity: 1;
+  width: auto;
+  overflow: visible;
+}
 .sidebar-badge {
   position: absolute;
   top: -6px;
