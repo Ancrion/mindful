@@ -41,6 +41,7 @@
 - **Dashboard Empty-State überarbeitet**: Statt einfachem Text + Button jetzt eine zentrierte Design-Karte mit Icon-Kreis, Überschrift, Beschreibung, großem `btn-lg` und Hint-Text.
 - **Fixed: Empty-State wurde nie angezeigt**: `loadWidgets()` erstellte automatisch 3 Default-Widgets (stats, tasks, pomodoro) bei leerer DB → die Design-Karte wurde nie erreicht. Fix: Auto-Defaults entfernt, `_widgets = Array.isArray(data) ? data : []`.
 - **Default-Widgets bei Registrierung**: Neue User erhalten jetzt automatisch 3 Dashboard-Widgets (stats, tasks, pomodoro) in der Datenbank. Wer alle löscht, sieht die Empty-State-Karte.
+- **Fixed: Dashboard blieb leer (upcoming-Widget)**: Alte Widgets vom Typ `upcoming` (Legacy für `events`) waren nicht in `WIDGET_TYPES` registriert → `_buildCard` gab `null` zurück → Grid leer, aber `_widgets.length > 0` → Empty-State nie erreicht. Fix: `upcoming` in Registry + `_getWidgetBody` ergänzt, unbekannte Typen werden jetzt rausgefiltert.
 
 ---
 
