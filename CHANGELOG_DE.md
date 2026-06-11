@@ -44,7 +44,7 @@
 - **Fixed: Dashboard blieb leer (upcoming-Widget)**: Alte Widgets vom Typ `upcoming` (Legacy für `events`) waren nicht in `WIDGET_TYPES` registriert → `_buildCard` gab `null` zurück → Grid leer, aber `_widgets.length > 0` → Empty-State nie erreicht. Fix: `upcoming` in Registry + `_getWidgetBody` ergänzt, unbekannte Typen werden jetzt rausgefiltert.
 - **Changelog-Seite liest jetzt direkt aus CHANGELOG_DE.md**: Kein `changelog-seed.json` mehr – Single Source of Truth ist die Markdown-Datei. Parser wandelt MD in strukturierte Einträge um (Version, Datum, Features, Fixes) für die Timeline-Karten-UI. (`changelog-seed.json` + `changelog.js` gelöscht, `marked` raus)
 - **Sidebar: Ungelesene-Nachrichten-Badge**: Rote Badge-Zahl am Envelope-Icon, sichtbar in collapsed und expanded Sidebar. Badge liegt absolut positioniert über dem Icon.
-- **Sidebar: Nachrichten-Link direkt unter Profil**: Liegt jetzt direkt unter dem Profil-Avatar, vor dem Workspace-Selector und dessen Trennlinie (`border-bottom`).
+- **Sidebar: Nachrichten-Link direkt unter Profil**: Liegt jetzt auf gleicher Ebene wie Profil und Workspace‑Selector, direkt unter dem Profil-Avatar, vor dem Workspace‑Bereich.
 
 ---
 
