@@ -814,5 +814,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       selectWsSidebar(parseInt(saved));
     }
     initGlobalTimer();
+    loadSidebarUnread();
   }
 });
+
+async function loadSidebarUnread() {
+  try {
+    const res = await authFetch(`${API_BASE}/messages/unread`);
+    if (!res || !res.ok) return;
+    const data = await res.json();
+    const badge = document.getElementById("sidebarUnreadBadge");
+    if (!badge) return;
+    const count = data.count || 0;
+    badge.textContent = count > 0 ? count : "";
+    badge.style.display = count > 0 ? "inline" : "none";
+  } catch (err) {
+    console.error("Sidebar Unread Fehler:", err);
+  }
+}
