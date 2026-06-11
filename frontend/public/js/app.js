@@ -444,13 +444,11 @@ window.toggleWsFromCalendar = function (e) {
 };
 
 window.selectWsSidebar = function (id) {
-  if (id === "") id = null;
-  const compareId = id || "";
-  window.currentWorkspaceId = id;
+  window.currentWorkspaceId = id === "" ? null : id;
 
-  const selectedIds = id ? getDescendantIds(id) : [];
+  const selectedIds = window.currentWorkspaceId ? getDescendantIds(window.currentWorkspaceId) : [];
 
-  localStorage.setItem("mindful_workspace", id || "");
+  localStorage.setItem("mindful_workspace", id);
   localStorage.setItem("mindful_workspace_ids", JSON.stringify(selectedIds));
 
   const dot = document.getElementById("wsSbDot");
@@ -475,9 +473,9 @@ window.selectWsSidebar = function (id) {
   document.getElementById("wsSbDropdown").classList.remove("open");
 
   const items = document.querySelectorAll("#wsSbList .ws-sb-dd-item, #sidebarWs .ws-sb-dd-item[data-id='']");
-  items.forEach(el => el.classList.toggle("active", el.dataset.id == compareId));
+  items.forEach(el => el.classList.toggle("active", el.dataset.id == id));
 
-  window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: id, workspaceIds: selectedIds } }));
+  window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId, workspaceIds: selectedIds } }));
   loadSidebarUnread();
 };
 
