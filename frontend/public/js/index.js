@@ -49,10 +49,11 @@ async function initDashboard() {
       apiFetch("dashboard"),
       apiFetch("pomodoro/stats"),
     ]);
-    if (!data) return;
-    dashboardData = data;
-    if (pData) pomodoroStats = pData;
-    renderUser(data);
+    if (data) {
+      dashboardData = data;
+      if (pData) pomodoroStats = pData;
+      renderUser(data);
+    }
     await loadWidgets();
   } catch (err) {
     console.error("Dashboard Fehler:", err);
@@ -79,7 +80,7 @@ function renderWidgets() {
           </div>
           <h2>Willkommen im Dashboard</h2>
           <p>Füge deine ersten Widgets hinzu, um dein persönliches Dashboard einzurichten.</p>
-          <button class="btn btn-primary btn-lg" onclick="document.getElementById('widgetManageBtn').click()">
+          <button class="btn btn-primary btn-lg" onclick="openWidgetManager()">
             <i class="fas fa-plus"></i> Widget hinzufügen
           </button>
           <p class="widget-empty-hint">Statistiken · Aufgaben · Wetter · Kalender & mehr</p>
