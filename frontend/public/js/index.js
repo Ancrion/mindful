@@ -1432,8 +1432,10 @@ document.addEventListener("DOMContentLoaded", () => {
       _rerenderWidget("tasks");
       _rerenderWidget("notes");
       _rerenderWidget("events");
+      _rerenderWidget("upcoming");
       _rerenderWidget("calendar");
       _rerenderWidget("stats");
+      _rerenderWidget("docs");
     }
   });
 
