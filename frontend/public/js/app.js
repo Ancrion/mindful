@@ -827,7 +827,7 @@ async function loadSidebarUnread() {
     if (!badge) return;
     const count = data.count || 0;
     badge.textContent = count > 0 ? count : "";
-    badge.style.display = count > 0 ? "inline" : "none";
+    badge.style.display = count > 0 ? "flex" : "none";
   } catch (err) {
     console.error("Sidebar Unread Fehler:", err);
   }

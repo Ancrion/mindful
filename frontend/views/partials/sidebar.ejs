@@ -74,8 +74,7 @@
         <i class="fas fa-trophy"></i> <span>Rangliste</span>
       </a>
       <a href="/messages" class="module-link <%= currentPage === 'messages' ? 'active' : '' %>">
-        <i class="fas fa-envelope"></i> <span>Nachrichten</span>
-        <span class="msg-badge" id="sidebarUnreadBadge" style="display:none"></span>
+        <span class="module-icon-wrap"><i class="fas fa-envelope"></i><span class="msg-badge sidebar-badge" id="sidebarUnreadBadge" style="display:none"></span></span> <span>Nachrichten</span>
       </a>
       <a href="/bugs" class="module-link <%= currentPage === 'bugs' ? 'active' : '' %>" style="opacity:0.5;font-size:0.75rem">
         <i class="fas fa-bug"></i> <span>Bugs</span>
