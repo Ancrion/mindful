@@ -58,7 +58,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, "../frontend/public")));
+app.use(express.static(path.join(__dirname, "../frontend/public"), { maxAge: 0 }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // --- ROUTING ---
