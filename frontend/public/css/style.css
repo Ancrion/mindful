@@ -2335,10 +2335,15 @@ body.dark .ws-ctx-menu .ctx-item.ctx-danger:hover { background: #2d1515; }
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   cursor: pointer;
   user-select: none;
+}
+.cl-entry.expanded .cl-entry-head {
+  margin-bottom: 12px;
+}
+.cl-entry.collapsed .cl-entry-head {
+  margin-bottom: 0;
 }
 .cl-toggle-icon {
   margin-left: auto;
@@ -2385,7 +2390,12 @@ body.dark .ws-ctx-menu .ctx-item.ctx-danger:hover { background: #2d1515; }
   font-size: 17px;
   font-weight: 700;
   color: var(--text);
-  margin: 0 0 12px;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .cl-list {
   list-style: none;

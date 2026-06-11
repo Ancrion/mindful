@@ -34,13 +34,13 @@
                 <% if (i !== 0) { %><div class="cl-line"></div><% } %>
               </div>
               <div class="cl-entry-card">
-                <div class="cl-entry-head" onclick="this.closest('.cl-entry').classList.toggle('expanded');this.closest('.cl-entry').classList.toggle('collapsed')">
+                <div class="cl-entry-head">
                   <span class="cl-version-badge">v<%= e.version %></span>
                   <span class="cl-date"><%= new Date(e.datum + 'T00:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' }) %></span>
+                  <h3 class="cl-entry-title"><%= e.titel %></h3>
                   <span class="cl-toggle-icon"><i class="fas fa-chevron-down"></i></span>
                 </div>
                 <div class="cl-entry-body">
-                  <h3 class="cl-entry-title"><%= e.titel %></h3>
                   <% if (e.features && e.features.length) { %>
                   <ul class="cl-list">
                     <li class="cl-list-label cl-feature">Neu</li>
