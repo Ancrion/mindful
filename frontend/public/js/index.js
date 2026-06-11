@@ -1424,9 +1424,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === e.currentTarget) closeWidgetManager();
   });
 
-  // Workspace change re-render
-  window.addEventListener("workspacechange", () => {
-    if (dashboardData) {
+  // Workspace change: reload dashboard data + re-render widgets
+  window.addEventListener("workspacechange", async () => {
+    const data = await apiFetch("dashboard");
+    if (data) {
+      dashboardData = data;
       _rerenderWidget("tasks");
       _rerenderWidget("notes");
       _rerenderWidget("events");
