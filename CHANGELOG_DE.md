@@ -39,6 +39,7 @@
 - **Fixed: Empty-State („Alles erledigt!") nie angezeigt**: `loadTodos()` prüfte `if (!todos)`, aber leeres Array `[]` ist truthy → auf `Array.isArray`-Check + separaten Length-Check geändert.
 - **Changelog auf JSON-only umgestellt**: Quelle ist `backend/data/changelog-seed.json` – kein DB mehr, auto-sync via `git pull`, alle alten Einträge (v0.1.0–v1.7.7) wiederhergestellt.
 - **Dashboard Empty-State überarbeitet**: Statt einfachem Text + Button jetzt eine zentrierte Design-Karte mit Icon-Kreis, Überschrift, Beschreibung, großem `btn-lg` und Hint-Text.
+- **Fixed: Empty-State wurde nie angezeigt**: `loadWidgets()` erstellte automatisch 3 Default-Widgets (stats, tasks, pomodoro) bei leerer DB → die Design-Karte wurde nie erreicht. Fix: Auto-Defaults entfernt, `_widgets = Array.isArray(data) ? data : []`.
 
 ---
 
