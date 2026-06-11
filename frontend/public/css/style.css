@@ -253,6 +253,7 @@ textarea {
 .msg-top-link {
   margin: 0;
   border-bottom: 1px solid var(--border-soft);
+  border-radius: 0;
 }
 .sidebar-badge {
   position: absolute;
