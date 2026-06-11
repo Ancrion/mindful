@@ -250,6 +250,11 @@ textarea {
   width: auto;
   overflow: visible;
 }
+.module-link .module-icon-wrap {
+  width: 20px;
+  justify-content: center;
+  align-items: center;
+}
 .msg-top-link {
   margin: 0;
   border-bottom: 1px solid var(--border-soft);
