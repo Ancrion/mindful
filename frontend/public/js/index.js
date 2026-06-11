@@ -61,23 +61,8 @@ async function initDashboard() {
 
 // ─── Widget Loading ───
 async function loadWidgets() {
-  let widgets = await apiFetch("dashboard/widgets");
-  if (!widgets || widgets.length === 0) {
-    const defaults = [
-      { typ: "stats", config: {} },
-      { typ: "tasks", config: {} },
-      { typ: "pomodoro", config: {} },
-    ];
-    for (const w of defaults) {
-      await apiFetch("dashboard/widgets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(w),
-      });
-    }
-    widgets = await apiFetch("dashboard/widgets");
-  }
-  _widgets = widgets || [];
+  let data = await apiFetch("dashboard/widgets");
+  _widgets = Array.isArray(data) ? data : [];
   renderWidgets();
 }
 
