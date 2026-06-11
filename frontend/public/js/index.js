@@ -14,6 +14,7 @@ const WIDGET_TYPES = {
   pomodoro: { name: "Pomodoro", icon: "fa-clock", desc: "Fokus-Statistiken & Chart", color: "#ec4899" },
   weather: { name: "Wetter", icon: "fa-cloud-sun", desc: "Aktuelles Wetter & 5-Tage-Vorhersage", color: "#06b6d4" },
   calendar: { name: "Kalender", icon: "fa-calendar", desc: "Monatsübersicht mit Termin-Dots", color: "#8b5cf6" },
+  upcoming: { name: "Termine", icon: "fa-calendar-day", desc: "Bevorstehende Termine", color: "#f59e0b" },
 };
 
 // ─── API Helper ───
@@ -75,7 +76,8 @@ function renderWidgets() {
    if (!grid) return;
    grid.innerHTML = "";
    _widgets.sort((a, b) => a.position - b.position);
-   if (!_widgets.length) {
+    _widgets = _widgets.filter(w => WIDGET_TYPES[w.typ]);
+    if (!_widgets.length) {
       grid.innerHTML = `<div class="widget-empty">
         <div class="widget-empty-card">
           <div class="widget-empty-icon">
