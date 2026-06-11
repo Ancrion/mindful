@@ -2337,6 +2337,32 @@ body.dark .ws-ctx-menu .ctx-item.ctx-danger:hover { background: #2d1515; }
   gap: 10px;
   margin-bottom: 10px;
   flex-wrap: wrap;
+  cursor: pointer;
+  user-select: none;
+}
+.cl-toggle-icon {
+  margin-left: auto;
+  transition: transform 0.25s ease;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.cl-entry.expanded .cl-toggle-icon {
+  transform: rotate(0deg);
+}
+.cl-entry.collapsed .cl-toggle-icon {
+  transform: rotate(-90deg);
+}
+.cl-entry-body {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+}
+.cl-entry.expanded .cl-entry-body {
+  max-height: 5000px;
+  opacity: 1;
+}
+.cl-entry.collapsed .cl-entry-body {
+  max-height: 0;
+  opacity: 0;
 }
 .cl-version-badge {
   font-size: 12px;

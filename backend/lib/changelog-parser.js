@@ -38,13 +38,13 @@ function parseEntries() {
     }
 
     // Neue Funktionen
-    if (line.includes("###") && /Neue Funktionen/i.test(line)) {
+    if (line.includes("###") && /Neue Funktionen|Neue Features|Neue.?Features/i.test(line)) {
       section = "features";
       continue;
     }
 
     // Bugfixes
-    if (line.includes("###") && /Bugfixes|Improvements|Behoben/i.test(line)) {
+    if (line.includes("###") && /Bugfixes|Improvements|Behoben|Fehlerbehebungen/i.test(line)) {
       section = "fixes";
       continue;
     }

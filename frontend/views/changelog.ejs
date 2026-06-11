@@ -28,37 +28,40 @@
         <div class="changelog-timeline" id="changelogTimeline">
           <% if (typeof clEntries !== 'undefined' && clEntries.length) { %>
             <% clEntries.forEach(function(e, i) { %>
-            <div class="cl-entry <%= i === 0 ? 'latest' : '' %>">
+            <div class="cl-entry <%= i === 0 ? 'latest expanded' : 'collapsed' %>">
               <div class="cl-entry-line">
                 <div class="cl-dot"></div>
                 <% if (i !== 0) { %><div class="cl-line"></div><% } %>
               </div>
               <div class="cl-entry-card">
-                <div class="cl-entry-head">
+                <div class="cl-entry-head" onclick="this.closest('.cl-entry').classList.toggle('expanded');this.closest('.cl-entry').classList.toggle('collapsed')">
                   <span class="cl-version-badge">v<%= e.version %></span>
                   <span class="cl-date"><%= new Date(e.datum + 'T00:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' }) %></span>
+                  <span class="cl-toggle-icon"><i class="fas fa-chevron-down"></i></span>
                 </div>
-                <h3 class="cl-entry-title"><%= e.titel %></h3>
-                <% if (e.features && e.features.length) { %>
-                <ul class="cl-list">
-                  <li class="cl-list-label cl-feature">Neu</li>
-                  <% e.features.forEach(function(f) { %>
-                    <li><%- f %></li>
-                  <% }); %>
-                </ul>
-                <% } %>
-                <% if (e.fixes && e.fixes.length) { %>
-                <ul class="cl-list">
-                  <li class="cl-list-label cl-fix">Behoben</li>
-                  <% e.fixes.forEach(function(f) { %>
-                    <li><%- f %></li>
-                  <% }); %>
-                </ul>
-                <% } %>
-                <div class="cl-entry-actions">
-                  <a href="https://github.com/Ancrion/mindful/commits" target="_blank" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-code-branch"></i> Commits auf GitHub
-                  </a>
+                <div class="cl-entry-body">
+                  <h3 class="cl-entry-title"><%= e.titel %></h3>
+                  <% if (e.features && e.features.length) { %>
+                  <ul class="cl-list">
+                    <li class="cl-list-label cl-feature">Neu</li>
+                    <% e.features.forEach(function(f) { %>
+                      <li><%- f %></li>
+                    <% }); %>
+                  </ul>
+                  <% } %>
+                  <% if (e.fixes && e.fixes.length) { %>
+                  <ul class="cl-list">
+                    <li class="cl-list-label cl-fix">Behoben</li>
+                    <% e.fixes.forEach(function(f) { %>
+                      <li><%- f %></li>
+                    <% }); %>
+                  </ul>
+                  <% } %>
+                  <div class="cl-entry-actions">
+                    <a href="https://github.com/Ancrion/mindful/commits" target="_blank" class="btn btn-secondary btn-sm">
+                      <i class="fas fa-code-branch"></i> Commits auf GitHub
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -71,5 +74,14 @@
     </div>
 
     <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script>
+      document.querySelectorAll(".cl-entry .cl-entry-head").forEach(function(h) {
+        h.addEventListener("click", function() {
+          var entry = this.closest(".cl-entry");
+          entry.classList.toggle("expanded");
+          entry.classList.toggle("collapsed");
+        });
+      });
+    </script>
   </body>
 </html>
