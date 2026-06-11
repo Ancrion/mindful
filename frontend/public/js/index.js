@@ -86,16 +86,22 @@ function renderWidgets() {
    if (!grid) return;
    grid.innerHTML = "";
    _widgets.sort((a, b) => a.position - b.position);
-   if (_widgets.length === 0) {
-     grid.innerHTML = `<div class="widget-empty">
-       <i class="fas fa-puzzle-piece"></i>
-       <p>Noch keine Widgets vorhanden.</p>
-       <button class="btn-primary" onclick="document.getElementById('widgetManageBtn').click()">
-         <i class="fas fa-plus"></i> Widget hinzufügen
-       </button>
-     </div>`;
-     return;
-   }
+    if (_widgets.length === 0) {
+      grid.innerHTML = `<div class="widget-empty">
+        <div class="widget-empty-card">
+          <div class="widget-empty-icon">
+            <i class="fas fa-puzzle-piece"></i>
+          </div>
+          <h2>Willkommen im Dashboard</h2>
+          <p>Füge deine ersten Widgets hinzu, um dein persönliches Dashboard einzurichten.</p>
+          <button class="btn btn-primary btn-lg" onclick="document.getElementById('widgetManageBtn').click()">
+            <i class="fas fa-plus"></i> Widget hinzufügen
+          </button>
+          <p class="widget-empty-hint">Statistiken · Aufgaben · Wetter · Kalender & mehr</p>
+        </div>
+      </div>`;
+      return;
+    }
    for (const w of _widgets) {
      const card = _buildCard(w);
      if (card) grid.appendChild(card);
