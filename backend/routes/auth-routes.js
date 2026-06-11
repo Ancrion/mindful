@@ -105,10 +105,24 @@ router.post("/register", authLimiter, async (req, res) => {
     const result = db
       .prepare("INSERT INTO users (name, email, passwort_hash) VALUES (?, ?, ?)")
       .run(name, email || null, passwort_hash);
+    const userId = result.lastInsertRowid;
+
+    // Standard-Widgets für neues Dashboard anlegen
+    const defaultWidgets = [
+      { typ: "stats", position: 0 },
+      { typ: "tasks", position: 1 },
+      { typ: "pomodoro", position: 2 },
+    ];
+    const insertWidget = db.prepare(
+      "INSERT INTO dashboard_widgets (user_id, typ, position, config) VALUES (?, ?, ?, '{}')"
+    );
+    for (const w of defaultWidgets) {
+      insertWidget.run(userId, w.typ, w.position);
+    }
 
     res.status(201).json({
       message: "Benutzer erfolgreich registriert",
-      userId: result.lastInsertRowid,
+      userId,
     });
   } catch (err) {
     console.error("Fehler bei der Registrierung:", err);
