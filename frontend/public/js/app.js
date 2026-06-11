@@ -445,6 +445,7 @@ window.toggleWsFromCalendar = function (e) {
 
 window.selectWsSidebar = function (id) {
   if (id === "") id = null;
+  const compareId = id || "";
   window.currentWorkspaceId = id;
 
   const selectedIds = id ? getDescendantIds(id) : [];
@@ -474,7 +475,7 @@ window.selectWsSidebar = function (id) {
   document.getElementById("wsSbDropdown").classList.remove("open");
 
   const items = document.querySelectorAll("#wsSbList .ws-sb-dd-item, #sidebarWs .ws-sb-dd-item[data-id='']");
-  items.forEach(el => el.classList.toggle("active", el.dataset.id == id || (!id && el.dataset.id === "")));
+  items.forEach(el => el.classList.toggle("active", el.dataset.id == compareId));
 
   window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: id, workspaceIds: selectedIds } }));
   loadSidebarUnread();
