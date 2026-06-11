@@ -2,13 +2,15 @@
   {
     "version": "1.7.9",
     "datum": "2026-06-11",
-    "titel": "Admin-Panel & Benutzerverwaltung + JS-Syntax-Fixes",
+    "titel": "Admin-Panel, Dashboard-Empty-State & JS-Syntax-Fixes",
     "features": [
       "Admin-Panel unter /admin mit Benutzertabelle",
       "Admin-Rechte erteilen/entziehen per Klick",
       "Benutzer löschen (Doppel-Bestätigung)",
       "Passwort zurücksetzen (prompt oder Standard mindful2024)",
-      "Neue API-Endpunkte unter /api/admin/"
+      "Neue API-Endpunkte unter /api/admin/",
+      "Dashboard Empty-State: zentrierte Design-Karte mit Icon, Button und Dark Mode",
+      "Default-Widgets (stats, tasks, pomodoro) bei Registrierung"
     ],
     "fixes": [
       "todo.js: Syntaxfehler (überflüssige }-Klammer) → Script nie geladen",
@@ -17,9 +19,16 @@
       "adminOnly Middleware: unterscheidet API vs View-Routen",
       "Changelog auf JSON-only umgestellt (kein DB mehr, auto-sync via git)",
       "todo.css: .btn-primary überschrieb Button mit schwarzem Hintergrund (background: var(--text)) → Button war schwarz statt orange",
-      "JS: Empty-State in loadTodos() zeigte nie „Alles erledigt!“ weil Array [] truthy ist"
+      "JS: Empty-State in loadTodos() zeigte nie „Alles erledigt!“ weil Array [] truthy ist",
+      "Dashboard Empty-State: zentrierte Design-Karte mit Icon, Button und Dark Mode",
+      "Dashboard Empty-State wurde nie angezeigt – loadWidgets() erstellte automatisch Defaults",
+      "Default-Widgets (stats, tasks, pomodoro) werden jetzt bei Registrierung in die DB geschrieben",
+      "Dashboard blieb leer – altes Widget vom Typ upcoming (Legacy) nicht in WIDGET_TYPES registriert",
+      "upcoming-Widget fehlte in _getWidgetBody-Switch → mapped auf _buildEventsBody",
+      "Unbekannte Widget-Typen werden jetzt gefiltert, damit Empty-State erscheinen kann",
+      "loadWidgets() läuft auch wenn Dashboard-API fehlschlägt (kein früher return mehr)"
     ],
-    "commits": ["21e1196", "79dd5d5", "e4211b6", "49a5ba2", "abecf60", "bb2acd9"]
+    "commits": ["21e1196", "79dd5d5", "e4211b6", "49a5ba2", "abecf60", "bb2acd9", "67b4fd0", "08f5d3e", "910fec0", "853db83", "04c30f6", "65e2445", "182ec26"]
   },
   {
     "version": "1.7.8",
