@@ -3072,7 +3072,10 @@ git push --tags</script>
             commit:"9f64d54", hash:"https://github.com/Ancrion/mindful/commit/9f64d54" },
           { id:"jaro-54", file:"frontend/public/js/index.js",
             desc:"FLIP ANIMATION BEIM WIDGET-TAUSCH v1.7.8: ① FLIP Technik: First (rectMap VOR DOM-Änderung per Map<Element, Rect>) → Last (Position nach insertBefore+reflowAll) → Invert (transition:none + transform:translate) → Play (transition:"" + transform:""), ② Perfekt smooth 0.25s Animation, ③ 60fps via double requestAnimationFrame, ④ Kompatibel mit _reflowAll()",
-            commit:"fc47729", hash:"https://github.com/Ancrion/mindful/commit/fc47729" }
+            commit:"fc47729", hash:"https://github.com/Ancrion/mindful/commit/fc47729" },
+          { id:"jaro-55", file:"backend/routes/bugs.js",
+            desc:"ADMIN-RECHTE FIX v1.7.8: ① isJaro() prüfte req.user.is_admin (nicht im JWT enthalten → immer false), ② Fix: DB-Query SELECT is_admin FROM users WHERE id = ?, ③ User lbuser→jaro umbenannt + is_admin=1, ④ Admin kann jetzt Bugs löschen + verschieben",
+            commit:"a3d7c4e", hash:"https://github.com/Ancrion/mindful/commit/a3d7c4e" }
       },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",

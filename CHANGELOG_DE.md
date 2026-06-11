@@ -63,6 +63,13 @@
 
 - **Code bereinigt**: Debug-Logs entfernt, klare Struktur
 
+- **Fixed: Admin-Rechte (isJaro) für Bug-Kacheln**:
+  - Problem: `isJaro()` prüfte `req.user.is_admin`, aber JWT-Token enthielt kein `is_admin`
+  - `isJaro()` war IMMER `false`, egal ob User admin war
+  - Lösung: `isJaro()` macht jetzt DB-Query: `SELECT is_admin FROM users WHERE id = ?`
+  - Admin kann jetzt Bugs löschen (rotes X) und per Drag & Drop verschieben
+  - User `lbuser` → `jaro` umbenannt, `is_admin=1`
+
 - **Sauberer Code**:
   - Entfernt redundante `_onDrop()` Funktion auf Card-Level
   - Nur noch Ein Drop-Handler (auf Grid) statt mehrere
@@ -105,6 +112,7 @@
 🔗 [`5106255`](https://github.com/Ancrion/mindful/commit/5106255) - fix: Swap-based drag-drop logic - always swap dragged with target position
 🔗 [`9f64d54`](https://github.com/Ancrion/mindful/commit/9f64d54) - refactor: Remove debug logs, enhance visual drag-drop feedback with scale + border effects
 🔗 [`fc47729`](https://github.com/Ancrion/mindful/commit/fc47729) - feat: Add FLIP animation for smooth widget swap transitions
+🔗 [`a3d7c4e`](https://github.com/Ancrion/mindful/commit/a3d7c4e) - fix: isJaro() queries DB for is_admin (JWT fehlte is_admin), rename lbuser→jaro
 
 ---
 
