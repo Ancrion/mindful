@@ -528,7 +528,6 @@ window.renameNote = async function (noteId, currentName) {
       renderTree();
     }
   }
-  }
 };
 
 window.renameFolder = async function (folderId, currentName) {
