@@ -82,11 +82,11 @@
   - Nur noch eine `_drag` Variable mit `{ element, dropTarget, insertBefore }`
   - Debug-Logs aufgeräumt (nur wichtige Fehler-Logs bleiben)
 
-- **Fixed: Sidebar-Bottom Optionen/Abmelden versetzt bei Expansion**:
-  - Problem: `<button>` (Abmelden) hatte Browser-default-Styles (font-family, padding, background)
-  - `<a>` (Optionen) hatte andere Defaults → beide nicht deckungsgleich
-  - Lösung: `.module-bottom .module-link` mit `font: inherit`, `border: none`, `background: none`, `padding: 0 10px`
-  - Beide jetzt visuell identisch, keine Versetzung
+- **Fixed: Sidebar-Bottom Optionen/Abmelden nicht einheitlich**:
+  - Problem: `<button>` und `<a>` haben unterschiedliche Browser-Defaults (appearance, vertical-align, font)
+  - CSS-Reset allein reichte nicht
+  - Lösung: `<button>` durch `<a href="javascript:void(0)">` ersetzt → beide identische `<a>`-Tags
+  - Zusätzlich `text-decoration: none` für `.module-bottom .module-link`
 
 - **Getestete Funktionalität**:
   - ✅ Widget ist in der Hand des Mauszeiger während Drag
@@ -126,6 +126,7 @@
 🔗 [`fc47729`](https://github.com/Ancrion/mindful/commit/fc47729) - feat: Add FLIP animation for smooth widget swap transitions
 🔗 [`cf4013c`](https://github.com/Ancrion/mindful/commit/cf4013c) - fix: draggable="1" invalid in HTML5, needs draggable="true"; backend returns boolean
 🔗 [`7d488a8`](https://github.com/Ancrion/mindful/commit/7d488a8) - fix: Reset button default styles in .module-bottom (font:inherit, border:none, bg:none) for alignment with Optionen link
+🔗 [`f63ea67`](https://github.com/Ancrion/mindful/commit/f63ea67) - fix: Change Abmelden <button> to <a> for consistent styling with Optionen
 
 ---
 
