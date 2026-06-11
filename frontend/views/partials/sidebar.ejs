@@ -17,6 +17,9 @@
         <strong id="userNameDisplay">...</strong>
       </div>
     </a>
+      <a href="/messages" class="module-link msg-top-link <%= currentPage === 'messages' ? 'active' : '' %>">
+        <span class="module-icon-wrap"><i class="fas fa-envelope"></i><span class="msg-badge sidebar-badge" id="sidebarUnreadBadge" style="display:none"></span></span> <span>Nachrichten</span>
+      </a>
     <div class="sidebar-ws" id="sidebarWs">
       <div class="ws-sb-trigger" onclick="toggleWsSidebar(event)" title="Workspace wechseln">
         <span class="ws-sb-dot" id="wsSbDot" style="background:#999"></span>
@@ -51,9 +54,6 @@
         </div>
       </div>
     </div>
-      <a href="/messages" class="module-link msg-top-link <%= currentPage === 'messages' ? 'active' : '' %>">
-        <span class="module-icon-wrap"><i class="fas fa-envelope"></i><span class="msg-badge sidebar-badge" id="sidebarUnreadBadge" style="display:none"></span></span> <span>Nachrichten</span>
-      </a>
     <nav class="module-nav">
       <a href="/" class="module-link <%= currentPage === 'dashboard' ? 'active' : '' %>">
         <i class="fas fa-th-large"></i> <span>Dashboard</span>
