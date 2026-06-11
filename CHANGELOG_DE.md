@@ -48,6 +48,7 @@
 - **Dashboard: Auto-Update bei Workspace-Wechsel**: Bei Auswahl eines anderen Arbeitsbereichs werden alle Widgets (tasks, notes, events, upcoming, calendar, stats, docs) aus dem gecachten `dashboardData` + `wsFilter` neu gerendert. Kein API-Neufetch nötig.
 - **Fixed: Workspace-Active-State**: "Alle Bereiche" wurde nie als aktiv markiert (null != ''). Fix: Explizites Remove/Add der active-Klasse statt toggle. `id` bleibt unverändert, `currentWorkspaceId` wird zu null konvertiert.
 - **Cache-Fix: JS/CSS-Updates sofort**: `express.static` mit `maxAge: 0`. Zusammen mit `Cache-Control: no-store` werden aktualisierte JS/CSS-Dateien ohne Hard Refresh ausgeliefert.
+- **Fixed: "Alle Bereiche" Click-Handler**: Inline `onclick` durch `addEventListener` ersetzt, mit `id="wsSbAllItem"`. Gleiche Event-Behandlung wie Workspace-Items → sofortige UI-Aktualisierung ohne Hard Refresh nötig.
 
 ---
 
