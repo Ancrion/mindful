@@ -67,6 +67,12 @@
   - Problem: `isJaro()` prüfte `req.user.is_admin`, aber JWT-Token enthielt kein `is_admin`
   - `isJaro()` war IMMER `false`, egal ob User admin war
   - Lösung: `isJaro()` macht jetzt DB-Query: `SELECT is_admin FROM users WHERE id = ?`
+  - **Root Cause #2: `draggable="1"` ist in HTML5 UNGÜLTIG**
+    - Backend gab `isJaro: 1` (Integer) statt `isJaro: true` (Boolean) zurück
+    - Frontend rendert `draggable="${isJaroUser}"` → `draggable="1"`
+    - HTML5 akzeptiert NUR `"true"` / `"false"`, alles andere = `"auto"` → `<div>` ist default NOT draggable
+    - **Fix 1**: Backend `return !!(...)` → gibt `true`/`false`
+    - **Fix 2**: Frontend `draggable="${isJaroUser ? 'true' : 'false'}"`
   - Admin kann jetzt Bugs löschen (rotes X) und per Drag & Drop verschieben
   - User `lbuser` → `jaro` umbenannt, `is_admin=1`
 
@@ -112,7 +118,7 @@
 🔗 [`5106255`](https://github.com/Ancrion/mindful/commit/5106255) - fix: Swap-based drag-drop logic - always swap dragged with target position
 🔗 [`9f64d54`](https://github.com/Ancrion/mindful/commit/9f64d54) - refactor: Remove debug logs, enhance visual drag-drop feedback with scale + border effects
 🔗 [`fc47729`](https://github.com/Ancrion/mindful/commit/fc47729) - feat: Add FLIP animation for smooth widget swap transitions
-🔗 [`a3d7c4e`](https://github.com/Ancrion/mindful/commit/a3d7c4e) - fix: isJaro() queries DB for is_admin (JWT fehlte is_admin), rename lbuser→jaro
+🔗 [`cf4013c`](https://github.com/Ancrion/mindful/commit/cf4013c) - fix: draggable="1" invalid in HTML5, needs draggable="true"; backend returns boolean
 
 ---
 
