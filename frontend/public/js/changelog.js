@@ -1,4 +1,4 @@
-const CL_API = "/api/changelog";
+const CL_API = "/api/changelog?_=" + Date.now();
 let clEntries = [];
 
 document.addEventListener("DOMContentLoaded", async () => {

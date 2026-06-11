@@ -26,7 +26,61 @@
         </header>
 
         <div class="changelog-timeline" id="changelogTimeline">
-          <p class="loading">Lade Versionsverlauf …</p>
+          <% if (typeof clEntries !== 'undefined' && clEntries.length) { %>
+            <% clEntries.forEach(function(e, i) { %>
+            <div class="cl-entry <%= i === 0 ? 'latest' : '' %>">
+              <div class="cl-entry-line">
+                <div class="cl-dot"></div>
+                <% if (i !== 0) { %><div class="cl-line"></div><% } %>
+              </div>
+              <div class="cl-entry-card">
+                <div class="cl-entry-head">
+                  <span class="cl-version-badge">v<%= e.version %></span>
+                  <span class="cl-date"><%= new Date(e.datum + 'T00:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' }) %></span>
+                </div>
+                <h3 class="cl-entry-title"><%= e.titel %></h3>
+                <% if (e.features && e.features.length) { %>
+                <ul class="cl-list">
+                  <li class="cl-list-label cl-feature">Neu</li>
+                  <% e.features.forEach(function(f) { %>
+                    <li><%= f %></li>
+                  <% }); %>
+                </ul>
+                <% } %>
+                <% if (e.fixes && e.fixes.length) { %>
+                <ul class="cl-list">
+                  <li class="cl-list-label cl-fix">Behoben</li>
+                  <% e.fixes.forEach(function(f) { %>
+                    <li><%= f %></li>
+                  <% }); %>
+                </ul>
+                <% } %>
+                <% if (e.commits && e.commits.length) { %>
+                <details class="cl-commits">
+                  <summary class="cl-commits-summary">
+                    <i class="fas fa-code-branch"></i> Commits (<%= e.commits.length %>)
+                  </summary>
+                  <div class="cl-commits-list">
+                    <% e.commits.forEach(function(c) { %>
+                      <a href="https://github.com/Ancrion/mindful/commit/<%= c %>" target="_blank" class="cl-commit-link" title="Commit auf GitHub anzeigen">
+                        <code><%= c.substring(0, 7) %></code>
+                        <i class="fas fa-external-link-alt"></i>
+                      </a>
+                    <% }); %>
+                  </div>
+                </details>
+                <% } %>
+                <div class="cl-entry-actions">
+                  <a href="https://github.com/Ancrion/mindful/commits" target="_blank" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-code-branch"></i> Commits auf GitHub
+                  </a>
+                </div>
+              </div>
+            </div>
+            <% }); %>
+          <% } else { %>
+            <p class="loading">Lade Versionsverlauf …</p>
+          <% } %>
         </div>
       </main>
 
