@@ -3103,6 +3103,9 @@ git push --tags</script>
           { id:"jaro-65", file:"frontend/public/js/index.js",
             desc:"DASHBOARD-EMPTY-STATE-FIX v1.7.9: Auto-Defaults (stats, tasks, pomodoro) aus loadWidgets() entfernt – die Empty-State-Design-Karte wurde nie erreicht, weil bei leerer DB sofort Defaults angelegt wurden. Fix: Array.isArray(data) ? data : [] + renderWidgets().",
             commit:"08f5d3e", hash:"https://github.com/Ancrion/mindful/commit/08f5d3e" },
+          { id:"jaro-66", file:"backend/routes/auth-routes.js",
+            desc:"DASHBOARD-DEFAULT-WIDGETS v1.7.9: Bei Registrierung werden jetzt 3 Standard-Widgets (stats, tasks, pomodoro) in der DB angelegt. Neue User haben sofort ein Dashboard. Wer alle löscht, sieht die Empty-State-Karte.",
+            commit:"910fec0", hash:"https://github.com/Ancrion/mindful/commit/910fec0" },
           { id:"jaro-63", file:"backend/data/changelog-seed.json (JSON-REFACTOR)",
             desc:"CHANGELOG-JSON v1.7.9: Changelog auf JSON-only umgestellt (kein DB mehr, auto-sync via git pull). Alle alten Einträge v0.1.0–v1.7.7 aus CHANGELOG_DE.md in changelog-seed.json überführt.",
             commit:"abecf60", hash:"https://github.com/Ancrion/mindful/commit/abecf60" }
