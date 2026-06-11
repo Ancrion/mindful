@@ -4,6 +4,10 @@ const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const db = require("./database/db");
+const autoSeedChangelog = require("./database/seed_changelog");
+
+// Auto-Seed: fehlende Changelog-Einträge aus JSON einfügen
+autoSeedChangelog();
 
 // ROUTEN-IMPORTS
 const indexRoutes = require("./routes/index");
