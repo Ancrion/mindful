@@ -50,12 +50,10 @@ async function authFetch(url, options = {}) {
 
 async function checkAuthStatus() {
   const res = await authFetch(`${API_BASE}/auth/me`);
-  const isPublic =
-    window.location.pathname.includes("/login") ||
-    window.location.pathname.includes("/register");
-
   const isPublicPage =
-    isPublic || window.location.pathname === "/changelog";
+    window.location.pathname.includes("/login") ||
+    window.location.pathname.includes("/register") ||
+    window.location.pathname === "/changelog";
 
   if (!res || !res.ok) {
     if (!isPublicPage) window.location.replace("/login");
@@ -63,7 +61,14 @@ async function checkAuthStatus() {
   }
 
   const user = await res.json();
-  if (isPublic) window.location.replace("/");
+  if (!user) {
+    if (!isPublicPage) window.location.replace("/login");
+    return null;
+  }
+
+  if (window.location.pathname.includes("/login") || window.location.pathname.includes("/register")) {
+    window.location.replace("/");
+  }
   return user;
 }
 

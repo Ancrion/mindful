@@ -217,9 +217,18 @@ const avatarUpload = multer({
   },
 });
 
-router.get("/me", auth, (req, res) => {
-  const user = db.prepare("SELECT id, name, email, wallpaper, avatar FROM users WHERE id = ?").get(req.user.id);
-  if (!user) return res.status(404).json({ error: "Benutzer nicht gefunden" });
+router.get("/me", (req, res) => {
+  let userId = null;
+  const token = req.cookies?.token || req.headers["authorization"]?.split(" ")[1];
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      userId = decoded.id;
+    } catch {}
+  }
+  if (!userId) return res.json(null);
+  const user = db.prepare("SELECT id, name, email, wallpaper, avatar FROM users WHERE id = ?").get(userId);
+  if (!user) return res.json(null);
   res.json(user);
 });
 
