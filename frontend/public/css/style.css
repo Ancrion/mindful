@@ -141,7 +141,6 @@ textarea {
 .module-top {
   display: flex;
   flex-direction: column;
-  gap: 12px;
   flex: 1;
 }
 
@@ -149,6 +148,7 @@ textarea {
   display: flex;
   gap: 4px;
   padding: 0 2px;
+  margin-bottom: 0;
 }
 
 .sidebar-toggle {
@@ -251,12 +251,9 @@ textarea {
   overflow: visible;
 }
 .msg-top-link {
-  margin: 0 0 2px;
-  min-height: 32px;
-}
-.header-badge {
-  top: -4px;
-  right: -6px;
+  margin: 0;
+  min-height: 30px;
+  padding: 2px 10px;
 }
 .sidebar-badge {
   position: absolute;
