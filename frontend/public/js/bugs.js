@@ -34,7 +34,7 @@ function renderKanban(bugs) {
     countEl.textContent = columns[status].length;
 
     container.innerHTML = columns[status].map(b => `
-      <div class="kanban-card" draggable="${isJaroUser}" data-id="${b.id}" data-status="${status}">
+      <div class="kanban-card" draggable="${isJaroUser ? 'true' : 'false'}" data-id="${b.id}" data-status="${status}">
         ${isJaroUser ? `<button class="kanban-card-delete" data-id="${b.id}" title="Löschen">&times;</button>` : ""}
         <strong class="kanban-card-title">${escapeHtml(b.titel)}</strong>
         ${b.seite ? `<span class="kanban-card-page"><i class="fa-regular fa-window-maximize"></i> ${escapeHtml(b.seite)}</span>` : ""}
