@@ -1424,19 +1424,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === e.currentTarget) closeWidgetManager();
   });
 
-  // Workspace change: reload dashboard data + re-render widgets
-  window.addEventListener("workspacechange", async () => {
-    const data = await apiFetch("dashboard");
-    if (data) {
-      dashboardData = data;
-      _rerenderWidget("tasks");
-      _rerenderWidget("notes");
-      _rerenderWidget("events");
-      _rerenderWidget("upcoming");
-      _rerenderWidget("calendar");
-      _rerenderWidget("stats");
-      _rerenderWidget("docs");
-    }
+  // Workspace change: re-render widgets with filtered data
+  window.addEventListener("workspacechange", () => {
+    if (!dashboardData) return;
+    _rerenderWidget("tasks");
+    _rerenderWidget("notes");
+    _rerenderWidget("events");
+    _rerenderWidget("upcoming");
+    _rerenderWidget("calendar");
+    _rerenderWidget("stats");
+    _rerenderWidget("docs");
   });
 
   // Close context menu on click outside
