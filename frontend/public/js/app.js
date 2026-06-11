@@ -472,11 +472,15 @@ window.selectWsSidebar = function (id) {
 
   document.getElementById("wsSbDropdown").classList.remove("open");
 
-  const items = document.querySelectorAll("#wsSbList .ws-sb-dd-item, #sidebarWs .ws-sb-dd-item");
-  items.forEach(el => {
-    el.classList.remove("active");
-    if (el.dataset.id == id) el.classList.add("active");
-  });
+  // Active class auf exakt EIN Item setzen
+  document.querySelectorAll("#wsSbList .ws-sb-dd-item").forEach(el => el.classList.remove("active"));
+  document.getElementById("wsSbAllItem")?.classList.remove("active");
+  if (id === "") {
+    document.getElementById("wsSbAllItem")?.classList.add("active");
+  } else {
+    const el = document.querySelector(`#wsSbList .ws-sb-dd-item[data-id="${id}"]`);
+    if (el) el.classList.add("active");
+  }
 
   window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId, workspaceIds: selectedIds } }));
   loadSidebarUnread();
