@@ -1290,7 +1290,6 @@ body.dark .ws-ctx-menu .ctx-item.ctx-danger:hover { background: #2d1515; }
     flex-wrap: wrap;
   }
   .module-user {
-    border-bottom: 1px solid var(--border);
     padding: 12px 6px;
   }
   .sidebar-toggle {
