@@ -5,7 +5,9 @@ const auth = require("../middleware/auth");
 const adminOnly = require("../middleware/admin");
 
 function isJaro(user) {
-  return user && user.is_admin;
+  if (!user || !user.id) return false;
+  const row = db.prepare("SELECT is_admin FROM users WHERE id = ?").get(user.id);
+  return row && row.is_admin;
 }
 
 router.get("/", auth, (req, res) => {
