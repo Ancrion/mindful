@@ -45,6 +45,7 @@
 - **Changelog-Seite liest jetzt direkt aus CHANGELOG_DE.md**: Kein `changelog-seed.json` mehr – Single Source of Truth ist die Markdown-Datei. Parser wandelt MD in strukturierte Einträge um (Version, Datum, Features, Fixes) für die Timeline-Karten-UI. (`changelog-seed.json` + `changelog.js` gelöscht, `marked` raus)
 - **Sidebar: Ungelesene-Nachrichten-Badge**: Rote Badge-Zahl am Envelope-Icon, sichtbar in collapsed und expanded Sidebar. Badge liegt absolut positioniert über dem Icon.
 - **Sidebar: Nachrichten-Link direkt unter Profil**: Liegt auf gleicher Ebene wie Profil und Workspace‑Selector, direkt unter dem Profil-Avatar. Hat eigenen `border-bottom` als Trennstrich vor dem Workspace-Bereich. Kein `border-bottom` mehr auf `.module-user`. `border-radius: 0` für saubere, gerade Trennlinie. Standard-Link-Größe beibehalten.
+- **Dashboard: Auto-Update bei Workspace-Wechsel**: Bei Auswahl eines anderen Arbeitsbereichs wird die Dashboard-API neu angefragt, `dashboardData` aktualisiert und alle Widgets (tasks, notes, events, calendar, stats) werden neu gerendert.
 
 ---
 
