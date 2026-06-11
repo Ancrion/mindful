@@ -472,8 +472,11 @@ window.selectWsSidebar = function (id) {
 
   document.getElementById("wsSbDropdown").classList.remove("open");
 
-  const items = document.querySelectorAll("#wsSbList .ws-sb-dd-item, #sidebarWs .ws-sb-dd-item[data-id='']");
-  items.forEach(el => el.classList.toggle("active", el.dataset.id == id));
+  const items = document.querySelectorAll("#wsSbList .ws-sb-dd-item, #sidebarWs .ws-sb-dd-item");
+  items.forEach(el => {
+    el.classList.remove("active");
+    if (el.dataset.id == id) el.classList.add("active");
+  });
 
   window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: window.currentWorkspaceId, workspaceIds: selectedIds } }));
   loadSidebarUnread();
