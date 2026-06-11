@@ -812,6 +812,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadWallpaper();
     loadDarkMode();
     await loadWorkspaces();
+    document.getElementById("wsSbAllItem")?.addEventListener("click", e => {
+      e.stopPropagation();
+      window.selectWsSidebar("");
+    });
     const saved = localStorage.getItem("mindful_workspace");
     if (saved) {
       selectWsSidebar(parseInt(saved));
