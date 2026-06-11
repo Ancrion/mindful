@@ -477,6 +477,7 @@ window.selectWsSidebar = function (id) {
   items.forEach(el => el.classList.toggle("active", el.dataset.id == id));
 
   window.dispatchEvent(new CustomEvent("workspacechange", { detail: { workspaceId: id, workspaceIds: selectedIds } }));
+  loadSidebarUnread();
 };
 
 window.quickCreateWsSidebar = async function () {
