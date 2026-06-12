@@ -248,7 +248,8 @@ function _buildCard(widget) {
   card.innerHTML = `
     <div class="widget-header">
       <span class="widget-handle"><i class="fas fa-grip-vertical"></i></span>
-      <h3 class="widget-title"><i class="fas ${info.icon}"></i> <span class="widget-title-text">${info.name}</span>${widget.typ === "weather" && config.city ? ` <span class="widget-subtitle">${escHtml(config.city)}</span>` : ""}</h3>
+      <h3 class="widget-title"><i class="fas ${info.icon}"></i> <span class="widget-title-text">${info.name}</span></h3>
+      ${widget.typ === "weather" && config.city ? `<span class="weather-city-center">${escHtml(config.city)}</span>` : ""}
       ${widget.typ === "calendar" ? `<div class="cal-view-switch">${["month","week","day"].map(v =>
         `<button class="cal-view-btn${_calendarWidgetView === v ? " active" : ""}" data-view="${v}">${v === "month" ? "Monat" : v === "week" ? "Woche" : "Tag"}</button>`
       ).join("")}</div>` : ""}
