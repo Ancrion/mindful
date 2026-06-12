@@ -54,15 +54,26 @@
   - Gleiche `font-size: 16px`, `width: 20px`, `text-align: center` wie alle anderen `.module-link i`
   - Identisches `padding: 0 10px`, `gap: 12px`, `min-height: 40px` – kein Versatz mehr
 
-- **Habit-Tracker (v1.8.0)**:
-  - Neue Seite `/habits` mit Übersicht aller Habits + heutige fällige Habits
-  - Habits: Icon, Farbe, Typ (täglich/intervall/wochentags/wochenende/wöchentlich), Zeitfenster
-  - Add/Edit-Modal mit Icon-Picker, Color-Picker, Typ-Auswahl, Zeit-Einstellung
-  - Dashboard-Widget `habits` zeigt heutige Habits mit Checkbox zum Abhaken
-  - Zeitfenster-Logik: "Jetzt"-Badge wenn Habit im aktuellen Zeitfenster liegt
-  - Auto-Refresh alle 60s + initialer Fetch beim Dashboard-Start
-  - API: CRUD (`/api/habits`) + Today (`/api/habits/today`) + Toggle (`/api/habits/:id/toggle`)
-  - DB: `habits` + `habit_logs` Tabellen, Sidebar-Modul `fa-check-double`
+- **Habit-Tracker (v1.8.0) – Umfassend verbessert**:
+  - Neue Seite `/habits` mit Übersicht aller Habits + heutige fällige Habits + Statistiken
+  - **Erweiterte Habit-Eigenschaften**:
+    - Icon, Farbe, Typ (täglich/intervall/wochentags/wockenende/wöchentlich), Zeitfenster
+    - Neue: Beschreibung, Kategorie, Priorität (Hoch/Mittel/Niedrig), Erinnerungszeit
+    - Streak-Tracking: current streak, longest streak, total completions
+    - Archived-Flag für Gewohnheiten archivieren (nicht löschen)
+  - **Frontend Verbesserungen**:
+    - Add/Edit-Modal mit Icon-Picker, Color-Picker, Typ-Auswahl, Zeit-, Kategorie-, Prioritäts-Einstellung
+    - Stats-Sektion auf `/habits` zeigt: Aktive Habits, Längster Streak, Tägliche Quote, Gesamtabhakungen
+    - Dashboard-Widget `habits` mit Zeitfenster + Streak-Anzeige + "Jetzt"-Badge
+    - Neue Dashboard-Widget `habitstats` mit Top-Streaks, Durchschnitte, Zusammenfassung
+  - **Backend Verbesserungen**:
+    - Neue Endpoints: `GET /api/habits/stats` (Statistiken), `GET /api/habits/calendar/:id` (Kalender-Daten), `GET /api/habits/:id/history` (Verlauf)
+    - Streak-Berechnung verbessert: Berücksichtigt Lücken, aktuelle Streaks nur wenn gestern/heute, longest streak über alle Daten
+    - Toggle-Endpoint aktualisiert Streaks automatisch
+    - DB erweitert: `description`, `category`, `priority`, `reminder_time`, `current_streak`, `longest_streak`, `total_completions`, `archived`
+    - `habit_logs` um `notes`-Feld + UNIQUE Constraint auf (habit_id, datum)
+  - API: CRUD (`/api/habits`) + Today (`/api/habits/today`) + Toggle mit Notes + Stats + Calendar + History
+  - Dashboard-Widgets: `habits` + `habitstats` mit Auto-Refresh alle 60s
   - **Fixed: Habits fehlten in Sidebar bei Bestandsnutzern**: `ensureDefaultModules()` legte nur Module an wenn der User **null** Module hatte. Neue Defaults (wie `habits`) wurden nie bei existierenden Usern ergänzt. Fix: Prüft jetzt jedes Default-Modul einzeln via `module_key` und fügt fehlende nach.
   - Neue Seite `/habits` mit Übersicht aller Habits + heutige fällige Habits
   - Habits: Icon, Farbe, Typ (täglich/intervall/wochentags/wochenende/wöchentlich), Zeitfenster
