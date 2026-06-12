@@ -101,6 +101,12 @@
   flex-direction: column;
   min-width: 0;
 }
+.hc-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
 .hc-name {
   font-size: 0.92rem;
   font-weight: 500;
@@ -109,13 +115,47 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.habit-priority {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
 .hc-meta {
-  font-size: 0.78rem;
+  font-size: 0.77rem;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 6px;
   margin-top: 1px;
+  flex-wrap: wrap;
+}
+.hc-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.73rem;
+}
+.hc-stats {
+  font-size: 0.75rem;
+  display: flex;
+  gap: 10px;
+  margin-top: 3px;
+  color: var(--text-secondary);
+}
+.hc-stats span {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.hc-stats i {
+  font-size: 0.7rem;
+}
+.hc-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #ef4444;
+  font-weight: 500;
 }
 .hc-window {
   display: inline-flex;
@@ -267,4 +307,12 @@
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
+}
+
+/* ─── Modal Tweaks ─── */
+textarea#habitDesc {
+  font-family: inherit;
+  font-size: 0.88rem;
+  resize: vertical;
+  min-height: 60px;
 }

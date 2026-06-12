@@ -954,13 +954,17 @@ function _buildHabitsBody() {
     const windowStr = h.time_start && h.time_end
       ? `${h.time_start}–${h.time_end}`
       : h.time_start ? `ab ${h.time_start}` : h.time_end ? `bis ${h.time_end}` : "";
+    const streak = h.current_streak ? `<span class="w-habit-streak"><i class="fas fa-fire"></i> ${h.current_streak}</span>` : "";
     return `<div class="w-habit-item ${h.completed ? "w-habit-done" : ""} ${isInWindow && !h.completed ? "w-habit-now" : ""}" style="--hc:${h.color || "#6366f1"}">
       <button class="w-habit-toggle ${h.completed ? "checked" : ""}" data-habit-id="${h.id}">
         ${h.completed ? '<i class="fas fa-check-circle"></i>' : '<i class="far fa-circle"></i>'}
       </button>
       <i class="fas ${h.icon || "fa-check-circle"}" style="color:${h.color || "#6366f1"}"></i>
       <span class="w-habit-name">${escHtml(h.name)}</span>
-      <span class="w-habit-time">${escHtml(windowStr)}</span>
+      <span class="w-habit-meta">
+        ${windowStr ? `<span class="w-habit-time">${escHtml(windowStr)}</span>` : ""}
+        ${streak}
+      </span>
       ${isInWindow && !h.completed ? '<span class="w-habit-badge">Jetzt</span>' : ""}
     </div>`;
   }).join("")}</div>`;

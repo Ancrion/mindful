@@ -259,13 +259,21 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     name TEXT NOT NULL,
+    description TEXT,
     icon TEXT DEFAULT 'fa-check-circle',
     color TEXT DEFAULT '#6366f1',
+    category TEXT,
+    priority TEXT DEFAULT 'medium',
     typ TEXT DEFAULT 'daily',
     interval_days INTEGER DEFAULT 1,
     time_start TEXT,
     time_end TEXT,
+    reminder_time TEXT,
+    current_streak INTEGER DEFAULT 0,
+    longest_streak INTEGER DEFAULT 0,
+    total_completions INTEGER DEFAULT 0,
     active INTEGER DEFAULT 1,
+    archived INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now', 'localtime')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
@@ -276,8 +284,10 @@ db.exec(`
     habit_id INTEGER NOT NULL,
     datum TEXT NOT NULL,
     completed INTEGER DEFAULT 1,
+    notes TEXT,
     completed_at TEXT DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE,
+    UNIQUE(habit_id, datum)
   );
 
   -- 19. BUG-REPORTS

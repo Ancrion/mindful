@@ -69,6 +69,10 @@
             <label>Name</label>
             <input type="text" id="habitName" placeholder="z.B. Proteinshake zubereiten" autofocus />
           </div>
+          <div class="fg">
+            <label>Beschreibung (optional)</label>
+            <textarea id="habitDesc" placeholder="Warum ist dieses Habit wichtig?" rows="2"></textarea>
+          </div>
           <div class="fg-row">
             <div class="fg">
               <label>Icon</label>
@@ -124,6 +128,24 @@
               <label>Zeitfenster bis</label>
               <input type="time" id="habitTimeEnd" />
             </div>
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label>Kategorie (optional)</label>
+              <input type="text" id="habitCategory" placeholder="z.B. Fitness, Produktivität" />
+            </div>
+            <div class="fg">
+              <label>Priorität</label>
+              <select id="habitPriority">
+                <option value="low">Niedrig</option>
+                <option value="medium" selected>Mittel</option>
+                <option value="high">Hoch</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Erinnerungszeit (optional)</label>
+            <input type="time" id="habitReminderTime" />
           </div>
           <div class="modal-actions">
             <button class="btn btn-primary btn-full" onclick="saveHabit()">

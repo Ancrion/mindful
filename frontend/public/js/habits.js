@@ -1,6 +1,7 @@
 // ─── State ───
 let _habits = [];
 let _todayHabits = [];
+let _categories = new Set();
 
 // ─── Init ───
 document.addEventListener("DOMContentLoaded", () => {
@@ -12,7 +13,10 @@ async function loadHabits() {
     apiFetch("habits"),
     apiFetch("habits/today"),
   ]);
-  if (all) _habits = all;
+  if (all) {
+    _habits = all;
+    _categories = new Set(all.filter(h => h.category).map(h => h.category));
+  }
   if (today) _todayHabits = today;
   renderAll();
   renderToday();
@@ -23,6 +27,24 @@ function escAttr(v) {
   return String(v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
+function formatStreak(s) {
+  if (!s) return "0";
+  if (s === 1) return "1 Tag";
+  return s + " Tage";
+}
+
+function priorityColor(p) {
+  if (p === "high") return "#ef4444";
+  if (p === "medium") return "#f59e0b";
+  return "#22c55e";
+}
+
+function priorityLabel(p) {
+  if (p === "high") return "Hoch";
+  if (p === "medium") return "Mittel";
+  return "Niedrig";
+}
+
 // ─── Heute ───
 function renderToday() {
   const list = document.getElementById("habitsTodayList");
@@ -31,7 +53,7 @@ function renderToday() {
   if (!_todayHabits.length) {
     list.innerHTML = `<div class="habits-empty">
       <i class="fas fa-star"></i>
-      <p>Keine Habits für heute. Leg los und erstelle dein erstes!</p>
+      <p>Keine Habits für heute. Gut gemacht!</p>
     </div>`;
     return;
   }
@@ -48,7 +70,11 @@ function renderToday() {
         : h.time_end
           ? `bis ${h.time_end}`
           : "";
-    return `<div class="habit-card habit-today ${h.completed ? "done" : ""} ${isInWindow && !h.completed ? "active-window" : ""}" style="--hc:${h.color || "#6366f1"}">
+    
+    const completed = h.completed ? "done" : "";
+    const activeWindow = isInWindow && !h.completed ? "active-window" : "";
+    
+    return `<div class="habit-card habit-today ${completed} ${activeWindow}" style="--hc:${h.color || "#6366f1"}">
       <div class="hc-left">
         <button class="hc-toggle ${h.completed ? "checked" : ""}" onclick="toggleHabit(${h.id})">
           ${h.completed ? '<i class="fas fa-check-circle"></i>' : '<i class="far fa-circle"></i>'}
@@ -56,7 +82,10 @@ function renderToday() {
         <i class="fas ${h.icon || "fa-check-circle"}" style="color:${h.color || "#6366f1"}"></i>
         <div class="hc-info">
           <span class="hc-name">${escAttr(h.name)}</span>
-          ${windowStr ? `<span class="hc-window"><i class="far fa-clock"></i> ${escAttr(windowStr)}</span>` : ""}
+          <div class="hc-meta">
+            ${windowStr ? `<span class="hc-window"><i class="far fa-clock"></i> ${escAttr(windowStr)}</span>` : ""}
+            ${h.current_streak ? `<span class="hc-streak"><i class="fas fa-fire"></i> ${formatStreak(h.current_streak)}</span>` : ""}
+          </div>
         </div>
       </div>
       <div class="hc-right">
@@ -97,16 +126,27 @@ function renderAll() {
         : h.time_end
           ? `bis ${h.time_end}`
           : "Ganztägig";
+    
+    const priorityBadge = h.priority ? `<span class="habit-priority" style="color:${priorityColor(h.priority)}" title="${priorityLabel(h.priority)}">${["low", "medium", "high"].indexOf(h.priority) === 0 ? "⬤" : ["low", "medium", "high"].indexOf(h.priority) === 1 ? "⬤⬤" : "⬤⬤⬤"}</span>` : "";
+    
     return `<div class="habit-card" style="--hc:${h.color || "#6366f1"}">
       <div class="hc-left">
         <i class="fas ${h.icon || "fa-check-circle"}" style="color:${h.color || "#6366f1"}"></i>
         <div class="hc-info">
-          <span class="hc-name">${escAttr(h.name)}</span>
+          <div class="hc-name-row">
+            <span class="hc-name">${escAttr(h.name)}</span>
+            ${priorityBadge}
+          </div>
           <span class="hc-meta">
             <span class="hc-typ">${typLabel(h.typ, h.interval_days)}</span>
             <span class="hc-sep">·</span>
             <span class="hc-window"><i class="far fa-clock"></i> ${escAttr(winStr)}</span>
+            ${h.category ? `<span class="hc-sep">·</span><span class="hc-cat"><i class="fas fa-tag"></i> ${escAttr(h.category)}</span>` : ""}
           </span>
+          <div class="hc-stats">
+            <span><i class="fas fa-fire"></i> ${h.longest_streak || 0}</span>
+            <span><i class="fas fa-check"></i> ${h.total_completions || 0}</span>
+          </div>
         </div>
       </div>
       <div class="hc-right">
@@ -119,8 +159,8 @@ function renderAll() {
 }
 
 // ─── Toggle ───
-async function toggleHabit(id) {
-  const res = await apiFetch(`habits/${id}/toggle`, { method: "POST" });
+async function toggleHabit(id, notes = null) {
+  const res = await apiFetch(`habits/${id}/toggle`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) });
   if (res) {
     const h = _todayHabits.find(x => x.id === id);
     if (h) h.completed = res.completed ? 1 : 0;
@@ -135,10 +175,14 @@ function openHabitEditor(id) {
   const deleteBtn = document.getElementById("habitDeleteBtn");
   const hId = document.getElementById("editHabitId");
   const name = document.getElementById("habitName");
+  const desc = document.getElementById("habitDesc");
   const typ = document.getElementById("habitTyp");
   const interval = document.getElementById("habitIntervalDays");
   const tStart = document.getElementById("habitTimeStart");
   const tEnd = document.getElementById("habitTimeEnd");
+  const reminder = document.getElementById("habitReminderTime");
+  const cat = document.getElementById("habitCategory");
+  const prio = document.getElementById("habitPriority");
 
   if (id != null) {
     const h = _habits.find(x => x.id === id);
@@ -146,10 +190,14 @@ function openHabitEditor(id) {
     title.textContent = "Habit bearbeiten";
     hId.value = h.id;
     name.value = h.name;
+    desc.value = h.description || "";
     typ.value = h.typ;
     interval.value = h.interval_days || 2;
     tStart.value = h.time_start || "";
     tEnd.value = h.time_end || "";
+    reminder.value = h.reminder_time || "";
+    cat.value = h.category || "";
+    prio.value = h.priority || "medium";
     deleteBtn.style.display = "";
     document.getElementById("habitIntervalField").style.display = h.typ === "interval" ? "" : "none";
     document.querySelectorAll(".hip-option").forEach(el => {
@@ -162,10 +210,14 @@ function openHabitEditor(id) {
     title.textContent = "Neues Habit";
     hId.value = "";
     name.value = "";
+    desc.value = "";
     typ.value = "daily";
     interval.value = "2";
     tStart.value = "";
     tEnd.value = "";
+    reminder.value = "";
+    cat.value = "";
+    prio.value = "medium";
     deleteBtn.style.display = "none";
     document.getElementById("habitIntervalField").style.display = "none";
     document.querySelectorAll(".hip-option").forEach((el, i) => el.classList.toggle("active", i === 0));
@@ -204,14 +256,18 @@ async function saveHabit() {
   const name = document.getElementById("habitName").value.trim();
   if (!name) { alert("Bitte einen Namen eingeben."); return; }
 
+  const description = document.getElementById("habitDesc").value.trim() || null;
   const icon = document.querySelector(".hip-option.active")?.dataset.icon || "fa-check-circle";
   const color = document.querySelector(".hcp-option.active")?.dataset.color || "#6366f1";
   const typ = document.getElementById("habitTyp").value;
   const interval_days = parseInt(document.getElementById("habitIntervalDays").value) || 1;
   const time_start = document.getElementById("habitTimeStart").value || null;
   const time_end = document.getElementById("habitTimeEnd").value || null;
+  const reminder_time = document.getElementById("habitReminderTime").value || null;
+  const category = document.getElementById("habitCategory").value.trim() || null;
+  const priority = document.getElementById("habitPriority").value || "medium";
 
-  const body = { name, icon, color, typ, interval_days, time_start, time_end };
+  const body = { name, description, icon, color, typ, interval_days, time_start, time_end, reminder_time, category, priority };
 
   let res;
   if (id) {
@@ -229,7 +285,7 @@ async function saveHabit() {
 async function deleteHabit() {
   const id = document.getElementById("editHabitId").value;
   if (!id) return;
-  if (!confirm("Wirklich löschen?")) return;
+  if (!confirm("Wirklich löschen? Dies kann nicht rückgängig gemacht werden.")) return;
   const res = await apiFetch(`habits/${id}`, { method: "DELETE" });
   if (res) {
     closeHabitEditor();
@@ -237,7 +293,7 @@ async function deleteHabit() {
   }
 }
 
-// ─── API helper (self-contained if app.js hasn't loaded yet) ───
+// ─── API helper ───
 async function apiFetch(endpoint, options = {}) {
   try {
     const url = `/api/${endpoint}`;
