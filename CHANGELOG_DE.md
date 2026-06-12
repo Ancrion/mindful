@@ -7,6 +7,39 @@
 
 ---
 
+## 🚀 v1.8.0 - Sidebar anpassbar & Wetter-Stunden-Vorhersage
+
+**Neue Features**: 12.06.2026
+
+### ✨ Neue Funktionen
+
+- **Sidebar-Module individuell anpassbar**:
+  - Module per Drag & Drop verschieben und neu anordnen
+  - Module ausblenden per Kontextmenü (`⋯`-Button → Ausblenden)
+  - Ausgeblendete Module über „Modul hinzufügen"-Button wieder einblenden
+  - Reihenfolge wird automatisch gespeichert
+  - Neue `sidebar_modules`-Tabelle pro User
+  - API-Endpunkte: `GET /api/sidebar/modules`, `PUT /api/sidebar/modules/reorder`, `PUT /api/sidebar/modules/:id/toggle`, `GET /api/sidebar/modules/all`
+
+- **Wetter-Widget: Stündliche Vorhersage im Popup**:
+  - Klick auf einen Tag in der 5-Tage-Vorschrift öffnet ein Modal
+  - Detailansicht mit stündlicher Temperatur, Regenwahrscheinlichkeit, Windgeschwindigkeit
+  - Überschrift zeigt den ausgewählten Tag („Heute", Wochentag + Datum)
+  - Schließen per Klick außerhalb oder X-Button
+  - Backend liefert `hourly`-Daten von Open-Meteo
+
+- **Changelog-Seite: Accordion-Ein-/Ausklappfunktion**:
+  - Ältere Einträge sind standardmäßig eingeklappt
+  - Klick auf den Kopf (Version + Datum) klappt den Eintrag auf/zu
+  - Chevron-Icon rotiert bei Zustandswechsel
+  - Erster Eintrag (neueste Version) ist immer aufgeklappt
+
+- **Fehlende Changelog-Inhalte für alte Versionen korrigiert**:
+  - Parser erkennt jetzt auch abweichende Sektions-Überschriften: „Neue Features", „Fehlerbehebungen" etc.
+  - Alle alten Einträge mit nicht-standard Section-Headern werden jetzt korrekt angezeigt
+
+---
+
 ## 🛡️ v1.7.9 - Admin-Panel & Benutzerverwaltung
 
 **Neues Feature**: 11.06.2026

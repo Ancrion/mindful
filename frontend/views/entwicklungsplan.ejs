@@ -3141,8 +3141,17 @@ git push --tags</script>
             commit:"b1dc9f9", hash:"https://github.com/Ancrion/mindful/commit/b1dc9f9" },
           { id:"jaro-63", file:"backend/data/changelog-seed.json (JSON-REFACTOR)",
             desc:"CHANGELOG-JSON v1.7.9: Changelog auf JSON-only umgestellt (kein DB mehr, auto-sync via git pull). Alle alten Einträge v0.1.0–v1.7.7 aus CHANGELOG_DE.md in changelog-seed.json überführt.",
-            commit:"abecf60", hash:"https://github.com/Ancrion/mindful/commit/abecf60" }
-      },
+            commit:"abecf60", hash:"https://github.com/Ancrion/mindful/commit/abecf60" },
+          { id:"jaro-78", file:"backend/routes/sidebar.js (NEU) + backend/database/db.js + frontend/views/partials/sidebar.ejs + frontend/public/js/app.js + frontend/public/css/style.css",
+            desc:"SIDEBAR-MODULES-CUSTOMIZABLE v1.8.0: Module per Drag & Drop verschieben, ausblenden/hinzufügen via Kontextmenü + Overlay. Neue sidebar_modules-Tabelle, API-Endpoints (GET/PUT/reorder/toggle). Dynamisches Rendering statt Hardcode.",
+            commit:"edf286b", hash:"https://github.com/Ancrion/mindful/commit/edf286b" },
+          { id:"jaro-79", file:"frontend/public/js/index.js + frontend/public/css/dashboard.css + backend/routes/dashboard_widgets.js",
+            desc:"WEATHER-HOURLY-FORECAST v1.8.0: Klick auf Tag in 5-Tage-Vorhersage öffnet Modal mit stündlicher Temperatur, Regenwahrscheinlichkeit, Wind. Open-Meteo liefert hourly-Daten. Neues Overlay-UI.",
+            commit:"1939f97", hash:"https://github.com/Ancrion/mindful/commit/1939f97" },
+          { id:"jaro-80", file:"backend/lib/changelog-parser.js + frontend/views/changelog.ejs + frontend/public/css/style.css",
+            desc:"CHANGELOG-ACCORDION v1.8.0: Einträge auf-/zuklappbar. Ältere Einträge collapsed, neuster expanded. Parser erkennt jetzt auch 'Neue Features', 'Fehlerbehebungen' etc. Chevron-Icon rotiert.",
+            commit:"9bbc153", hash:"https://github.com/Ancrion/mindful/commit/9bbc153" }
+        },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
         items: [
