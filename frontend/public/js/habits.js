@@ -270,8 +270,10 @@ function openHabitEditor(id) {
     document.querySelectorAll(".hip-option").forEach((el, i) => el.classList.toggle("active", i === 0));
     document.querySelectorAll(".hcp-option").forEach((el, i) => el.classList.toggle("active", i === 0));
   }
-  modal.style.display = "";
-  name.focus();
+  modal.style.display = "flex";
+  modal.classList.add("open");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  setTimeout(() => name.focus(), 100);
 
   // Icon picker
   document.querySelectorAll(".hip-option").forEach(el => {
@@ -290,7 +292,11 @@ function openHabitEditor(id) {
 }
 
 function closeHabitEditor() {
-  document.getElementById("habitModal").style.display = "none";
+  const modal = document.getElementById("habitModal");
+  modal.classList.remove("open");
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 250);
 }
 
 function onHabitTypChange() {

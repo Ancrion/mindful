@@ -371,7 +371,89 @@
   font-weight: 500;
 }
 
-/* ─── Modal Tweaks ─── */
+/* ─── Modal ─── */
+#habitModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1000;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 60px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  backdrop-filter: blur(2px);
+  overflow-y: auto;
+}
+#habitModal.open {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  width: 460px;
+  max-width: 94vw;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  transform: scale(0.95) translateY(20px);
+  transition: transform 0.3s ease;
+  margin-bottom: 40px;
+}
+#habitModal.open .modal-card {
+  transform: scale(1) translateY(0);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+  padding: 0;
+}
+.modal-close:hover {
+  background: var(--hover-bg);
+  color: var(--text);
+}
+.modal-body {
+  padding: 20px 24px;
+}
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--border);
+}
+.btn-full {
+  width: 100%;
+}
+
+/* ─── Modal Fields ─── */
 textarea#habitDesc {
   font-family: inherit;
   font-size: 0.88rem;
