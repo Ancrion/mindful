@@ -28,6 +28,13 @@
   - Schließen per Klick außerhalb oder X-Button
   - Backend liefert `hourly`-Daten von Open-Meteo
 
+- **Mehrere Wetter-Widgets für verschiedene Städte**:
+  - Im Widget-Manager erscheint bei Wetter immer ein `+`-Symbol (kein Haken)
+  - Beliebig viele Wetter-Widgets mit unterschiedlichen Städten parallel
+  - Anzeige der Anzahl (`×2`, `×3`) im Manager
+  - Auto-Refresh aktualisiert alle Wetter-Widgets
+  - `_rerenderWidget()` und `_refreshWidget()` unterstützen jetzt mehrere Instanzen pro Typ
+
 - **Changelog-Seite: Accordion-Ein-/Ausklappfunktion**:
   - Ältere Einträge sind standardmäßig eingeklappt
   - Klick auf den Kopf (Version + Datum) klappt den Eintrag auf/zu
