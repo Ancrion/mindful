@@ -7,6 +7,24 @@
 
 ---
 
+## 🚀 v1.9.0 - Habit-Tracker & Dashboard-Erweiterung
+
+**Neue Features**: 12.06.2026
+
+### ✨ Neue Funktionen
+
+- **Habit-Tracker**: Neue Seite `/habits` mit Übersicht, Statistiken und Add/Edit-Modal (Icon, Farbe, Typ, Kategorie, Priorität, Zeitfenster, Erinnerung). Dashboard-Widgets `habits` (heutige Habits mit Toggle) + `habitstats` (Top-Streaks, Avg). Backend: Streak-Tracking (current/longest/total), neue Endpoints (`/stats`, `/calendar/:id`, `/:id/history`), DB: `description`, `category`, `priority`, `reminder_time`, `streaks`, `archived`. Auto-Refresh alle 60s.
+
+- **Modal-Verbesserungen**: Scrollt automatisch nach oben beim Öffnen, zentrierte Darstellung (`display: flex` + `open`-CSS-Klasse), sanfte Scale+Fade-Animation (300ms), Auto-Fokus auf das Namensfeld.
+
+### 🔧 Bugfixes & Improvements
+
+- **Fixed: Habits fehlten in Sidebar bei Bestandsnutzern**: `ensureDefaultModules()` legte nur Module an wenn der User **null** Module hatte. Prüft jetzt jedes Default-Modul einzeln via `module_key`
+- **Fixed: Speichern-Button funktioniert nicht**: Event-Propagation Problem – Klick bubbelt zum Modal-Overlay. Fix: `stopPropagation()` auf Buttons + Error-Handling mit Try/Catch + Alert
+- **Fixed: DB-Migration für neue Habit-Spalten**: Bestehende DB hatte keine Spalten für `description`, `category`, `priority`, `reminder_time`, `current_streak`, `longest_streak`, `total_completions`, `archived`. ALTER TABLE Migrationen via try/catch in `db.js` hinzugefügt. `habit_logs`: `notes`-Spalte + UNIQUE INDEX
+
+---
+
 ## 🚀 v1.8.0 - Sidebar anpassbar & Wetter-Stunden-Vorhersage
 
 **Neue Features**: 12.06.2026
@@ -26,14 +44,6 @@
 - **Fehlende Changelog-Inhalte korrigiert**: Parser erkennt jetzt alternative Section-Header.
 
 - **Sidebar-Plus-Icon: Visuelle Angleichung**: Gleiche Größe/Position wie Nav-Icons.
-
-- **Habit-Tracker**: Neue Seite `/habits` mit Übersicht, Statistiken und Add/Edit-Modal (Icon, Farbe, Typ, Kategorie, Priorität, Zeitfenster, Erinnerung). Dashboard-Widgets `habits` (heutige Habits mit Toggle) + `habitstats` (Top-Streaks, Avg). Backend: Streak-Tracking (current/longest/total), neue Endpoints (`/stats`, `/calendar/:id`, `/:id/history`), DB: `description`, `category`, `priority`, `reminder_time`, `streaks`, `archived`. Auto-Refresh alle 60s.
-
-### 🔧 Bugfixes & Improvements
-
-- **Fixed: Habits fehlten in Sidebar bei Bestandsnutzern**: `ensureDefaultModules()` legte nur Module an wenn der User **null** Module hatte. Prüft jetzt jedes Default-Modul einzeln via `module_key`
-- **Fixed: Speichern-Button funktioniert nicht**: Event-Propagation Problem – Klick bubbelt zum Modal-Overlay. Fix: `stopPropagation()` auf Buttons + Error-Handling mit Try/Catch + Alert
-- **Fixed: DB-Migration für neue Habit-Spalten**: Bestehende DB hatte keine Spalten für `description`, `category`, `priority`, `reminder_time`, `current_streak`, `longest_streak`, `total_completions`, `archived`. ALTER TABLE Migrationen via try/catch in `db.js` hinzugefügt. `habit_logs`: `notes`-Spalte + UNIQUE INDEX
 
 ---
 
