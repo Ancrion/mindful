@@ -9,9 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function loadHabits() {
-  const [all, today] = await Promise.all([
+  const [all, today, stats] = await Promise.all([
     apiFetch("habits"),
     apiFetch("habits/today"),
+    apiFetch("habits/stats"),
   ]);
   if (all) {
     _habits = all;
@@ -20,6 +21,7 @@ async function loadHabits() {
   if (today) _todayHabits = today;
   renderAll();
   renderToday();
+  if (stats) renderStats(stats);
 }
 
 function escAttr(v) {
@@ -43,6 +45,51 @@ function priorityLabel(p) {
   if (p === "high") return "Hoch";
   if (p === "medium") return "Mittel";
   return "Niedrig";
+}
+
+// ─── Stats ───
+function renderStats(stats) {
+  const grid = document.getElementById("statsGrid");
+  if (!grid) return;
+
+  const totalHabits = _habits.length;
+  const totalCompletions = stats.reduce((sum, h) => sum + (h.total_completions || 0), 0);
+  const longestStreaks = stats.map(h => h.longest_streak || 0).sort((a, b) => b - a);
+  const maxStreak = longestStreaks[0] || 0;
+
+  const todayCompleted = _todayHabits.filter(h => h.completed).length;
+  const todayDue = _todayHabits.length;
+
+  grid.innerHTML = `
+    <div class="stat-card">
+      <div class="sc-icon"><i class="fas fa-check-double"></i></div>
+      <div class="sc-content">
+        <span class="sc-value">${totalHabits}</span>
+        <span class="sc-label">Aktive Habits</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon"><i class="fas fa-fire"></i></div>
+      <div class="sc-content">
+        <span class="sc-value">${maxStreak}</span>
+        <span class="sc-label">Längster Streak</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon"><i class="fas fa-chart-pie"></i></div>
+      <div class="sc-content">
+        <span class="sc-value">${todayDue > 0 ? Math.round((todayCompleted / todayDue) * 100) : 0}%</span>
+        <span class="sc-label">Heute erledigt</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon"><i class="fas fa-check"></i></div>
+      <div class="sc-content">
+        <span class="sc-value">${totalCompletions}</span>
+        <span class="sc-label">Gesamt abgehakt</span>
+      </div>
+    </div>
+  `;
 }
 
 // ─── Heute ───
