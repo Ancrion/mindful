@@ -54,43 +54,10 @@
         </div>
       </div>
     </div>
-    <nav class="module-nav">
-      <a href="/" class="module-link <%= currentPage === 'dashboard' ? 'active' : '' %>">
-        <i class="fas fa-th-large"></i> <span>Dashboard</span>
-      </a>
-      <a href="/todo" class="module-link <%= currentPage === 'todo' ? 'active' : '' %>">
-        <i class="fas fa-check-circle"></i> <span>To-Do</span>
-      </a>
-      <a href="/notes" class="module-link <%= currentPage === 'notes' ? 'active' : '' %>">
-        <i class="fas fa-sticky-note"></i> <span>Notizen</span>
-      </a>
-      <a href="/calendar" class="module-link <%= currentPage === 'calendar' ? 'active' : '' %>">
-        <i class="fas fa-calendar-alt"></i> <span>Kalender</span>
-      </a>
-      <a href="/pomodoro" class="module-link <%= currentPage === 'pomodoro' ? 'active' : '' %>">
-        <i class="fas fa-clock"></i> <span>Pomodoro</span>
-      </a>
-      <a href="/tracking" class="module-link <%= currentPage === 'tracking' ? 'active' : '' %>">
-        <i class="fas fa-stopwatch"></i> <span>Zeiterfassung</span>
-      </a>
-      <a href="/leaderboard" class="module-link <%= currentPage === 'leaderboard' ? 'active' : '' %>">
-        <i class="fas fa-trophy"></i> <span>Rangliste</span>
-      </a>
-      <a href="/bugs" class="module-link <%= currentPage === 'bugs' ? 'active' : '' %>" style="opacity:0.5;font-size:0.75rem">
-        <i class="fas fa-bug"></i> <span>Bugs</span>
-      </a>
-      <% if (typeof currentUser !== 'undefined' && currentUser && currentUser.name === 'jaro') { %>
-      <a href="/entwicklungsplan" class="module-link <%= currentPage === 'entwicklungsplan' ? 'active' : '' %>" style="opacity:0.6;font-size:0.8rem">
-        <i class="fas fa-code-branch"></i> <span>Projektplan</span>
-      </a>
-      <a href="/admin" class="module-link <%= currentPage === 'admin' ? 'active' : '' %>" style="opacity:0.6;font-size:0.8rem">
-        <i class="fas fa-shield-alt"></i> <span>Admin</span>
-      </a>
-      <% } %>
-      <a href="/changelog" class="module-link <%= currentPage === 'changelog' ? 'active' : '' %>" style="opacity:0.5;font-size:0.75rem">
-        <i class="fas fa-clipboard-list"></i> <span>Versionsverlauf</span>
-      </a>
-    </nav>
+    <nav class="module-nav" id="moduleNav"></nav>
+    <div class="sb-add-module" id="sbAddModuleBtn" title="Modul hinzufügen">
+      <i class="fas fa-plus"></i> <span>Modul hinzufügen</span>
+    </div>
   </div>
   <div class="module-bottom">
     <a href="/profile" class="module-link">
@@ -108,6 +75,23 @@
   <div class="ctx-item" data-action="add-child"><i class="fas fa-plus"></i> Unter-Workspace</div>
   <div class="ctx-item" data-action="rename"><i class="fas fa-pen"></i> Umbenennen</div>
   <div class="ctx-item ctx-danger" data-action="delete"><i class="fas fa-trash"></i> Löschen</div>
+</div>
+
+<div class="sb-mod-ctx-menu" id="sbModCtxMenu">
+  <div class="ctx-item" data-action="hide"><i class="fas fa-eye-slash"></i> Ausblenden</div>
+  <div class="ctx-separator"></div>
+  <div class="ctx-item" data-action="move-up"><i class="fas fa-chevron-up"></i> Nach oben</div>
+  <div class="ctx-item" data-action="move-down"><i class="fas fa-chevron-down"></i> Nach unten</div>
+</div>
+
+<div class="sb-add-overlay" id="sbAddOverlay" style="display:none">
+  <div class="sb-add-modal">
+    <div class="sb-add-header">
+      <h3>Modul hinzufügen</h3>
+      <button class="sb-add-close" onclick="closeSbAddOverlay()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sb-add-list" id="sbAddList"></div>
+  </div>
 </div>
 
 <div class="search-overlay" id="searchOverlay" onclick="closeSearch(event)">

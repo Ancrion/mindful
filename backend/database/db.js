@@ -241,7 +241,20 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
-  -- 15. BUG-REPORTS
+  -- 15. SIDEBAR-MODULES
+  CREATE TABLE IF NOT EXISTS sidebar_modules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    module_key TEXT NOT NULL,
+    label TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    path TEXT NOT NULL,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    visible INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 17. BUG-REPORTS
   CREATE TABLE IF NOT EXISTS bug_reports (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id     INTEGER NOT NULL,
@@ -254,7 +267,7 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
-  -- 16. CHANGELOG
+  -- 18. CHANGELOG
   CREATE TABLE IF NOT EXISTS changelog (
     id       INTEGER PRIMARY KEY AUTOINCREMENT,
     version  TEXT NOT NULL,
@@ -268,6 +281,12 @@ db.exec(`
 `);
 
 // Seed: Fehlende Changelog-Einträge nachtragen (inkrementell)
+// Add unique constraint for sidebar_modules (user_id + module_key)
+try {
+  db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_sidebar_modules_user_key ON sidebar_modules(user_id, module_key)");
+} catch (e) {}
+
+// Seed default sidebar modules for existing users (will be created on first API call instead)
 const insert = db.prepare("INSERT OR IGNORE INTO changelog (version, datum, titel, features, fixes, commits) VALUES (?, ?, ?, ?, ?, ?)");
 const seed = [
     ["0.1.0", "2026-06-09", "Initiale Entwicklung", '["Dashboard mit Widget-System","To-Do-Listen mit Workspaces und Prioritäten","Kalender mit Kategorien und Events","Notizen mit Markdown-Editor und Kategorien","Pomodoro-Timer","Zeiterfassung mit Dashboard-Statistiken","Sidebar-Navigation mit Workspace-Filter","Dark Mode","Globale Spotlight-Suche (Strg+K)","Dokumenten-Upload und -Verwaltung"]', '[]', '["f7ec37c","2cc4c60","c2d91cb","2bf8706","fcf9c96","c521c45","52ad5ad"]'],

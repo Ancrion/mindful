@@ -21,6 +21,7 @@ const messagesRoutes = require("./messages");
 const bugsRoutes = require("./bugs");
 const changelogRoutes = require("./changelog");
 const adminRoutes = require("./admin");
+const sidebarRoutes = require("./sidebar");
 
 // Auth Routes (öffentlich - kein auth erforderlich)
 router.use("/auth", authRoutes);
@@ -40,6 +41,7 @@ router.use("/dashboard/widgets", auth, dashboardWidgetRoutes);
 router.use("/leaderboard", auth, leaderboardRoutes);
 router.use("/users", auth, usersRoutes);
 router.use("/messages", auth, messagesRoutes);
+router.use("/sidebar", auth, sidebarRoutes);
 router.use("/bugs", auth, bugsRoutes);
 router.use("/changelog", changelogRoutes);
 router.use("/admin", auth, adminRoutes);

@@ -817,6 +817,194 @@ function updateGlobalDisplay() {
 window.initGlobalTimer = initGlobalTimer;
 window.stopGlobalTimer = stopGlobalTimer;
 
+// ─── Sidebar Module Management ───
+
+async function loadSidebarModules() {
+  try {
+    const nav = document.getElementById("moduleNav");
+    if (!nav) return;
+    const res = await authFetch("/api/sidebar/modules");
+    if (!res || !res.ok) return;
+    const data = await res.json();
+    renderSidebarModules(data.visible, data.available);
+  } catch (err) {
+    console.error("Sidebar Module Fehler:", err);
+  }
+}
+
+function renderSidebarModules(visible, available) {
+  const nav = document.getElementById("moduleNav");
+  if (!nav) return;
+
+  const curPath = window.location.pathname;
+  const currentPage = curPath === "/" ? "dashboard" : curPath.replace("/", "").split("/")[0];
+
+  nav.innerHTML = visible.map(mod => {
+    const active = mod.path === "/"
+      ? currentPage === "dashboard"
+      : currentPage && mod.path.includes(currentPage);
+    return `
+      <a href="${mod.path}" class="module-link ${active ? 'active' : ''}" draggable="true" data-id="${mod.id}" data-key="${mod.module_key}">
+        <i class="fas ${mod.icon}"></i>
+        <span>${mod.label}</span>
+        <span class="mod-ctx-trigger" data-id="${mod.id}"><i class="fas fa-ellipsis-h"></i></span>
+      </a>`;
+  }).join("");
+
+  // Drag & Drop
+  const links = nav.querySelectorAll(".module-link[draggable]");
+  let dragSrc = null;
+  links.forEach(link => {
+    link.addEventListener("dragstart", e => {
+      dragSrc = link;
+      link.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+    });
+    link.addEventListener("dragend", e => {
+      link.classList.remove("dragging");
+      document.querySelectorAll(".module-link.drag-over").forEach(el => el.classList.remove("drag-over"));
+      dragSrc = null;
+    });
+    link.addEventListener("dragover", e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      if (link !== dragSrc) {
+        document.querySelectorAll(".module-link.drag-over").forEach(el => el.classList.remove("drag-over"));
+        link.classList.add("drag-over");
+      }
+    });
+    link.addEventListener("dragleave", () => {
+      link.classList.remove("drag-over");
+    });
+    link.addEventListener("drop", e => {
+      e.preventDefault();
+      link.classList.remove("drag-over");
+      if (!dragSrc || dragSrc === link) return;
+      const all = [...nav.querySelectorAll(".module-link[draggable]")];
+      const fromIdx = all.indexOf(dragSrc);
+      const toIdx = all.indexOf(link);
+      if (fromIdx < 0 || toIdx < 0) return;
+      if (fromIdx < toIdx) {
+        link.parentNode.insertBefore(dragSrc, link.nextSibling);
+      } else {
+        link.parentNode.insertBefore(dragSrc, link);
+      }
+      saveModuleOrder();
+    });
+  });
+
+  // Context menu trigger click
+  nav.querySelectorAll(".mod-ctx-trigger").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      const rect = btn.getBoundingClientRect();
+      const menu = document.getElementById("sbModCtxMenu");
+      if (!menu) return;
+      menu.dataset.targetId = id;
+      menu.style.display = "block";
+      menu.style.top = (rect.bottom + 4) + "px";
+      menu.style.left = Math.min(rect.left, window.innerWidth - 180) + "px";
+    });
+  });
+
+  // Check if any modules are hidden (available list)
+  window.__sidebarAvailable = available || [];
+}
+
+async function saveModuleOrder() {
+  const nav = document.getElementById("moduleNav");
+  if (!nav) return;
+  const order = [...nav.querySelectorAll(".module-link[draggable]")].map(el => parseInt(el.dataset.id));
+  try {
+    await fetch("/api/sidebar/modules/reorder", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ order }),
+      credentials: "include",
+    });
+  } catch (err) {
+    console.error("Reorder Fehler:", err);
+  }
+}
+
+function hideSidebarModule(id) {
+  fetch(`/api/sidebar/modules/${id}/toggle`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  }).then(() => loadSidebarModules());
+}
+
+function moveModule(dir) {
+  const menu = document.getElementById("sbModCtxMenu");
+  const id = parseInt(menu?.dataset?.targetId);
+  if (!id) return;
+  const nav = document.getElementById("moduleNav");
+  if (!nav) return;
+  const links = [...nav.querySelectorAll(".module-link[draggable]")];
+  const idx = links.findIndex(l => parseInt(l.dataset.id) === id);
+  if (idx < 0) return;
+  const targetIdx = dir === "up" ? idx - 1 : idx + 1;
+  if (targetIdx < 0 || targetIdx >= links.length) return;
+  if (dir === "up") {
+    links[idx].parentNode.insertBefore(links[idx], links[targetIdx]);
+  } else {
+    links[idx].parentNode.insertBefore(links[idx], links[targetIdx].nextSibling);
+  }
+  saveModuleOrder();
+}
+
+function openSbAddOverlay() {
+  const overlay = document.getElementById("sbAddOverlay");
+  if (!overlay) return;
+  fetch("/api/sidebar/modules/all", {
+    credentials: "include",
+  }).then(res => res.json()).then(modules => {
+    const list = document.getElementById("sbAddList");
+    if (!list) return;
+    list.innerHTML = modules.map(mod => {
+      const isVisible = mod.visible === 1;
+      return `
+        <div class="sb-add-item" data-id="${mod.id}" data-visible="${mod.visible}">
+          <i class="fas ${mod.icon}"></i>
+          <span class="sb-add-label">${mod.label}</span>
+          ${isVisible ? '<span class="sb-add-check"><i class="fas fa-check-circle" style="color:var(--accent)"></i></span>' : '<span class="sb-add-check" style="color:var(--text-secondary);font-size:12px">ausgeblendet</span>'}
+        </div>`;
+    }).join("");
+    list.querySelectorAll(".sb-add-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const id = item.dataset.id;
+        hideSidebarModule(id);
+        openSbAddOverlay();
+      });
+    });
+    overlay.style.display = "flex";
+  }).catch(() => {});
+}
+
+function closeSbAddOverlay() {
+  const overlay = document.getElementById("sbAddOverlay");
+  if (overlay) overlay.style.display = "none";
+  loadSidebarModules();
+}
+
+// Context menu actions
+document.addEventListener("click", e => {
+  const menu = document.getElementById("sbModCtxMenu");
+  if (menu && !menu.contains(e.target)) {
+    menu.style.display = "none";
+  }
+});
+
+document.addEventListener("click", e => {
+  const overlay = document.getElementById("sbAddOverlay");
+  if (overlay && e.target === overlay) {
+    closeSbAddOverlay();
+  }
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkAuthStatus();
   if (user) {
@@ -834,6 +1022,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     initGlobalTimer();
     loadSidebarUnread();
+    loadSidebarModules();
+
+    // Add module button
+    document.getElementById("sbAddModuleBtn")?.addEventListener("click", openSbAddOverlay);
   }
 });
 
