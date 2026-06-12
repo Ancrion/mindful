@@ -2523,7 +2523,7 @@ body.dark .ws-ctx-menu .ctx-item.ctx-danger:hover { background: #2d1515; }
   transition: max-height 0.35s ease, opacity 0.25s ease;
 }
 .cl-entry.expanded .cl-entry-body {
-  max-height: 5000px;
+  max-height: 99999px;
   opacity: 1;
 }
 .cl-entry.collapsed .cl-entry-body {

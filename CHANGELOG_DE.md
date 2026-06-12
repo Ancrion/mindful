@@ -13,68 +13,21 @@
 
 ### ✨ Neue Funktionen
 
-- **Sidebar-Module individuell anpassbar**:
-  - Module per Drag & Drop verschieben und neu anordnen
-  - Module ausblenden per Kontextmenü (`⋯`-Button → Ausblenden)
-  - Ausgeblendete Module über „Modul hinzufügen"-Button wieder einblenden
-  - Reihenfolge wird automatisch gespeichert
-  - Neue `sidebar_modules`-Tabelle pro User
-  - API-Endpunkte: `GET /api/sidebar/modules`, `PUT /api/sidebar/modules/reorder`, `PUT /api/sidebar/modules/:id/toggle`, `GET /api/sidebar/modules/all`
+- **Sidebar-Module individuell anpassbar**: Drag & Drop, Kontextmenü (ausblenden), Modul-hinzufügen-Button. Neue `sidebar_modules`-Tabelle pro User mit API-Endpunkten.
 
-- **Wetter-Widget: Stündliche Vorhersage im Popup**:
-  - Klick auf einen Tag in der 5-Tage-Vorschrift öffnet ein Modal
-  - Detailansicht mit stündlicher Temperatur, Regenwahrscheinlichkeit, Windgeschwindigkeit
-  - Überschrift zeigt den ausgewählten Tag („Heute", Wochentag + Datum)
-  - Schließen per Klick außerhalb oder X-Button
-  - Backend liefert `hourly`-Daten von Open-Meteo
+- **Wetter-Widget: Stündliche Vorhersage im Popup**: Klick auf Tag in 5-Tage-Vorschrift öffnet Modal mit stündlichen Daten (Temperatur, Regen, Wind) von Open-Meteo.
 
-- **Mehrere Wetter-Widgets für verschiedene Städte**:
-  - Im Widget-Manager erscheint bei Wetter immer ein `+`-Symbol (kein Haken)
-  - Beliebig viele Wetter-Widgets mit unterschiedlichen Städten parallel
-  - Anzeige der Anzahl (`×2`, `×3`) im Manager
-  - Auto-Refresh aktualisiert alle Wetter-Widgets
-  - `_rerenderWidget()` und `_refreshWidget()` unterstützen jetzt mehrere Instanzen pro Typ
+- **Mehrere Wetter-Widgets für verschiedene Städte**: Im Widget-Manager immer `+` statt Haken, beliebig viele parallel, Count-Badge (`×2`).
 
-- **Wetter-Widget: Stadtname zentriert in der Titelzeile**:
-  - "Wetter" mit Icon bleibt links, Stadtname wird mittig in der Header-Leiste zentriert
-  - Absolute Positionierung via `left: 50%; transform: translateX(-50%)`
-  - Eigenes `.weather-city-center`-Element zwischen Titel und Remove-Button
+- **Wetter-Widget: Stadtname zentriert in der Titelzeile**: Icon+Text links, Stadtname mittig per `left: 50% + transform: translateX(-50%)`.
 
-- **Changelog-Seite: Accordion-Ein-/Ausklappfunktion**:
-  - Ältere Einträge sind standardmäßig eingeklappt
-  - Klick auf den Kopf (Version + Datum) klappt den Eintrag auf/zu
-  - Chevron-Icon rotiert bei Zustandswechsel
-  - Erster Eintrag (neueste Version) ist immer aufgeklappt
+- **Changelog-Seite: Accordion-Ein-/Ausklappfunktion**: Ältere Einträge eingeklappt, Klick auf Kopf klappt auf/zu, Chevron rotiert, neueste Version immer offen.
 
-- **Fehlende Changelog-Inhalte für alte Versionen korrigiert**:
-  - Parser erkennt jetzt auch abweichende Sektions-Überschriften: „Neue Features", „Fehlerbehebungen" etc.
-  - Alle alten Einträge mit nicht-standard Section-Headern werden jetzt korrekt angezeigt
+- **Fehlende Changelog-Inhalte korrigiert**: Parser erkennt jetzt alternative Section-Header.
 
-- **Sidebar-Plus-Icon: Visuelle Angleichung an Nav-Icons**:
-  - Gleiche `font-size: 16px`, `width: 20px`, `text-align: center` wie alle anderen `.module-link i`
-  - Identisches `padding: 0 10px`, `gap: 12px`, `min-height: 40px` – kein Versatz mehr
+- **Sidebar-Plus-Icon: Visuelle Angleichung**: Gleiche Größe/Position wie Nav-Icons.
 
-- **Habit-Tracker (v1.8.0) – Umfassend verbessert**:
-  - Neue Seite `/habits` mit Übersicht aller Habits + heutige fällige Habits + Statistiken
-  - **Erweiterte Habit-Eigenschaften**:
-    - Icon, Farbe, Typ (täglich/intervall/wochentags/wockenende/wöchentlich), Zeitfenster
-    - Neue: Beschreibung, Kategorie, Priorität (Hoch/Mittel/Niedrig), Erinnerungszeit
-    - Streak-Tracking: current streak, longest streak, total completions
-    - Archived-Flag für Gewohnheiten archivieren (nicht löschen)
-  - **Frontend Verbesserungen**:
-    - Add/Edit-Modal mit Icon-Picker, Color-Picker, Typ-Auswahl, Zeit-, Kategorie-, Prioritäts-Einstellung
-    - Stats-Sektion auf `/habits` zeigt: Aktive Habits, Längster Streak, Tägliche Quote, Gesamtabhakungen
-    - Dashboard-Widget `habits` mit Zeitfenster + Streak-Anzeige + "Jetzt"-Badge
-    - Neue Dashboard-Widget `habitstats` mit Top-Streaks, Durchschnitte, Zusammenfassung
-  - **Backend Verbesserungen**:
-    - Neue Endpoints: `GET /api/habits/stats` (Statistiken), `GET /api/habits/calendar/:id` (Kalender-Daten), `GET /api/habits/:id/history` (Verlauf)
-    - Streak-Berechnung verbessert: Berücksichtigt Lücken, aktuelle Streaks nur wenn gestern/heute, longest streak über alle Daten
-    - Toggle-Endpoint aktualisiert Streaks automatisch
-    - DB erweitert: `description`, `category`, `priority`, `reminder_time`, `current_streak`, `longest_streak`, `total_completions`, `archived`
-    - `habit_logs` um `notes`-Feld + UNIQUE Constraint auf (habit_id, datum)
-   - API: CRUD (`/api/habits`) + Today (`/api/habits/today`) + Toggle mit Notes + Stats + Calendar + History
-   - Dashboard-Widgets: `habits` + `habitstats` mit Auto-Refresh alle 60s
-   - **Modal & UX**: Auto-Scroll to top, zentriert mit Flex, glatte Scale+Fade Animation (300ms), fokus-delay auf Name-Input, Blur-Backdrop
+- **Habit-Tracker**: Neue Seite `/habits` mit Übersicht, Statistiken und Add/Edit-Modal (Icon, Farbe, Typ, Kategorie, Priorität, Zeitfenster, Erinnerung). Dashboard-Widgets `habits` (heutige Habits mit Toggle) + `habitstats` (Top-Streaks, Avg). Backend: Streak-Tracking (current/longest/total), neue Endpoints (`/stats`, `/calendar/:id`, `/:id/history`), DB: `description`, `category`, `priority`, `reminder_time`, `streaks`, `archived`. Auto-Refresh alle 60s.
 
 ### 🔧 Bugfixes & Improvements
 
