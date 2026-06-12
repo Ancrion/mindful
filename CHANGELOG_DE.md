@@ -63,6 +63,15 @@
   - Auto-Refresh alle 60s + initialer Fetch beim Dashboard-Start
   - API: CRUD (`/api/habits`) + Today (`/api/habits/today`) + Toggle (`/api/habits/:id/toggle`)
   - DB: `habits` + `habit_logs` Tabellen, Sidebar-Modul `fa-check-double`
+  - **Fixed: Habits fehlten in Sidebar bei Bestandsnutzern**: `ensureDefaultModules()` legte nur Module an wenn der User **null** Module hatte. Neue Defaults (wie `habits`) wurden nie bei existierenden Usern ergänzt. Fix: Prüft jetzt jedes Default-Modul einzeln via `module_key` und fügt fehlende nach.
+  - Neue Seite `/habits` mit Übersicht aller Habits + heutige fällige Habits
+  - Habits: Icon, Farbe, Typ (täglich/intervall/wochentags/wochenende/wöchentlich), Zeitfenster
+  - Add/Edit-Modal mit Icon-Picker, Color-Picker, Typ-Auswahl, Zeit-Einstellung
+  - Dashboard-Widget `habits` zeigt heutige Habits mit Checkbox zum Abhaken
+  - Zeitfenster-Logik: "Jetzt"-Badge wenn Habit im aktuellen Zeitfenster liegt
+  - Auto-Refresh alle 60s + initialer Fetch beim Dashboard-Start
+  - API: CRUD (`/api/habits`) + Today (`/api/habits/today`) + Toggle (`/api/habits/:id/toggle`)
+  - DB: `habits` + `habit_logs` Tabellen, Sidebar-Modul `fa-check-double`
 
 ---
 
