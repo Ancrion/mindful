@@ -38,6 +38,10 @@
   - Parser erkennt jetzt auch abweichende Sektions-Überschriften: „Neue Features", „Fehlerbehebungen" etc.
   - Alle alten Einträge mit nicht-standard Section-Headern werden jetzt korrekt angezeigt
 
+- **Sidebar-Plus-Icon: Visuelle Angleichung an Nav-Icons**:
+  - Gleiche `font-size: 16px`, `width: 20px`, `text-align: center` wie alle anderen `.module-link i`
+  - Identisches `padding: 0 10px`, `gap: 12px`, `min-height: 40px` – kein Versatz mehr
+
 ---
 
 ## 🛡️ v1.7.9 - Admin-Panel & Benutzerverwaltung
