@@ -3071,7 +3071,7 @@ git push --tags</script>
             desc:"VISUAL DRAG-DROP FEEDBACK + CODE CLEANUP v1.7.8: ① Debug-Logs vollständig entfernt (onDragStart, onDragEnd, onDragOver, drop), ② Neues .dragging: opacity 0.5, scale 0.95, accent border + tiefer shadow, ③ Neues .drag-over: scale 1.02 + 3px accent glow, ④ Smooth transitions 0.25s auf allen Properties, ⑤ Alte CSS-Duplikate aufgeräumt",
             commit:"9f64d54", hash:"https://github.com/Ancrion/mindful/commit/9f64d54" },
           { id:"jaro-54", file:"frontend/public/js/index.js",
-            desc:"FLIP ANIMATION BEIM WIDGET-TAUSCH v1.7.8: ① FLIP Technik: First (rectMap VOR DOM-Änderung per Map<Element, Rect>) → Last (Position nach insertBefore+reflowAll) → Invert (transition:none + transform:translate) → Play (transition:"" + transform:""), ② Perfekt smooth 0.25s Animation, ③ 60fps via double requestAnimationFrame, ④ Kompatibel mit _reflowAll()",
+            desc:"FLIP ANIMATION BEIM WIDGET-TAUSCH v1.7.8: ① FLIP Technik: First (rectMap VOR DOM-Änderung per Map<Element, Rect>) → Last (Position nach insertBefore+reflowAll) → Invert (transition:none + transform:translate) → Play (transition:'' + transform:''), ② Perfekt smooth 0.25s Animation, ③ 60fps via double requestAnimationFrame, ④ Kompatibel mit _reflowAll()",
             commit:"fc47729", hash:"https://github.com/Ancrion/mindful/commit/fc47729" },
           { id:"jaro-55", file:"backend/routes/bugs.js",
             desc:"ADMIN-RECHTE FIX (TEIL 1) v1.7.8: ① isJaro() prüfte req.user.is_admin (nicht im JWT enthalten → immer false), ② Fix: DB-Query SELECT is_admin FROM users WHERE id = ?, ③ User lbuser→jaro umbenannt + is_admin=1, ④ Admin kann jetzt Bugs löschen + verschieben",
@@ -3175,7 +3175,8 @@ git push --tags</script>
           { id:"jaro-86", file:"backend/routes/sidebar.js",
             desc:"FIX-SIDEBAR-NEW-MODULES v1.8.0: ensureDefaultModules() prüft jetzt jedes Default-Modul einzeln. Fehlende Module (z.B. habits) werden auch bei Bestandsnutzern nachträglich angelegt.",
             commit:"0ef8e01", hash:"https://github.com/Ancrion/mindful/commit/0ef8e01" }
-        },
+        ]
+      },
       omar: {
         label: "Omar", role: "Frontend", color: "#f59e0b", initial: "OM",
         items: [
