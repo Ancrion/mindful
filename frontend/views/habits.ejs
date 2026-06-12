@@ -66,7 +66,7 @@
     </div>
 
     <!-- Add/Edit Modal -->
-    <div id="habitModal" onclick="closeHabitEditor()">
+    <div id="habitModal" onclick="if(event.target === this) closeHabitEditor()">
       <div class="modal-card" onclick="event.stopPropagation()">
         <div class="modal-header">
           <h3 id="habitEditorTitle">Neues Habit</h3>
@@ -157,10 +157,10 @@
             <input type="time" id="habitReminderTime" />
           </div>
           <div class="modal-actions">
-            <button class="btn btn-primary btn-full" onclick="saveHabit()">
+            <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); saveHabit(); return false;">
               <i class="fas fa-check"></i> Speichern
             </button>
-            <button class="btn btn-ghost btn-full" id="habitDeleteBtn" style="display:none" onclick="deleteHabit()">
+            <button class="btn btn-ghost btn-full" id="habitDeleteBtn" style="display:none" onclick="event.stopPropagation(); deleteHabit(); return false;">
               <i class="fas fa-trash"></i> Löschen
             </button>
           </div>

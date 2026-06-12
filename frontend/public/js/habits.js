@@ -323,15 +323,22 @@ async function saveHabit() {
   const body = { name, description, icon, color, typ, interval_days, time_start, time_end, reminder_time, category, priority };
 
   let res;
-  if (id) {
-    res = await apiFetch(`habits/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  } else {
-    res = await apiFetch("habits", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  }
+  try {
+    if (id) {
+      res = await apiFetch(`habits/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    } else {
+      res = await apiFetch("habits", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    }
 
-  if (res) {
-    closeHabitEditor();
-    loadHabits();
+    if (res) {
+      closeHabitEditor();
+      await loadHabits();
+    } else {
+      alert("Fehler beim Speichern. Bitte versuche es später erneut.");
+    }
+  } catch (err) {
+    console.error("Fehler beim Speichern:", err);
+    alert("Fehler beim Speichern: " + err.message);
   }
 }
 
