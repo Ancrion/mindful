@@ -990,8 +990,22 @@ function closeSbAddOverlay() {
   loadSidebarModules();
 }
 
-// Context menu actions
+// Context menu item clicks
 document.addEventListener("click", e => {
+  const item = e.target.closest("#sbModCtxMenu .ctx-item");
+  if (item) {
+    const action = item.dataset.action;
+    const menu = document.getElementById("sbModCtxMenu");
+    menu.style.display = "none";
+    if (action === "hide") {
+      hideSidebarModule(menu.dataset.targetId);
+    } else if (action === "move-up") {
+      moveModule("up");
+    } else if (action === "move-down") {
+      moveModule("down");
+    }
+    return;
+  }
   const menu = document.getElementById("sbModCtxMenu");
   if (menu && !menu.contains(e.target)) {
     menu.style.display = "none";
