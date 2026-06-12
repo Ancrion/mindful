@@ -3169,6 +3169,9 @@ git push --tags</script>
           { id:"jaro-86", file:"frontend/views/habits.ejs + frontend/public/js/habits.js + frontend/public/css/habits.css",
             desc:"HABIT-TRACKER MODAL UX v1.8.0: Auto-Scroll to top, zentriert mit Flex, glatte Scale+Fade Animation (300ms), fokus-delay auf Name-Input, Blur-Backdrop.",
             commit:"a4e6df3", hash:"https://github.com/Ancrion/mindful/commit/a4e6df3" },
+          { id:"jaro-87", file:"frontend/views/habits.ejs + frontend/public/js/habits.js",
+            desc:"FIX-HABIT-MODAL-SAVE v1.8.0: Event-Propagation Problem – Klick auf Speichern bubbelt zum Modal-Overlay. Fix: stopPropagation() auf Buttons, Modal-Overlay prüft event.target === this. Error-Handling mit Try/Catch + Alert.",
+            commit:"5db55b8", hash:"https://github.com/Ancrion/mindful/commit/5db55b8" },
           { id:"jaro-86", file:"backend/routes/sidebar.js",
             desc:"FIX-SIDEBAR-NEW-MODULES v1.8.0: ensureDefaultModules() prüft jetzt jedes Default-Modul einzeln. Fehlende Module (z.B. habits) werden auch bei Bestandsnutzern nachträglich angelegt.",
             commit:"0ef8e01", hash:"https://github.com/Ancrion/mindful/commit/0ef8e01" }
