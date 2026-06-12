@@ -14,6 +14,7 @@ const WIDGET_TYPES = {
   pomodoro: { name: "Pomodoro", icon: "fa-clock", desc: "Fokus-Statistiken & Chart", color: "#ec4899" },
   weather: { name: "Wetter", icon: "fa-cloud-sun", desc: "Aktuelles Wetter & 5-Tage-Vorhersage", color: "#06b6d4" },
   habits: { name: "Habits", icon: "fa-check-double", desc: "Heutige Gewohnheiten im Zeitfenster", color: "#6366f1" },
+  habitstats: { name: "Habits Stats", icon: "fa-chart-bar", desc: "Statistiken & Streaks", color: "#8b5cf6" },
   calendar: { name: "Kalender", icon: "fa-calendar", desc: "Monatsübersicht mit Termin-Dots", color: "#8b5cf6" },
   upcoming: { name: "Termine", icon: "fa-calendar-day", desc: "Bevorstehende Termine", color: "#f59e0b" },
 };
@@ -235,7 +236,7 @@ function _buildCard(widget) {
   const grid = document.getElementById("widgetGrid");
   if (!grid) return null;
 
-  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2, habits: 2, calendar: 2 };
+  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2, habits: 2, habitstats: 2, calendar: 2 };
   const config = widget.config ? (typeof widget.config === "string" ? JSON.parse(widget.config) : widget.config) : {};
   const size = config.size || DEFAULT_SIZES[widget.typ] || 2;
 
@@ -314,6 +315,7 @@ function _getWidgetBody(widget) {
     case "pomodoro": return _buildPomoBody();
     case "weather": return _buildWeatherBody(widget);
     case "habits": return _buildHabitsBody();
+    case "habitstats": return _buildHabitStatsBody();
     case "calendar": return _buildCalendarBody();
     default: return "";
   }
@@ -928,13 +930,59 @@ function _buildWidgetDayView(year, month, events, today, months, daysDe) {
 }
 
 let _habitsWidgetCache = [];
+let _habitStatsCache = [];
 
 async function _refreshHabits() {
-  const data = await apiFetch("habits/today");
-  if (data) {
-    _habitsWidgetCache = data;
+  const [today, stats] = await Promise.all([
+    apiFetch("habits/today"),
+    apiFetch("habits/stats"),
+  ]);
+  if (today) {
+    _habitsWidgetCache = today;
     _rerenderWidget("habits");
   }
+  if (stats) {
+    _habitStatsCache = stats;
+    _rerenderWidget("habitstats");
+  }
+}
+
+function _buildHabitStatsBody() {
+  const items = _habitStatsCache;
+  if (!items.length) {
+    return `<div class="w-stats-empty">
+      <i class="fas fa-chart-bar"></i>
+      <p>Keine Daten verfügbar</p>
+    </div>`;
+  }
+
+  const topStreaks = items.sort((a, b) => (b.longest_streak || 0) - (a.longest_streak || 0)).slice(0, 5);
+  const totalCompleted = items.reduce((sum, h) => sum + (h.total_completions || 0), 0);
+  const avgStreak = items.length > 0 ? Math.round(items.reduce((sum, h) => sum + (h.longest_streak || 0), 0) / items.length) : 0;
+
+  return `<div class="w-stats-body">
+    <div class="w-stats-summary">
+      <div class="wss-item">
+        <span class="wss-value">${items.length}</span>
+        <span class="wss-label">Aktiv</span>
+      </div>
+      <div class="wss-item">
+        <span class="wss-value">${avgStreak}</span>
+        <span class="wss-label">Ø Streak</span>
+      </div>
+      <div class="wss-item">
+        <span class="wss-value">${totalCompleted}</span>
+        <span class="wss-label">Gesamt</span>
+      </div>
+    </div>
+    <div class="w-stats-top">
+      <h4>Top Streaks</h4>
+      ${topStreaks.map(h => `<div class="wst-item">
+        <span class="wst-name">${escHtml(h.name)}</span>
+        <span class="wst-streak"><i class="fas fa-fire"></i> ${h.longest_streak || 0}</span>
+      </div>`).join("")}
+    </div>
+  </div>`;
 }
 
 function _buildHabitsBody() {
@@ -1587,6 +1635,7 @@ document.addEventListener("DOMContentLoaded", () => {
     _rerenderWidget("stats");
     _rerenderWidget("docs");
     _rerenderWidget("habits");
+    _rerenderWidget("habitstats");
   });
 
   // Close context menu on click outside

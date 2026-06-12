@@ -833,6 +833,86 @@ body.dark .widget-manage-btn:hover {
   flex-shrink: 0;
 }
 
+/* ─── Habit Stats Widget ─── */
+.w-stats-empty {
+  text-align: center;
+  padding: 28px 12px;
+  color: var(--text-secondary);
+}
+.w-stats-empty i {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+  opacity: 0.4;
+}
+.w-stats-empty p {
+  font-size: 0.82rem;
+}
+.w-stats-body {
+  padding: 8px 0;
+}
+.w-stats-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.wss-item {
+  text-align: center;
+}
+.wss-value {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.wss-label {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+.w-stats-top h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.wst-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  transition: background 0.12s;
+}
+.wst-item:hover {
+  background: var(--hover-bg);
+}
+.wst-name {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.wst-streak {
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
 /* Weather Hourly Overlay */
 .weather-hourly-overlay {
   position: fixed;
