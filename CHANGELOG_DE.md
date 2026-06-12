@@ -35,6 +35,10 @@
   - Auto-Refresh aktualisiert alle Wetter-Widgets
   - `_rerenderWidget()` und `_refreshWidget()` unterstützen jetzt mehrere Instanzen pro Typ
 
+- **Wetter-Widget: Stadtname in der Titelzeile**:
+  - Neben "Wetter" wird der konfigurierte Stadtname angezeigt (z.B. "Wetter Berlin")
+  - Schmaler, dezent grauer `.widget-subtitle` direkt neben dem Titel
+
 - **Changelog-Seite: Accordion-Ein-/Ausklappfunktion**:
   - Ältere Einträge sind standardmäßig eingeklappt
   - Klick auf den Kopf (Version + Datum) klappt den Eintrag auf/zu
