@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful – Habits</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="/css/design-system.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/components.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/layout-components.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/animations.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/polish.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/accessibility.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="/css/habits.css?v=<%= Date.now() %>" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <%- include('partials/sidebar') %>
+
+      <main class="habits-main">
+        <header class="habits-header">
+          <div class="breadcrumb">Gewohnheiten / Übersicht</div>
+          <div class="habits-header-row">
+            <h1>Habits <span>Tracker</span></h1>
+            <button class="btn btn-primary" onclick="openHabitEditor()">
+              <i class="fas fa-plus"></i> Neues Habit
+            </button>
+          </div>
+          <p class="subtitle">Verfolge deine täglichen Gewohnheiten und baue Routinen auf.</p>
+        </header>
+
+        <div class="habits-today" id="habitsToday">
+          <h2><i class="fas fa-calendar-day"></i> Heute</h2>
+          <div class="habits-today-list" id="habitsTodayList">
+            <div class="skeleton-list">
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="habits-all">
+          <h2><i class="fas fa-list"></i> Alle Habits</h2>
+          <div class="habits-list" id="habitsList">
+            <div class="skeleton-list">
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+              <div class="skeleton-item"><div class="sk-shimmer"></div></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="habitModal" style="display:none" onclick="closeHabitEditor()">
+      <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h3 id="habitEditorTitle">Neues Habit</h3>
+          <button class="modal-close" onclick="closeHabitEditor()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editHabitId" />
+          <div class="fg">
+            <label>Name</label>
+            <input type="text" id="habitName" placeholder="z.B. Proteinshake zubereiten" autofocus />
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label>Icon</label>
+              <div class="habit-icon-picker" id="habitIconPicker">
+                <span class="hip-option active" data-icon="fa-check-circle"><i class="fas fa-check-circle"></i></span>
+                <span class="hip-option" data-icon="fa-dumbbell"><i class="fas fa-dumbbell"></i></span>
+                <span class="hip-option" data-icon="fa-book"><i class="fas fa-book"></i></span>
+                <span class="hip-option" data-icon="fa-running"><i class="fas fa-running"></i></span>
+                <span class="hip-option" data-icon="fa-water"><i class="fas fa-water"></i></span>
+                <span class="hip-option" data-icon="fa-apple-alt"><i class="fas fa-apple-alt"></i></span>
+                <span class="hip-option" data-icon="fa-bed"><i class="fas fa-bed"></i></span>
+                <span class="hip-option" data-icon="fa-brain"><i class="fas fa-brain"></i></span>
+                <span class="hip-option" data-icon="fa-heart"><i class="fas fa-heart"></i></span>
+                <span class="hip-option" data-icon="fa-leaf"><i class="fas fa-leaf"></i></span>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Farbe</label>
+              <div class="habit-color-picker" id="habitColorPicker">
+                <span class="hcp-option active" data-color="#6366f1" style="background:#6366f1"></span>
+                <span class="hcp-option" data-color="#3b82f6" style="background:#3b82f6"></span>
+                <span class="hcp-option" data-color="#22c55e" style="background:#22c55e"></span>
+                <span class="hcp-option" data-color="#f59e0b" style="background:#f59e0b"></span>
+                <span class="hcp-option" data-color="#ef4444" style="background:#ef4444"></span>
+                <span class="hcp-option" data-color="#ec4899" style="background:#ec4899"></span>
+                <span class="hcp-option" data-color="#8b5cf6" style="background:#8b5cf6"></span>
+                <span class="hcp-option" data-color="#14b8a6" style="background:#14b8a6"></span>
+              </div>
+            </div>
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label>Typ</label>
+              <select id="habitTyp" onchange="onHabitTypChange()">
+                <option value="daily">Täglich</option>
+                <option value="interval">Alle X Tage</option>
+                <option value="weekdays">Wochentage (Mo–Fr)</option>
+                <option value="weekends">Wochenende (Sa–So)</option>
+                <option value="weekly">Wöchentlich</option>
+              </select>
+            </div>
+            <div class="fg" id="habitIntervalField" style="display:none">
+              <label>Alle X Tage</label>
+              <input type="number" id="habitIntervalDays" value="2" min="1" max="365" />
+            </div>
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label>Zeitfenster von</label>
+              <input type="time" id="habitTimeStart" />
+            </div>
+            <div class="fg">
+              <label>Zeitfenster bis</label>
+              <input type="time" id="habitTimeEnd" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary btn-full" onclick="saveHabit()">
+              <i class="fas fa-check"></i> Speichern
+            </button>
+            <button class="btn btn-ghost btn-full" id="habitDeleteBtn" style="display:none" onclick="deleteHabit()">
+              <i class="fas fa-trash"></i> Löschen
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/app.js?v=<%= Date.now() %>"></script>
+    <script src="/js/habits.js?v=<%= Date.now() %>"></script>
+  </body>
+</html>

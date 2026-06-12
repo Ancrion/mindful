@@ -20,6 +20,7 @@ const usersRoutes = require("./users");
 const messagesRoutes = require("./messages");
 const bugsRoutes = require("./bugs");
 const changelogRoutes = require("./changelog");
+const habitsRoutes = require("./habits");
 const adminRoutes = require("./admin");
 const sidebarRoutes = require("./sidebar");
 
@@ -42,6 +43,7 @@ router.use("/leaderboard", auth, leaderboardRoutes);
 router.use("/users", auth, usersRoutes);
 router.use("/messages", auth, messagesRoutes);
 router.use("/sidebar", auth, sidebarRoutes);
+router.use("/habits", auth, habitsRoutes);
 router.use("/bugs", auth, bugsRoutes);
 router.use("/changelog", changelogRoutes);
 router.use("/admin", auth, adminRoutes);

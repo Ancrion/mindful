@@ -19,6 +19,7 @@ router.get("/notes", auth, (req, res) => res.render("notes", { currentPage: "not
 router.get("/notizen", auth, (req, res) => res.render("notes", { currentPage: "notes" }));
 router.get("/pomodoro", auth, (req, res) => res.render("pomodoro", { currentPage: "pomodoro" }));
 router.get("/tracking", auth, (req, res) => res.render("tracking", { currentPage: "tracking" }));
+router.get("/habits", auth, (req, res) => res.render("habits", { currentPage: "habits" }));
 router.get("/zeiterfassung", auth, (req, res) => res.render("tracking", { currentPage: "tracking" }));
 router.get("/documents", auth, (req, res) => res.render("documents", { currentPage: "documents" }));
 router.get("/dokumente", auth, (req, res) => res.render("documents", { currentPage: "documents" }));

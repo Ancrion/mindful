@@ -7,6 +7,7 @@ const DEFAULT_MODULES = [
   { key: "messages",     label: "Nachrichten",     icon: "fa-envelope",       path: "/messages",        adminOnly: false },
   { key: "todo",         label: "To-Do",           icon: "fa-check-circle",   path: "/todo",            adminOnly: false },
   { key: "notes",        label: "Notizen",         icon: "fa-sticky-note",    path: "/notes",           adminOnly: false },
+  { key: "habits",       label: "Habits",          icon: "fa-check-double",   path: "/habits",          adminOnly: false },
   { key: "calendar",     label: "Kalender",        icon: "fa-calendar-alt",   path: "/calendar",        adminOnly: false },
   { key: "pomodoro",     label: "Pomodoro",        icon: "fa-clock",          path: "/pomodoro",        adminOnly: false },
   { key: "tracking",     label: "Zeiterfassung",   icon: "fa-stopwatch",      path: "/tracking",        adminOnly: false },

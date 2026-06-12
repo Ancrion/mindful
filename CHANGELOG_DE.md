@@ -54,6 +54,16 @@
   - Gleiche `font-size: 16px`, `width: 20px`, `text-align: center` wie alle anderen `.module-link i`
   - Identisches `padding: 0 10px`, `gap: 12px`, `min-height: 40px` – kein Versatz mehr
 
+- **Habit-Tracker (v1.8.0)**:
+  - Neue Seite `/habits` mit Übersicht aller Habits + heutige fällige Habits
+  - Habits: Icon, Farbe, Typ (täglich/intervall/wochentags/wochenende/wöchentlich), Zeitfenster
+  - Add/Edit-Modal mit Icon-Picker, Color-Picker, Typ-Auswahl, Zeit-Einstellung
+  - Dashboard-Widget `habits` zeigt heutige Habits mit Checkbox zum Abhaken
+  - Zeitfenster-Logik: "Jetzt"-Badge wenn Habit im aktuellen Zeitfenster liegt
+  - Auto-Refresh alle 60s + initialer Fetch beim Dashboard-Start
+  - API: CRUD (`/api/habits`) + Today (`/api/habits/today`) + Toggle (`/api/habits/:id/toggle`)
+  - DB: `habits` + `habit_logs` Tabellen, Sidebar-Modul `fa-check-double`
+
 ---
 
 ## 🛡️ v1.7.9 - Admin-Panel & Benutzerverwaltung

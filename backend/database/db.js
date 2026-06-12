@@ -254,7 +254,33 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
-  -- 17. BUG-REPORTS
+  -- 17. HABITS
+  CREATE TABLE IF NOT EXISTS habits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    icon TEXT DEFAULT 'fa-check-circle',
+    color TEXT DEFAULT '#6366f1',
+    typ TEXT DEFAULT 'daily',
+    interval_days INTEGER DEFAULT 1,
+    time_start TEXT,
+    time_end TEXT,
+    active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- 18. HABIT-LOGS
+  CREATE TABLE IF NOT EXISTS habit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    habit_id INTEGER NOT NULL,
+    datum TEXT NOT NULL,
+    completed INTEGER DEFAULT 1,
+    completed_at TEXT DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+  );
+
+  -- 19. BUG-REPORTS
   CREATE TABLE IF NOT EXISTS bug_reports (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id     INTEGER NOT NULL,

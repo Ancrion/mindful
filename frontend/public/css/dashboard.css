@@ -733,6 +733,91 @@ body.dark .widget-manage-btn:hover {
   transform: translateY(-1px);
 }
 
+/* ─── Habits Widget ─── */
+.w-habits-empty {
+  text-align: center;
+  padding: 28px 12px;
+  color: var(--text-secondary);
+}
+.w-habits-empty i {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+  opacity: 0.4;
+}
+.w-habits-empty p {
+  font-size: 0.82rem;
+}
+.w-habits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.w-habit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  transition: background 0.12s;
+}
+.w-habit-item:hover {
+  background: var(--hover-bg);
+}
+.w-habit-item.w-habit-done {
+  opacity: 0.5;
+}
+.w-habit-item.w-habit-now {
+  background: var(--hover-bg);
+  border-left: 2px solid var(--hc, #6366f1);
+}
+.w-habit-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.12s, transform 0.12s;
+}
+.w-habit-toggle:hover {
+  transform: scale(1.12);
+}
+.w-habit-toggle.checked {
+  color: var(--hc, #6366f1);
+}
+.w-habit-item > i {
+  font-size: 0.95rem;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.w-habit-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+}
+.w-habit-time {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.w-habit-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--hc, #6366f1);
+  border-radius: 3px;
+  padding: 1px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
 /* Weather Hourly Overlay */
 .weather-hourly-overlay {
   position: fixed;

@@ -13,6 +13,7 @@ const WIDGET_TYPES = {
   docs: { name: "Dokumente", icon: "fa-file", desc: "Neueste Dokumente", color: "#8b5cf6" },
   pomodoro: { name: "Pomodoro", icon: "fa-clock", desc: "Fokus-Statistiken & Chart", color: "#ec4899" },
   weather: { name: "Wetter", icon: "fa-cloud-sun", desc: "Aktuelles Wetter & 5-Tage-Vorhersage", color: "#06b6d4" },
+  habits: { name: "Habits", icon: "fa-check-double", desc: "Heutige Gewohnheiten im Zeitfenster", color: "#6366f1" },
   calendar: { name: "Kalender", icon: "fa-calendar", desc: "Monatsübersicht mit Termin-Dots", color: "#8b5cf6" },
   upcoming: { name: "Termine", icon: "fa-calendar-day", desc: "Bevorstehende Termine", color: "#f59e0b" },
 };
@@ -55,6 +56,7 @@ async function initDashboard() {
       if (pData) pomodoroStats = pData;
       renderUser(data);
     }
+    await _refreshHabits();
     await loadWidgets();
   } catch (err) {
     console.error("Dashboard Fehler:", err);
@@ -233,7 +235,7 @@ function _buildCard(widget) {
   const grid = document.getElementById("widgetGrid");
   if (!grid) return null;
 
-  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2, calendar: 2 };
+  const DEFAULT_SIZES = { stats: 4, tasks: 2, notes: 2, events: 2, docs: 2, pomodoro: 3, weather: 2, habits: 2, calendar: 2 };
   const config = widget.config ? (typeof widget.config === "string" ? JSON.parse(widget.config) : widget.config) : {};
   const size = config.size || DEFAULT_SIZES[widget.typ] || 2;
 
@@ -311,6 +313,7 @@ function _getWidgetBody(widget) {
     case "docs": return _buildDocsBody();
     case "pomodoro": return _buildPomoBody();
     case "weather": return _buildWeatherBody(widget);
+    case "habits": return _buildHabitsBody();
     case "calendar": return _buildCalendarBody();
     default: return "";
   }
@@ -346,6 +349,21 @@ function _getPostRender(widget) {
          if (gpsBtn) gpsBtn.addEventListener("click", () => _requestWeatherLocation(widget));
        };
     }
+    case "habits": return () => {
+      const card = document.querySelector(".widget-habits");
+      if (!card) return;
+      card.querySelectorAll(".w-habit-toggle").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = parseInt(btn.dataset.habitId);
+          const res = await apiFetch(`habits/${id}/toggle`, { method: "POST" });
+          if (res) {
+            const h = _habitsWidgetCache.find(x => x.id === id);
+            if (h) h.completed = res.completed ? 1 : 0;
+            _rerenderWidget("habits");
+          }
+        });
+      });
+    };
     case "calendar": return () => {
       const grid = document.querySelector(".widget-calendar .cal-wgrid");
       if (grid) {
@@ -475,11 +493,15 @@ async function _refreshWidget(typ) {
     const data = await apiFetch("dashboard");
     if (data) { dashboardData = data; _rerenderWidget("stats"); }
   }
+  if (typ === "habits") {
+    await _refreshHabits();
+  }
 }
 
 function _startAutoRefresh() {
   if (!_refreshTimers.weather) _refreshTimers.weather = setInterval(() => _refreshWidget("weather"), 300000);
   if (!_refreshTimers.stats) _refreshTimers.stats = setInterval(() => _refreshWidget("stats"), 30000);
+  if (!_refreshTimers.habits) _refreshTimers.habits = setInterval(() => _refreshWidget("habits"), 60000);
 }
 
 function _stopAutoRefresh() {
@@ -903,6 +925,45 @@ function _buildWidgetDayView(year, month, events, today, months, daysDe) {
 
   html += `</div>`;
   return html;
+}
+
+let _habitsWidgetCache = [];
+
+async function _refreshHabits() {
+  const data = await apiFetch("habits/today");
+  if (data) {
+    _habitsWidgetCache = data;
+    _rerenderWidget("habits");
+  }
+}
+
+function _buildHabitsBody() {
+  const items = _habitsWidgetCache;
+  if (!items.length) {
+    return `<div class="w-habits-empty">
+      <i class="fas fa-check-double"></i>
+      <p>Keine Habits für heute</p>
+    </div>`;
+  }
+
+  const now = new Date();
+  const curTime = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+
+  return `<div class="w-habits-list">${items.map(h => {
+    const isInWindow = (!h.time_start || curTime >= h.time_start) && (!h.time_end || curTime <= h.time_end);
+    const windowStr = h.time_start && h.time_end
+      ? `${h.time_start}–${h.time_end}`
+      : h.time_start ? `ab ${h.time_start}` : h.time_end ? `bis ${h.time_end}` : "";
+    return `<div class="w-habit-item ${h.completed ? "w-habit-done" : ""} ${isInWindow && !h.completed ? "w-habit-now" : ""}" style="--hc:${h.color || "#6366f1"}">
+      <button class="w-habit-toggle ${h.completed ? "checked" : ""}" data-habit-id="${h.id}">
+        ${h.completed ? '<i class="fas fa-check-circle"></i>' : '<i class="far fa-circle"></i>'}
+      </button>
+      <i class="fas ${h.icon || "fa-check-circle"}" style="color:${h.color || "#6366f1"}"></i>
+      <span class="w-habit-name">${escHtml(h.name)}</span>
+      <span class="w-habit-time">${escHtml(windowStr)}</span>
+      ${isInWindow && !h.completed ? '<span class="w-habit-badge">Jetzt</span>' : ""}
+    </div>`;
+  }).join("")}</div>`;
 }
 
 function _buildCalendarBody() {
@@ -1521,6 +1582,7 @@ document.addEventListener("DOMContentLoaded", () => {
     _rerenderWidget("calendar");
     _rerenderWidget("stats");
     _rerenderWidget("docs");
+    _rerenderWidget("habits");
   });
 
   // Close context menu on click outside
