@@ -73,7 +73,7 @@ router.get("/weather/data", requireUser, (req, res) => {
   if (!lat || !lon) return res.status(400).json({ error: "lat and lon required" });
 
   const https = require("https");
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=5`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m,weather_code,precipitation_probability,wind_speed_10m&timezone=auto&forecast_days=5`;
 
   https.get(url, (resp) => {
     let data = "";

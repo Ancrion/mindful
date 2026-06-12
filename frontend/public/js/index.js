@@ -1008,6 +1008,7 @@ async function _fetchWeather(widget, lat, lon) {
 function _renderWeatherData(widget, data) {
   const current = data.current;
   const daily = data.daily;
+  const hourly = data.hourly;
   const weatherCodes = {
     0: "fa-sun", 1: "fa-sun", 2: "fa-cloud-sun", 3: "fa-cloud",
     45: "fa-smog", 48: "fa-smog",
@@ -1025,7 +1026,7 @@ function _renderWeatherData(widget, data) {
     forecast = daily.time.map((date, i) => {
       const d = new Date(date + "T12:00:00");
       const dayIcon = weatherCodes[daily.weather_code[i]] || "fa-cloud";
-      return `<div class="weather-day">
+      return `<div class="weather-day" data-day-idx="${i}">
         <div class="weather-day-label">${i === 0 ? "Heute" : dayNames[d.getDay()]}</div>
         <div class="weather-day-icon"><i class="fas ${dayIcon}"></i></div>
         <div class="weather-day-temps">
@@ -1047,6 +1048,71 @@ function _renderWeatherData(widget, data) {
     <div class="weather-forecast">${forecast}</div>
   `;
   _updateWidgetBody(widget, body);
+
+  // Click handler for daily forecast — show hourly modal
+  const card = document.querySelector(`.widget-weather[data-widget-id="${widget.id}"]`);
+  if (!card) return;
+  card.querySelectorAll(".weather-day").forEach(el => {
+    el.addEventListener("click", e => {
+      e.stopPropagation();
+      const idx = parseInt(el.dataset.dayIdx);
+      if (isNaN(idx) || !hourly) return;
+      _showHourlyForecast(widget, hourly, daily, idx);
+    });
+  });
+}
+
+function _showHourlyForecast(widget, hourly, daily, dayIdx) {
+  const dateStr = daily.time[dayIdx];
+  const dayLabel = dayIdx === 0 ? "Heute" : new Date(dateStr + "T12:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" });
+
+  const weatherCodes = {
+    0: "fa-sun", 1: "fa-sun", 2: "fa-cloud-sun", 3: "fa-cloud",
+    45: "fa-smog", 48: "fa-smog",
+    51: "fa-cloud-rain", 53: "fa-cloud-rain", 55: "fa-cloud-rain",
+    61: "fa-cloud-showers-heavy", 63: "fa-cloud-showers-heavy", 65: "fa-cloud-showers-heavy",
+    71: "fa-snowflake", 73: "fa-snowflake", 75: "fa-snowflake",
+    80: "fa-cloud-rain", 81: "fa-cloud-rain", 82: "fa-cloud-rain",
+    95: "fa-bolt", 96: "fa-bolt", 99: "fa-bolt",
+  };
+
+  let rows = "";
+  for (let i = 0; i < hourly.time.length; i++) {
+    if (!hourly.time[i].startsWith(dateStr)) continue;
+    const time = hourly.time[i].split("T")[1].slice(0, 5);
+    const temp = Math.round(hourly.temperature_2m[i]);
+    const code = hourly.weather_code[i];
+    const precip = hourly.precipitation_probability[i];
+    const wind = hourly.wind_speed_10m[i];
+    const hIcon = weatherCodes[code] || "fa-cloud";
+    rows += `<div class="wh-row">
+      <span class="wh-time">${time}</span>
+      <span class="wh-icon"><i class="fas ${hIcon}"></i></span>
+      <span class="wh-temp">${temp}°</span>
+      ${precip !== undefined && precip !== null ? `<span class="wh-precip"><i class="fas fa-tint"></i> ${Math.round(precip)}%</span>` : ""}
+      <span class="wh-wind"><i class="fas fa-wind"></i> ${Math.round(wind)} km/h</span>
+    </div>`;
+  }
+
+  const existing = document.querySelector(".weather-hourly-overlay");
+  if (existing) existing.remove();
+
+  const overlay = document.createElement("div");
+  overlay.className = "weather-hourly-overlay";
+  overlay.innerHTML = `
+    <div class="wh-modal">
+      <div class="wh-header">
+        <span class="wh-title">${dayLabel}</span>
+        <button class="wh-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="wh-body">${rows || "<p class='wh-empty'>Keine stündlichen Daten</p>"}</div>
+    </div>
+  `;
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) overlay.remove();
+  });
+  overlay.querySelector(".wh-close").addEventListener("click", () => overlay.remove());
+  document.body.appendChild(overlay);
 }
 
 async function _searchWeatherCity(widget, city) {
