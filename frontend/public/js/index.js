@@ -194,28 +194,37 @@ function renderWidgets() {
  }
 
 function _rerenderWidget(typ) {
-  const idx = _widgets.findIndex((w) => w.typ === typ);
-  if (idx === -1) return;
   const grid = document.getElementById("widgetGrid");
   if (!grid) return;
   if (typ === "pomodoro" && chartWeek) {
     chartWeek.destroy();
     chartWeek = null;
   }
+
+  const matches = _widgets.reduce((acc, w, i) => w.typ === typ ? [...acc, i] : acc, []);
+  if (!matches.length) return;
+
+  // Find the first existing DOM element of this type to determine insertion point
   const existing = grid.querySelector(`.widget-${typ}`);
   const nextSibling = existing ? existing.nextSibling : null;
-  if (existing) existing.remove();
+
+  // Remove ALL existing DOM elements of this type
+  grid.querySelectorAll(`.widget-${typ}`).forEach(el => el.remove());
+
   const info = WIDGET_TYPES[typ];
-  if (info) {
+  if (!info) return;
+
+  const refNode = nextSibling && nextSibling.parentNode === grid ? nextSibling : null;
+  matches.forEach(idx => {
     const card = _buildCard(_widgets[idx]);
     if (card) {
-      if (nextSibling && nextSibling.parentNode === grid) {
-        grid.insertBefore(card, nextSibling);
+      if (refNode) {
+        grid.insertBefore(card, refNode);
       } else {
         grid.appendChild(card);
       }
     }
-  }
+  });
 }
 
 function _buildCard(widget) {
@@ -455,10 +464,10 @@ let _refreshTimers = {};
 
 async function _refreshWidget(typ) {
   if (typ === "weather") {
-    const w = _widgets.find((x) => x.typ === "weather");
-    if (!w) return;
-    const config = w.config ? (typeof w.config === "string" ? JSON.parse(w.config) : w.config) : {};
-    if (config.lat && config.lon) await _fetchWeather(w, config.lat, config.lon);
+    _widgets.filter((x) => x.typ === "weather").forEach(w => {
+      const config = w.config ? (typeof w.config === "string" ? JSON.parse(w.config) : w.config) : {};
+      if (config.lat && config.lon) _fetchWeather(w, config.lat, config.lon);
+    });
     return;
   }
   if (typ === "stats") {
@@ -1443,34 +1452,45 @@ function _renderWidgetManager() {
   const list = document.getElementById("widgetManagerList");
   if (!list) return;
 
-  const activeTypes = _widgets.map((w) => w.typ);
+  const counts = {};
+  _widgets.forEach(w => { counts[w.typ] = (counts[w.typ] || 0) + 1; });
   const allTypes = Object.entries(WIDGET_TYPES);
 
   list.innerHTML = allTypes.map(([key, info]) => {
-    const isActive = activeTypes.includes(key);
-    return `<div class="wm-item ${isActive ? "active" : ""}" data-typ="${key}" draggable="false">
+    const count = counts[key] || 0;
+    const isWeather = key === "weather";
+    return `<div class="wm-item ${count > 0 ? "active" : ""} ${isWeather ? "wm-weather" : ""}" data-typ="${key}" draggable="false">
       <span class="wm-handle"><i class="fas fa-grip-vertical"></i></span>
       <span class="wm-icon" style="background:${info.color}"><i class="fas ${info.icon}"></i></span>
       <div class="wm-info">
-        <div class="wm-name">${info.name}</div>
+        <div class="wm-name">${info.name}${count > 1 ? ` <span class="wm-count">×${count}</span>` : ""}</div>
         <div class="wm-desc">${info.desc}</div>
       </div>
-      <span class="wm-toggle"><i class="fas fa-check"></i></span>
+      <span class="wm-toggle">${count > 0 ? (isWeather ? '<i class="fas fa-plus"></i>' : '<i class="fas fa-check"></i>') : '<i class="fas fa-plus"></i>'}</span>
     </div>`;
   }).join("");
 
   list.querySelectorAll(".wm-item").forEach((el) => {
     el.addEventListener("click", async () => {
       const typ = el.dataset.typ;
-      const isActive = el.classList.contains("active");
-      if (isActive) {
+      const isWeather = typ === "weather";
+
+      // For weather: always add another instance (don't remove)
+      if (isWeather) {
+        await _addWidget(typ);
+        _renderWidgetManager();
+        return;
+      }
+
+      // For non-weather: toggle single instance as before
+      const count = _widgets.filter(w => w.typ === typ).length;
+      if (count > 0) {
         const w = _widgets.find((x) => x.typ === typ);
         if (w) await _removeWidget(w.id);
-        el.classList.remove("active");
       } else {
         await _addWidget(typ);
-        el.classList.add("active");
       }
+      _renderWidgetManager();
     });
   });
 }

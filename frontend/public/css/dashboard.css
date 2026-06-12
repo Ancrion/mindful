@@ -1014,6 +1014,18 @@ body.dark .wh-row {
   background: var(--accent-alpha, rgba(110,138,184,0.1));
   border: 1px solid var(--accent-alpha, rgba(110,138,184,0.3));
 }
+.wm-item .wm-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-alpha, rgba(110,138,184,0.15));
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+.wm-item.wm-weather.active .wm-toggle i {
+  color: var(--accent);
+}
 
 .wm-handle {
   color: var(--text-muted);
