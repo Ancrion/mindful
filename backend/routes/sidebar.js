@@ -19,15 +19,15 @@ const DEFAULT_MODULES = [
 ];
 
 function ensureDefaultModules(userId) {
-  const count = db.prepare("SELECT COUNT(*) as c FROM sidebar_modules WHERE user_id = ?").get(userId);
-  if (count.c > 0) return;
-
   const insert = db.prepare(
     "INSERT OR IGNORE INTO sidebar_modules (user_id, module_key, label, icon, path, sort_order, visible) VALUES (?, ?, ?, ?, ?, ?, ?)"
   );
   const tx = db.transaction(() => {
     DEFAULT_MODULES.forEach((mod, i) => {
-      insert.run(userId, mod.key, mod.label, mod.icon, mod.path, i, 1);
+      const existing = db.prepare("SELECT id FROM sidebar_modules WHERE user_id = ? AND module_key = ?").get(userId, mod.key);
+      if (!existing) {
+        insert.run(userId, mod.key, mod.label, mod.icon, mod.path, 999 + i, 1);
+      }
     });
   });
   tx();
