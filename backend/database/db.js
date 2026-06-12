@@ -254,40 +254,30 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
-  -- 17. HABITS
+  -- 17. HABITS (first creation)
   CREATE TABLE IF NOT EXISTS habits (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     name TEXT NOT NULL,
-    description TEXT,
     icon TEXT DEFAULT 'fa-check-circle',
     color TEXT DEFAULT '#6366f1',
-    category TEXT,
-    priority TEXT DEFAULT 'medium',
     typ TEXT DEFAULT 'daily',
     interval_days INTEGER DEFAULT 1,
     time_start TEXT,
     time_end TEXT,
-    reminder_time TEXT,
-    current_streak INTEGER DEFAULT 0,
-    longest_streak INTEGER DEFAULT 0,
-    total_completions INTEGER DEFAULT 0,
     active INTEGER DEFAULT 1,
-    archived INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now', 'localtime')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
-  -- 18. HABIT-LOGS
+  -- 18. HABIT-LOGS (first creation)
   CREATE TABLE IF NOT EXISTS habit_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     habit_id INTEGER NOT NULL,
     datum TEXT NOT NULL,
     completed INTEGER DEFAULT 1,
-    notes TEXT,
     completed_at TEXT DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE,
-    UNIQUE(habit_id, datum)
+    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
   );
 
   -- 19. BUG-REPORTS
@@ -315,6 +305,18 @@ db.exec(`
     erstellt TEXT DEFAULT (datetime('now', 'localtime'))
   );
 `);
+
+// Migration: Neue Habit-Tracker-Spalten (description, category, priority, reminder_time, streaks, archived)
+try { db.exec("ALTER TABLE habits ADD COLUMN description TEXT DEFAULT NULL"); } catch (e) {}
+try { db.exec("ALTER TABLE habits ADD COLUMN category TEXT DEFAULT NULL"); } catch (e) {}
+try { db.exec("ALTER TABLE habits ADD COLUMN priority TEXT DEFAULT 'medium'"); } catch (e) {}
+try { db.exec("ALTER TABLE habits ADD COLUMN reminder_time TEXT DEFAULT NULL"); } catch (e) {}
+try { db.exec("ALTER TABLE habits ADD COLUMN current_streak INTEGER DEFAULT 0"); } catch (e) {}
+try { db.exec("ALTER TABLE habits ADD COLUMN longest_streak INTEGER DEFAULT 0"); } catch (e) {}
+try { db.exec("ALTER TABLE habits ADD COLUMN total_completions INTEGER DEFAULT 0"); } catch (e) {}
+try { db.exec("ALTER TABLE habits ADD COLUMN archived INTEGER DEFAULT 0"); } catch (e) {}
+try { db.exec("ALTER TABLE habit_logs ADD COLUMN notes TEXT DEFAULT NULL"); } catch (e) {}
+try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_habit_logs_unique ON habit_logs(habit_id, datum)"); } catch (e) {}
 
 // Seed: Fehlende Changelog-Einträge nachtragen (inkrementell)
 // Add unique constraint for sidebar_modules (user_id + module_key)

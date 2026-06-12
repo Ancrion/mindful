@@ -74,14 +74,13 @@
     - `habit_logs` um `notes`-Feld + UNIQUE Constraint auf (habit_id, datum)
    - API: CRUD (`/api/habits`) + Today (`/api/habits/today`) + Toggle mit Notes + Stats + Calendar + History
    - Dashboard-Widgets: `habits` + `habitstats` mit Auto-Refresh alle 60s
-   - **Fixed: Habits fehlten in Sidebar bei Bestandsnutzern**: `ensureDefaultModules()` legte nur Module an wenn der User **null** Module hatte. Neue Defaults (wie `habits`) wurden nie bei existierenden Usern ergänzt. Fix: Prüft jetzt jedes Default-Modul einzeln via `module_key` und fügt fehlende nach.
-   - **Modal UX & Fixes**: Auto-Scroll to top, zentriert mit Flex, glatte Scale+Fade Animation (300ms), fokus-delay auf Name-Input, Blur-Backdrop
-   - **Fixed: Speichern-Button funktioniert nicht**: Event-Propagation Problem – Klick bubbelt zum Modal-Overlay. Fix: `stopPropagation()` auf Buttons, Modal prüft `event.target === this`. Error-Handling mit Try/Catch + Alert-Feedback
+   - **Modal & UX**: Auto-Scroll to top, zentriert mit Flex, glatte Scale+Fade Animation (300ms), fokus-delay auf Name-Input, Blur-Backdrop
 
 ### 🔧 Bugfixes & Improvements
 
 - **Fixed: Habits fehlten in Sidebar bei Bestandsnutzern**: `ensureDefaultModules()` legte nur Module an wenn der User **null** Module hatte. Prüft jetzt jedes Default-Modul einzeln via `module_key`
-- **Fixed: Speichern-Button Habit-Modal funktioniert nicht**: Event-Propagation Problem – Klick bubbelt zum Modal-Overlay-onclick. Fix: `stopPropagation()` auf Buttons, Modal prüft `event.target === this`
+- **Fixed: Speichern-Button funktioniert nicht**: Event-Propagation Problem – Klick bubbelt zum Modal-Overlay. Fix: `stopPropagation()` auf Buttons + Error-Handling mit Try/Catch + Alert
+- **Fixed: DB-Migration für neue Habit-Spalten**: Bestehende DB hatte keine Spalten für `description`, `category`, `priority`, `reminder_time`, `current_streak`, `longest_streak`, `total_completions`, `archived`. ALTER TABLE Migrationen via try/catch in `db.js` hinzugefügt. `habit_logs`: `notes`-Spalte + UNIQUE INDEX
 
 ---
 
