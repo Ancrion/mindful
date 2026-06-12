@@ -54,6 +54,14 @@
   - Gleiche `font-size: 16px`, `width: 20px`, `text-align: center` wie alle anderen `.module-link i`
   - Identisches `padding: 0 10px`, `gap: 12px`, `min-height: 40px` – kein Versatz mehr
 
+- **Habit-Tracker Modal UX Improvement**:
+  - Modal scrollt automatisch nach oben beim Öffnen (`window.scrollTo`)
+  - Zentriert positioniert mit `flex` + `align-items: center` + `justify-content: flex-start`
+  - Glatte Öffnungs-/Schließ-Animation (Scale 0.95→1, Fade, 300ms)
+  - Fokus mit Delay auf Name-Input für saubere Animation
+  - Modal schwebt über Seite mit Blur-Backdrop (rgba 0.35)
+  - Bessere visueller Feedback beim Schließen (Fade-Out statt sofort)
+
 - **Habit-Tracker (v1.8.0) – Umfassend verbessert**:
   - Neue Seite `/habits` mit Übersicht aller Habits + heutige fällige Habits + Statistiken
   - **Erweiterte Habit-Eigenschaften**:
