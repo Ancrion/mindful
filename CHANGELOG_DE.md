@@ -17,6 +17,8 @@
 
 - **Modal-Verbesserungen**: Scrollt automatisch nach oben beim Öffnen, zentrierte Darstellung (`display: flex` + `open`-CSS-Klasse), sanfte Scale+Fade-Animation (300ms), Auto-Fokus auf das Namensfeld.
 
+- **Dashboard-Widgets klickbar**: Klick auf ein Widget (To-Do, Notizen, Termine, Habits, etc.) navigiert direkt zur entsprechenden Seite. Interaktive Elemente (Buttons, Griffe, Links) lösen keine Navigation aus.
+
 ### 🔧 Bugfixes & Improvements
 
 - **Fixed: Habits fehlten in Sidebar bei Bestandsnutzern**: `ensureDefaultModules()` legte nur Module an wenn der User **null** Module hatte. Prüft jetzt jedes Default-Modul einzeln via `module_key`

@@ -6,17 +6,17 @@ let _weatherCache = null;
 
 // ─── Widget Registry ───
 const WIDGET_TYPES = {
-  stats: { name: "Statistiken", icon: "fa-chart-simple", desc: "Zahlen auf einen Blick", color: "#6e8ab8" },
-  tasks: { name: "To-Do", icon: "fa-tasks", desc: "Anstehende Aufgaben", color: "#3b82f6" },
-  notes: { name: "Notizen", icon: "fa-file-alt", desc: "Letzte Notizen", color: "#22c55e" },
-  events: { name: "Termine", icon: "fa-calendar-day", desc: "Heutige Termine", color: "#f59e0b" },
-  docs: { name: "Dokumente", icon: "fa-file", desc: "Neueste Dokumente", color: "#8b5cf6" },
-  pomodoro: { name: "Pomodoro", icon: "fa-clock", desc: "Fokus-Statistiken & Chart", color: "#ec4899" },
-  weather: { name: "Wetter", icon: "fa-cloud-sun", desc: "Aktuelles Wetter & 5-Tage-Vorhersage", color: "#06b6d4" },
-  habits: { name: "Habits", icon: "fa-check-double", desc: "Heutige Gewohnheiten im Zeitfenster", color: "#6366f1" },
-  habitstats: { name: "Habits Stats", icon: "fa-chart-bar", desc: "Statistiken & Streaks", color: "#8b5cf6" },
-  calendar: { name: "Kalender", icon: "fa-calendar", desc: "Monatsübersicht mit Termin-Dots", color: "#8b5cf6" },
-  upcoming: { name: "Termine", icon: "fa-calendar-day", desc: "Bevorstehende Termine", color: "#f59e0b" },
+  stats: { name: "Statistiken", icon: "fa-chart-simple", desc: "Zahlen auf einen Blick", color: "#6e8ab8", page: null },
+  tasks: { name: "To-Do", icon: "fa-tasks", desc: "Anstehende Aufgaben", color: "#3b82f6", page: "/todo" },
+  notes: { name: "Notizen", icon: "fa-file-alt", desc: "Letzte Notizen", color: "#22c55e", page: "/notes" },
+  events: { name: "Termine", icon: "fa-calendar-day", desc: "Heutige Termine", color: "#f59e0b", page: "/calendar" },
+  docs: { name: "Dokumente", icon: "fa-file", desc: "Neueste Dokumente", color: "#8b5cf6", page: null },
+  pomodoro: { name: "Pomodoro", icon: "fa-clock", desc: "Fokus-Statistiken & Chart", color: "#ec4899", page: "/pomodoro" },
+  weather: { name: "Wetter", icon: "fa-cloud-sun", desc: "Aktuelles Wetter & 5-Tage-Vorhersage", color: "#06b6d4", page: null },
+  habits: { name: "Habits", icon: "fa-check-double", desc: "Heutige Gewohnheiten im Zeitfenster", color: "#6366f1", page: "/habits" },
+  habitstats: { name: "Habits Stats", icon: "fa-chart-bar", desc: "Statistiken & Streaks", color: "#8b5cf6", page: "/habits" },
+  calendar: { name: "Kalender", icon: "fa-calendar", desc: "Monatsübersicht mit Termin-Dots", color: "#8b5cf6", page: "/calendar" },
+  upcoming: { name: "Termine", icon: "fa-calendar-day", desc: "Bevorstehende Termine", color: "#f59e0b", page: "/calendar" },
 };
 
 // ─── API Helper ───
@@ -296,6 +296,15 @@ function _buildCard(widget) {
       showDashCtxMenu(e, type, cache[id]);
     }
   });
+
+  // Navigate to widget page on click (except interactive elements)
+  if (info.page) {
+    card.addEventListener("click", (e) => {
+      const el = e.target.closest("a, button, .widget-handle, .widget-resize-handle, .widget-remove, .cal-view-btn, [data-dash-id]");
+      if (el) return;
+      window.location.href = info.page;
+    });
+  }
 
   // Post-render hook for special widgets (chart, weather fetch)
   const postRender = _getPostRender(widget);
