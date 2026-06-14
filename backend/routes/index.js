@@ -77,7 +77,6 @@ router.get("/changelog", (req, res) => {
   }
 });
 router.get("/admin", auth, adminOnly, (req, res) => res.render("admin", { currentPage: "admin" }));
-router.get("/dev-tasks-admin", auth, adminOnly, (req, res) => res.render("dev-tasks-admin", { currentPage: "admin" }));
 
 // ─── HEALTH CHECK ───
 router.get("/health", (req, res) => {

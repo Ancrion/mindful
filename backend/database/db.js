@@ -304,23 +304,6 @@ db.exec(`
     commits  TEXT DEFAULT '[]',
     erstellt TEXT DEFAULT (datetime('now', 'localtime'))
   );
-
-  -- 20. DEVELOPMENT TASKS
-  CREATE TABLE IF NOT EXISTS development_tasks (
-    id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    title        TEXT NOT NULL,
-    description  TEXT,
-    file_path    TEXT NOT NULL,
-    line_start   INTEGER DEFAULT NULL,
-    line_end     INTEGER DEFAULT NULL,
-    action_type  TEXT DEFAULT 'modify',
-    assignee     TEXT,
-    status       TEXT DEFAULT 'open',
-    priority     TEXT DEFAULT 'medium',
-    phase        TEXT DEFAULT 'Phase 1',
-    created_at   TEXT DEFAULT (datetime('now', 'localtime')),
-    updated_at   TEXT DEFAULT (datetime('now', 'localtime'))
-  );
 `);
 
 // Migration: Neue Habit-Tracker-Spalten (description, category, priority, reminder_time, streaks, archived)
@@ -339,20 +322,6 @@ try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_habit_logs_unique ON habit_
 // Add unique constraint for sidebar_modules (user_id + module_key)
 try {
   db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_sidebar_modules_user_key ON sidebar_modules(user_id, module_key)");
-} catch (e) {}
-
-// Migrations for development_tasks table
-try {
-  db.exec("CREATE INDEX IF NOT EXISTS idx_dev_tasks_assignee ON development_tasks(assignee)");
-} catch (e) {}
-try {
-  db.exec("CREATE INDEX IF NOT EXISTS idx_dev_tasks_status ON development_tasks(status)");
-} catch (e) {}
-try {
-  db.exec("CREATE INDEX IF NOT EXISTS idx_dev_tasks_phase ON development_tasks(phase)");
-} catch (e) {}
-try {
-  db.exec("CREATE INDEX IF NOT EXISTS idx_dev_tasks_file_path ON development_tasks(file_path)");
 } catch (e) {}
 
 // Seed default sidebar modules for existing users (will be created on first API call instead)
