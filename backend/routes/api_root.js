@@ -23,6 +23,7 @@ const changelogRoutes = require("./changelog");
 const habitsRoutes = require("./habits");
 const adminRoutes = require("./admin");
 const sidebarRoutes = require("./sidebar");
+const devTasksRoutes = require("./development-tasks");
 
 // Auth Routes (öffentlich - kein auth erforderlich)
 router.use("/auth", authRoutes);
@@ -47,6 +48,7 @@ router.use("/habits", auth, habitsRoutes);
 router.use("/bugs", auth, bugsRoutes);
 router.use("/changelog", changelogRoutes);
 router.use("/admin", auth, adminRoutes);
+router.use("/development-tasks", auth, devTasksRoutes);
 
 // Health Check
 router.get("/health", (req, res) => {
