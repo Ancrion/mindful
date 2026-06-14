@@ -992,7 +992,10 @@
           alert("Code-Snippet nicht gefunden.");
           return;
         }
-        const code = codeEl.textContent;
+        // Dekodiere HTML-Entities (&#34; → ", etc.)
+        const div = document.createElement('div');
+        div.innerHTML = codeEl.textContent;
+        const code = div.textContent || div.innerText;
         document.getElementById("codeModalTitle").textContent = `${task.title} — ${task.file}`;
         document.getElementById("codeModalPre").textContent = code;
         document.getElementById("codeOverlay").classList.add("open");
