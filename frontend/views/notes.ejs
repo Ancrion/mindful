@@ -111,15 +111,17 @@
               <button class="fmt-btn" onclick="fmtCmd('removeFormat')" title="Formatierung entfernen"><i class="fas fa-eraser"></i></button>
               <span class="fmt-sep"></span>
               <button class="fmt-btn" onclick="mathCmd()" title="Mathe-Formel (LaTeX)"><i class="fas fa-superscript"></i></button>
-              <span class="fmt-sep"></span>
-              <button class="fmt-btn" id="mdToggle" onclick="toggleMarkdown()" title="Markdown-Modus: **fett**, *kursiv*, $LaTeX$"><b>MD</b></button>
-              <button class="fmt-btn fmt-btn-active" id="autoListToggle" onclick="toggleAutoList()" title="Auto-Aufzählung ( - / * / 1. )">¶</button>
+              <button class="fmt-btn" id="autoListToggle" onclick="toggleAutoList()" title="Auto-Aufzählung ( - / * / 1. )">¶</button>
             </div>
             <div class="toolbar-actions">
               <span class="save-status" id="saveStatus">
                 <i class="fas fa-circle" style="font-size:6px;color:var(--text-secondary);vertical-align:middle"></i>
                 <span id="saveStatusText">Bereit</span>
               </span>
+              <div class="mode-toggle">
+                <button class="mode-btn mode-btn-active" id="modeNormal" onclick="setNoteMode('normal')">📝 Normal</button>
+                <button class="mode-btn" id="modeLatex" onclick="setNoteMode('latex')">∑ LaTeX</button>
+              </div>
               <button class="toolbar-btn" onclick="togglePreview()" id="previewToggle" title="Vorschau">
                 <i class="fas fa-eye"></i>
               </button>

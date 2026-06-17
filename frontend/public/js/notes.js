@@ -861,15 +861,13 @@ window.createFolder = async function () {
 
 /* ====== FORMATIERUNG ====== */
 let autoListEnabled = true;
-let markdownEnabled = false;
+let latexMode = false;
 
-/* ── Markdown-Modus-Toggle ── */
-window.toggleMarkdown = function () {
-  markdownEnabled = !markdownEnabled;
-  document.getElementById("mdToggle").classList.toggle("fmt-btn-active", markdownEnabled);
-  document.getElementById("mdToggle").title = markdownEnabled
-    ? "Markdown-Modus AKTIV: **fett**, *kursiv*, $LaTeX$"
-    : "Markdown-Modus: **fett**, *kursiv*, $LaTeX$";
+/* ── Notiz-Modus: Normal oder LaTeX ── */
+window.setNoteMode = function (mode) {
+  latexMode = (mode === "latex");
+  document.getElementById("modeNormal").classList.toggle("mode-btn-active", !latexMode);
+  document.getElementById("modeLatex").classList.toggle("mode-btn-active", latexMode);
   // Vorschau aktualisieren falls sichtbar
   if (previewActive && currentNoteId) {
     const editor = document.getElementById("noteContent");
@@ -890,9 +888,9 @@ function mdInline(text) {
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 }
 
-/* ── Markdown-Block-Rendering (für Vorschau) ── */
+/* ── Markdown-Block-Rendering (für Vorschau im LaTeX-Modus) ── */
 function renderMarkdown(html) {
-  if (!markdownEnabled) return html;
+  if (!latexMode) return html;
   const div = document.createElement("div");
   div.innerHTML = html;
   const lines = div.textContent.split("\n");
@@ -934,19 +932,19 @@ function renderMarkdown(html) {
   return out;
 }
 
-/* ── FmtCmd mit Markdown-Unterstützung ── */
+/* ── FmtCmd – im LaTeX-Modus Markdown-Syntax einfügen ── */
 window.fmtCmd = function (cmd, arg) {
   const editor = document.getElementById("noteContent");
   editor.focus();
-  if (markdownEnabled) {
-    _mdFmtCmd(cmd, arg);
+  if (latexMode) {
+    _latexFmtCmd(cmd, arg);
     return;
   }
   document.execCommand(cmd, false, arg || null);
   onContentChange();
 };
 
-function _mdFmtCmd(cmd, arg) {
+function _latexFmtCmd(cmd, arg) {
   const sel = window.getSelection();
   const text = sel.toString();
   let prefix = "", suffix = "";
@@ -1198,9 +1196,9 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-/* ── Paste-Handler: in Markdown-Modus HTML-Formatierung entfernen ── */
+/* ── Paste-Handler: im LaTeX-Modus HTML-Formatierung entfernen ── */
 document.getElementById("noteContent").addEventListener("paste", function (e) {
-  if (!markdownEnabled) return;
+  if (!latexMode) return;
   e.preventDefault();
   const text = (e.clipboardData || window.clipboardData).getData("text/plain");
   document.execCommand("insertText", false, text);

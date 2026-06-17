@@ -488,8 +488,30 @@
 .fmt-btn:hover { background: var(--surface-3); color: var(--text); }
 .fmt-btn:active { background: var(--border-soft); }
 .fmt-btn-active { background: var(--surface-3); color: var(--text); }
-.fmt-btn#mdToggle { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.5px; }
-.fmt-btn#mdToggle.fmt-btn-active { background: var(--accent); color: #fff; }
+
+/* ── Notiz-Modus-Umschalter (Normal / LaTeX) ── */
+.mode-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.mode-btn {
+  padding: 4px 10px;
+  border: none;
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: 0.12s;
+  white-space: nowrap;
+}
+.mode-btn:hover { background: var(--surface-3); color: var(--text); }
+.mode-btn-active { background: var(--accent); color: #fff; }
+.mode-btn-active:hover { background: var(--accent-hover); color: #fff; }
 
 .fmt-sep {
   width: 1px;
