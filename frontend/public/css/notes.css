@@ -488,6 +488,8 @@
 .fmt-btn:hover { background: var(--surface-3); color: var(--text); }
 .fmt-btn:active { background: var(--border-soft); }
 .fmt-btn-active { background: var(--surface-3); color: var(--text); }
+.fmt-btn#mdToggle { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.5px; }
+.fmt-btn#mdToggle.fmt-btn-active { background: var(--accent); color: #fff; }
 
 .fmt-sep {
   width: 1px;

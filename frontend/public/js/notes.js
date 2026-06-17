@@ -861,10 +861,119 @@ window.createFolder = async function () {
 
 /* ====== FORMATIERUNG ====== */
 let autoListEnabled = true;
+let markdownEnabled = false;
 
+/* ── Markdown-Modus-Toggle ── */
+window.toggleMarkdown = function () {
+  markdownEnabled = !markdownEnabled;
+  document.getElementById("mdToggle").classList.toggle("fmt-btn-active", markdownEnabled);
+  document.getElementById("mdToggle").title = markdownEnabled
+    ? "Markdown-Modus AKTIV: **fett**, *kursiv*, $LaTeX$"
+    : "Markdown-Modus: **fett**, *kursiv*, $LaTeX$";
+  // Vorschau aktualisieren falls sichtbar
+  if (previewActive && currentNoteId) {
+    const editor = document.getElementById("noteContent");
+    const preview = document.getElementById("notePreview");
+    preview.innerHTML = renderPreviewWithMath(editor.innerHTML) || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+  }
+};
+
+/* ── Markdown-Inline-Rendering (für Vorschau) ── */
+function mdInline(text) {
+  return text
+    .replace(/~~(.+?)~~/g, '<del>$1</del>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+
+/* ── Markdown-Block-Rendering (für Vorschau) ── */
+function renderMarkdown(html) {
+  if (!markdownEnabled) return html;
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  const lines = div.textContent.split("\n");
+  let out = "";
+  let inList = null;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) {
+      if (inList) { out += "</" + inList + ">\n"; inList = null; }
+      continue;
+    }
+    if (/^#{1,3}\s/.test(line)) {
+      const level = line.match(/^(#+)/)[1].length;
+      out += "<h" + level + ">" + mdInline(line.replace(/^#+\s*/, "")) + "</h" + level + ">\n";
+      continue;
+    }
+    if (/^>\s/.test(line)) {
+      out += "<blockquote>" + mdInline(line.replace(/^>\s*/, "")) + "</blockquote>\n";
+      continue;
+    }
+    if (/^[-*]\s/.test(line)) {
+      if (inList !== "ul") { if (inList) out += "</" + inList + ">\n"; out += "<ul>\n"; inList = "ul"; }
+      out += "  <li>" + mdInline(line.replace(/^[-*]\s*/, "")) + "</li>\n";
+      continue;
+    }
+    if (/^\d+\.\s/.test(line)) {
+      if (inList !== "ol") { if (inList) out += "</" + inList + ">\n"; out += "<ol>\n"; inList = "ol"; }
+      out += "  <li>" + mdInline(line.replace(/^\d+\.\s*/, "")) + "</li>\n";
+      continue;
+    }
+    if (/^-{3,}\s*$/.test(line)) {
+      out += "<hr>\n";
+      continue;
+    }
+    if (inList) { out += "</" + inList + ">\n"; inList = null; }
+    out += "<p>" + mdInline(line) + "</p>\n";
+  }
+  if (inList) out += "</" + inList + ">\n";
+  return out;
+}
+
+/* ── FmtCmd mit Markdown-Unterstützung ── */
 window.fmtCmd = function (cmd, arg) {
-  document.getElementById("noteContent").focus();
+  const editor = document.getElementById("noteContent");
+  editor.focus();
+  if (markdownEnabled) {
+    _mdFmtCmd(cmd, arg);
+    return;
+  }
   document.execCommand(cmd, false, arg || null);
+  onContentChange();
+};
+
+function _mdFmtCmd(cmd, arg) {
+  const sel = window.getSelection();
+  const text = sel.toString();
+  let prefix = "", suffix = "";
+  switch (cmd) {
+    case "bold":             prefix = "**"; suffix = "**"; break;
+    case "italic":           prefix = "*";  suffix = "*";  break;
+    case "strikeThrough":    prefix = "~~"; suffix = "~~"; break;
+    case "underline":        return; // kein Markdown-Äquivalent
+    case "insertUnorderedList": prefix = "\n- "; break;
+    case "insertOrderedList":   prefix = "\n1. "; break;
+    case "formatBlock":
+      if (arg === "h1") prefix = "\n# ";
+      else if (arg === "h2") prefix = "\n## ";
+      else if (arg === "h3") prefix = "\n### ";
+      else if (arg === "p") return;
+      else if (arg === "blockquote") prefix = "\n> ";
+      else return;
+      break;
+    case "insertHorizontalRule": prefix = "\n---\n"; break;
+    case "removeFormat": return;
+    default: return;
+  }
+  if (text && suffix) {
+    document.execCommand("insertText", false, prefix + text + suffix);
+  } else {
+    document.execCommand("insertText", false, prefix);
+  }
   onContentChange();
 };
 
@@ -1011,6 +1120,8 @@ function renderMathInline(html) {
 }
 
 function renderPreviewWithMath(html) {
+  // Render markdown first (if enabled)
+  html = renderMarkdown(html);
   // Render math in preview content
   if (typeof katex === "undefined") return html;
   // Display math first (so it won't be caught by inline regex)
@@ -1085,6 +1196,14 @@ document.addEventListener("keydown", function (e) {
     fmtCmd(map[e.key]);
     e.preventDefault();
   }
+});
+
+/* ── Paste-Handler: in Markdown-Modus HTML-Formatierung entfernen ── */
+document.getElementById("noteContent").addEventListener("paste", function (e) {
+  if (!markdownEnabled) return;
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+  document.execCommand("insertText", false, text);
 });
 
 document.addEventListener("DOMContentLoaded", init);
