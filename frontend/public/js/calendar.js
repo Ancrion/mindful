@@ -613,6 +613,7 @@ function openEventModal(eventDate, eventHour) {
   document.getElementById("evDescription").value = "";
   document.getElementById("evLocation").value = "";
   document.getElementById("evDuration").value = "60";
+  document.getElementById("evCustomDuration").style.display = "none";
   document.getElementById("evRepeat").value = "none";
   document.getElementById("evReminder").value = "keine";
   document.getElementById("evAllDay").checked = false;
@@ -629,8 +630,11 @@ function openEventModal(eventDate, eventHour) {
   document.querySelector(".color-dot").classList.add("active");
 
   document.getElementById("evWorkspace").value = window.currentWorkspaceId || "";
+  onWsChange();
 
   document.getElementById("eventModalOverlay").classList.add("open");
+  // Duration nach dem Öffnen syncen (wenn Times gesetzt sind)
+  setTimeout(syncDurationFromTimes, 50);
 }
 
 function closeEventModal(e) {
@@ -690,7 +694,7 @@ async function editEvent(id) {
   document.getElementById("evTitle").value = ev.titel;
   document.getElementById("evDescription").value = ev.beschreibung || "";
   document.getElementById("evLocation").value = ev.ort || "";
-  document.getElementById("evDuration").value = ev.dauer || 60;
+  setDurationPreset(ev.dauer || 60);
   document.getElementById("evRepeat").value = ev.wiederholung || "none";
   document.getElementById("evReminder").value = ev.erinnerung || "keine";
   document.getElementById("evAllDay").checked = ev.ganztag ? true : false;
@@ -717,6 +721,7 @@ async function editEvent(id) {
   });
 
   document.getElementById("evWorkspace").value = ev.workspace_id || "";
+  onWsChange();
 
   document.getElementById("eventModalOverlay").classList.add("open");
 }
@@ -744,7 +749,51 @@ function toggleCustomDuration() {
   el.style.display = val === "custom" ? "block" : "none";
 }
 
-// Register color picker clicks
+/* ── Dauer ↔ Uhrzeit synchronisieren ── */
+function getMinutes(time) {
+  if (!time) return 0;
+  const [h, m] = time.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function formatTime(min) {
+  const h = Math.floor(min / 60) % 24;
+  const m = min % 60;
+  return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+}
+
+function syncEndTimeFromDuration() {
+  const start = document.getElementById("evStartTime").value;
+  const sel = document.getElementById("evDuration");
+  let dur = parseInt(sel.value);
+  if (isNaN(dur) || sel.value === "custom") {
+    dur = parseInt(document.getElementById("evCustomDuration").value) || 60;
+  }
+  document.getElementById("evEndTime").value = formatTime(getMinutes(start) + dur);
+}
+
+function syncDurationFromTimes() {
+  const start = document.getElementById("evStartTime").value;
+  const end = document.getElementById("evEndTime").value;
+  if (!start || !end) return;
+  let dur = getMinutes(end) - getMinutes(start);
+  if (dur < 0) dur += 1440;
+  setDurationPreset(dur);
+}
+
+function setDurationPreset(dur) {
+  const sel = document.getElementById("evDuration");
+  const presets = ["15", "30", "60", "90", "120", "180"];
+  if (presets.includes(String(dur))) {
+    sel.value = String(dur);
+  } else {
+    sel.value = "custom";
+    document.getElementById("evCustomDuration").value = dur;
+    document.getElementById("evCustomDuration").style.display = "block";
+  }
+}
+
+// Register color picker clicks + Dauer-Uhrzeit-Sync
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".color-dot").forEach(dot => {
     dot.addEventListener("click", () => {
@@ -752,6 +801,10 @@ document.addEventListener("DOMContentLoaded", () => {
       dot.classList.add("active");
     });
   });
+  document.getElementById("evStartTime").addEventListener("change", syncEndTimeFromDuration);
+  document.getElementById("evEndTime").addEventListener("change", syncDurationFromTimes);
+  document.getElementById("evDuration").addEventListener("change", syncEndTimeFromDuration);
+  document.getElementById("evCustomDuration").addEventListener("input", syncEndTimeFromDuration);
 });
 
 // Open modal from toolbar

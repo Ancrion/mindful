@@ -12,11 +12,11 @@ async function safeJson(response) {
 }
 
 const WORKSPACE_COLORS = {
-  orange: "#f19a3d",
-  blue: "#4c91ff",
-  green: "#78b85f",
-  pink: "#cf79ff",
-  red: "#ff5b50",
+  orange: "#F97316",
+  blue: "#3B82F6",
+  green: "#10B981",
+  pink: "#EC4899",
+  red: "#EF4444",
   purple: "#8B5CF6",
   teal: "#14B8A6",
   yellow: "#F59E0B",
