@@ -43,13 +43,10 @@
           <div class="tracking-start-card" id="trackingStartCard">
             <h2><i class="fas fa-play-circle"></i> Zeit erfassen</h2>
             <div class="tracking-start-form">
-              <div class="tracking-task-row">
-                <select id="trackingTaskSelect">
-                  <option value="">– Aufgabe wählen –</option>
-                </select>
-                <span class="tracking-task-or">oder</span>
-                <input type="text" id="trackingCustomTask" placeholder="eigenen Aufgabennamen eingeben..." />
-              </div>
+              <select id="trackingTaskSelect">
+                <option value="">– Aufgabe wählen –</option>
+              </select>
+              <input type="text" id="trackingCustomTask" placeholder="Eigenen Aufgabennamen eingeben..." style="display:none" />
               <input type="text" id="trackingDescription" placeholder="Notiz (optional)" />
               <button class="tracking-btn tracking-btn-start" onclick="startTracking()">
                 <i class="fas fa-play"></i> Start

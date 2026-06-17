@@ -24,10 +24,26 @@ async function loadTasks() {
       if (t.workspace_name) opt.textContent += ` (${t.workspace_name})`;
       sel.appendChild(opt);
     });
+    const sep = document.createElement("option");
+    sep.disabled = true;
+    sep.textContent = "───";
+    sel.appendChild(sep);
+    const custom = document.createElement("option");
+    custom.value = "new";
+    custom.textContent = "✏️ Eigene Aufgabe…";
+    sel.appendChild(custom);
   } catch (err) {
     console.error("Fehler beim Laden der Aufgaben:", err);
   }
 }
+
+document.addEventListener("change", function (e) {
+  if (e.target.id === "trackingTaskSelect") {
+    const input = document.getElementById("trackingCustomTask");
+    input.style.display = e.target.value === "new" ? "block" : "none";
+    if (e.target.value === "new") input.focus();
+  }
+});
 
 async function loadActive() {
   try {
@@ -77,18 +93,23 @@ window.startTracking = async function () {
   const sel = document.getElementById("trackingTaskSelect");
   const custom = document.getElementById("trackingCustomTask");
   const desc = document.getElementById("trackingDescription");
-  const customTask = custom.value.trim();
-  const todoId = sel.value || null;
   const note = desc.value.trim() || null;
 
-  let description;
-  if (todoId) {
-    description = note;
-  } else if (customTask) {
+  let todoId, description;
+  if (sel.value === "new") {
+    const customTask = custom.value.trim();
+    if (!customTask) {
+      showToast("Bitte gib einen Aufgabennamen ein.", "error");
+      return;
+    }
+    todoId = null;
     description = customTask;
     if (note) description += " — " + note;
+  } else if (sel.value) {
+    todoId = sel.value;
+    description = note;
   } else {
-    showToast("Bitte wähle eine Aufgabe aus oder gib einen Namen ein.", "error");
+    showToast("Bitte wähle eine Aufgabe aus.", "error");
     return;
   }
 
@@ -100,7 +121,9 @@ window.startTracking = async function () {
     const data = await res.json();
     _trackingEntryId = data.id;
     showActiveTimer(data);
+    sel.value = "";
     custom.value = "";
+    custom.style.display = "none";
     desc.value = "";
   } else if (res) {
     const err = await res.json().catch(() => ({}));
