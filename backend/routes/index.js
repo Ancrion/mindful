@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
-const path = require("path");
 const auth = require("../middleware/auth");
 const adminOnly = require("../middleware/admin");
 
@@ -32,39 +30,6 @@ router.get("/messages", auth, (req, res) => res.render("messages", { currentPage
 router.get("/nachrichten", auth, (req, res) => res.render("messages", { currentPage: "messages" }));
 router.get("/profile", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
 router.get("/profil", auth, (req, res) => res.render("profile", { currentPage: "profile" }));
-router.get("/entwicklungsplan", auth, adminOnly, (req, res) => {
-  const fileContents = {};
-  const root = path.join(__dirname, "..", "..");
-  const fileMap = {
-    // Database Schema (Phase 1 - ilhan)
-    "ilhan-db": "backend/database/db.js",
-
-    // Backend Routes (Phase 2-6 - jaro)
-    "jaro-auth": "backend/routes/auth-routes.js",
-    "jaro-workspace": "backend/routes/workspace.js",
-    "jaro-todos": "backend/routes/todos.js",
-    "jaro-kalender": "backend/routes/kalender.js",
-    "jaro-notizen": "backend/routes/notizen.js",
-    "jaro-ordner": "backend/routes/ordner.js",
-    "jaro-dashboard": "backend/routes/dashboard_widgets.js",
-    "jaro-habits": "backend/routes/habits.js",
-    "jaro-pomodoro": "backend/routes/pomodoro.js",
-    "jaro-zeit": "backend/routes/zeit.js",
-    "jaro-leaderboard": "backend/routes/leaderboard.js",
-    "jaro-messages": "backend/routes/messages.js",
-    "jaro-search": "backend/routes/search.js",
-    "jaro-bugs": "backend/routes/bugs.js",
-  };
-
-  for (const [id, filePath] of Object.entries(fileMap)) {
-    try {
-      fileContents[id] = fs.readFileSync(path.join(root, filePath), "utf-8");
-    } catch (e) {
-      fileContents[id] = null;
-    }
-  }
-  res.render("entwicklungsplan", { currentPage: "entwicklungsplan", fileContents });
-});
 router.get("/bugs", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/bug-report", auth, (req, res) => res.render("bugs", { currentPage: "bugs" }));
 router.get("/changelog", (req, res) => {

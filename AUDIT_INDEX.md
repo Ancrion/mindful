@@ -115,7 +115,6 @@ This index guides you to the right documentation for your needs.
 **Purpose**: Specific documentation for the Development Plan feature
 
 **Contents**:
-- Purpose of the dev plan page (`/entwicklungsplan`)
 - Backend implementation (route mapping, fileMap)
 - Frontend template structure
 - Team assignment structure

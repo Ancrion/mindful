@@ -722,7 +722,7 @@
     - Commit tracking
     - No auth required
 
-15. **Development Plan** - `/entwicklungsplan` → `entwicklungsplan.ejs` [ADMIN ONLY]
+
     - Team task assignment
     - Code snippet viewer
     - Dynamic task filtering
@@ -1224,7 +1224,6 @@
 - PUT /api/admin/users/:id/toggle-admin
 - DELETE /api/admin/users/:id
 - PUT /api/admin/users/:id/reset-password
-- GET /entwicklungsplan (view)
 - GET /admin (view)
 
 **Authorization Checks**:

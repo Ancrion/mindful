@@ -13,7 +13,6 @@ const DEFAULT_MODULES = [
   { key: "tracking",     label: "Zeiterfassung",   icon: "fa-stopwatch",      path: "/tracking",        adminOnly: false },
   { key: "leaderboard",  label: "Rangliste",       icon: "fa-trophy",         path: "/leaderboard",     adminOnly: false },
   { key: "bugs",         label: "Bugs",            icon: "fa-bug",            path: "/bugs",            adminOnly: false },
-  { key: "entwicklungsplan", label: "Projektplan", icon: "fa-code-branch",    path: "/entwicklungsplan", adminOnly: true },
   { key: "admin",        label: "Admin",           icon: "fa-shield-alt",     path: "/admin",           adminOnly: true },
   { key: "changelog",    label: "Versionsverlauf", icon: "fa-clipboard-list", path: "/changelog",       adminOnly: false },
 ];
