@@ -7,6 +7,28 @@
 
 ---
 
+## 🚀 v1.10.0 - LaTeX-Mathe-Editor & Markdown-Modus (wie Obsidian)
+
+**Neue Features**: 17.06.2026
+
+### ✨ Neue Funktionen
+
+- **LaTeX-Mathe-Editor**: Mathematische Formeln via KaTeX – `$...$` (inline) und `$$...$$` (block) – im Notizen-Editor
+- **Normal/LaTeX-Modus**: Modus-Umschalter `[📝 Normal] [∑ LaTeX]` rechts in der Toolbar
+  - **Normal**: WYSIWYG-Editor, Vorschau rendert nur LaTeX
+  - **LaTeX**: Roh-Text-Editor, Toolbar fügt `**fett**`, `*kursiv*`, `# H1` etc. ein, Vorschau rendert **Markdown + LaTeX**
+- **Formel-Editor-Modal**: Separater LaTeX-Editor mit Live-KaTeX-Vorschau über ∑-Button
+- **Markdown-Rendering in der Vorschau**: `**fett**`, `*kursiv*`, `~~durchgestrichen~~`, `` `code` ``, `[link](url)`, `# H1`–`### H3`, `-`/`*`-Listen, `1.`-nummerierte Listen, `> Zitat`, `---` Trennlinie
+- **Paste-Filter im LaTeX-Modus**: Eingefügter Text wird automatisch von HTML-Formatierung befreit
+
+### 🔧 Bugfixes & Improvements
+
+- **Zeilenumbrüche in der Vorschau korrigiert**: `textContent` konkatiniert Text ohne Newlines → auf `innerText` + Regex-basierte HTML-zu-Text-Konvertierung umgestellt. Jetzt werden Zeilenumbrüche zwischen `<div>`-Blöcken korrekt als neue Absätze dargestellt.
+- **MD-Toggle entfernt**: Statt verwirrendem Ein/Aus-Button jetzt klarer Modus-Umschalter (Normal / LaTeX)
+- **Dokumentation aktualisiert**: Markdown-Referenztabelle in FEATURES.md
+
+---
+
 ## 🚀 v1.9.0 - Habit-Tracker & Dashboard-Erweiterung
 
 **Neue Features**: 12.06.2026
