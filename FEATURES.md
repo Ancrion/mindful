@@ -151,6 +151,20 @@ Der Notizen-Editor unterstützt mathematische Formeln mit LaTeX-Syntax, gerender
 
 **Technik:** KaTeX v0.16.11 (CDN), `contenteditable`-Editor mit `document.execCommand`
 
+### Zeiterfassung
+
+- `POST /api/zeit/start` - Zeiterfassung starten
+- `POST /api/zeit/stop` - Aktive Zeiterfassung stoppen
+- `GET /api/zeit/active` - Aktive Zeiterfassung abrufen
+- `GET /api/zeit/today` - Heutige Einträge abrufen
+- `GET /api/zeit/range` - Einträge in einem Datumsbereich
+- `DELETE /api/zeit/:id` - Eintrag löschen
+
+#### Aufgabe auswählen oder frei eingeben
+
+Im Dropdown der Zeiterfassung können bestehende Todos ausgewählt werden.  
+Der unterste Eintrag **„✏️ Eigene Aufgabe…"** blendet ein Texteingabefeld ein, um eine Ad-hoc-Aufgabe ohne Verknüpfung zu einem Todo zu starten. Der eingegebene Name wird in `description` gespeichert; `todo_id` bleibt `null`.
+
 ### Kalender
 
 - `GET /api/kalender` - Alle Events abrufen
