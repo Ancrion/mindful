@@ -7,6 +7,27 @@
 
 ---
 
+## 🚀 v1.10.1 - Kalender: Dauer-Uhrzeit-Sync & Auto-Farbe vom Workspace
+
+**Neue Features**: 17.06.2026
+
+### ✨ Neue Funktionen
+
+- **Dauer ↔ Uhrzeit synchronisiert**: Dauer-Select, Startzeit und Endzeit im Event-Modal sind jetzt bidirektional verknüpft
+  - Dauer ändern → Endzeit wird automatisch neu berechnet
+  - Startzeit ändern → Endzeit folgt (Dauer bleibt gleich)
+  - Endzeit ändern → Dauer wird neu ermittelt (ggf. „Benutzerdefiniert")
+- **Auto-Farbe vom Workspace**: Beim Erstellen und Bearbeiten eines Events wird die Farbe automatisch aus dem ausgewählten Workspace übernommen
+- **Neuer Farbpunkt Teal (#14B8A6)**: Ergänzt die Event-Farbpalette (ersetzt Indigo) – deckt jetzt alle Workspace-Farben ab
+- **Workspace-Farben korrigiert**: Hex-Werte in `WORKSPACE_COLORS` an die vorhandenen Farbpunkte angepasst (orange, blue, green, pink, red, purple, teal, yellow)
+
+### 🔧 Bugfixes & Improvements
+
+- **Dauer-Select zeigt jetzt „Benutzerdefiniert"** bei nicht-standard Werten (z. B. 45 Min statt 15/30/60/90/120/180)
+- **Custom-Duration-Input beim Öffnen zurückgesetzt**: Wird beim Erstellen eines neuen Events ausgeblendet
+
+---
+
 ## 🚀 v1.10.0 - LaTeX-Mathe-Editor & Markdown-Modus (wie Obsidian)
 
 **Neue Features**: 17.06.2026
@@ -26,27 +47,6 @@
 - **Zeilenumbrüche in der Vorschau korrigiert**: `textContent` konkatiniert Text ohne Newlines → auf `innerText` + Regex-basierte HTML-zu-Text-Konvertierung umgestellt. Jetzt werden Zeilenumbrüche zwischen `<div>`-Blöcken korrekt als neue Absätze dargestellt.
 - **MD-Toggle entfernt**: Statt verwirrendem Ein/Aus-Button jetzt klarer Modus-Umschalter (Normal / LaTeX)
 - **Dokumentation aktualisiert**: Markdown-Referenztabelle in FEATURES.md
-
----
-
-## 🚀 v1.10.1 - Kalender: Dauer-Uhrzeit-Sync & Auto-Farbe vom Workspace
-
-**Neue Features**: 17.06.2026
-
-### ✨ Neue Funktionen
-
-- **Dauer ↔ Uhrzeit synchronisiert**: Dauer-Select, Startzeit und Endzeit im Event-Modal sind jetzt bidirektional verknüpft
-  - Dauer ändern → Endzeit wird automatisch neu berechnet
-  - Startzeit ändern → Endzeit folgt (Dauer bleibt gleich)
-  - Endzeit ändern → Dauer wird neu ermittelt (ggf. „Benutzerdefiniert")
-- **Auto-Farbe vom Workspace**: Beim Erstellen und Bearbeiten eines Events wird die Farbe automatisch aus dem ausgewählten Workspace übernommen
-- **Neuer Farbpunkt Teal (#14B8A6)**: Ergänzt die Event-Farbpalette (ersetzt Indigo) – deckt jetzt alle Workspace-Farben ab
-- **Workspace-Farben korrigiert**: Hex-Werte in `WORKSPACE_COLORS` an die vorhandenen Farbpunkte angepasst (orange, blue, green, pink, red, purple, teal, yellow)
-
-### 🔧 Bugfixes & Improvements
-
-- **Dauer-Select zeigt jetzt „Benutzerdefiniert"** bei nicht-standard Werten (z. B. 45 Min statt 15/30/60/90/120/180)
-- **Custom-Duration-Input beim Öffnen zurückgesetzt**: Wird beim Erstellen eines neuen Events ausgeblendet
 
 ---
 

@@ -158,6 +158,16 @@ Der Notizen-Editor unterstützt mathematische Formeln mit LaTeX-Syntax, gerender
 - `PUT /api/kalender/:id` - Event aktualisieren
 - `DELETE /api/kalender/:id` - Event löschen
 
+#### Event-Editor: Dauer ↔ Uhrzeit synchronisiert
+Änderst du die Dauer, Startzeit oder Endzeit im Event-Modal, passen sich die anderen Felder automatisch an:
+- **Dauer ändern** → Endzeit wird neu berechnet
+- **Startzeit ändern** → Endzeit folgt (Dauer bleibt gleich)
+- **Endzeit ändern** → Dauer wird neu ermittelt (ggf. „Benutzerdefiniert")
+- Nicht-Standard-Dauern (z. B. 45 Min) aktivieren automatisch das Custom-Eingabefeld
+
+#### Auto-Farbe vom Workspace
+Wird ein Workspace im Event ausgewählt, übernimmt der Event-Farbpunkt automatisch die Farbe des Workspace. Die Farbpalette (8 Punkte) deckt alle Workspace-Farben ab: Blau, Rot, Gelb, Grün, Lila, Pink, Teal, Orange.
+
 ### Dokumente
 
 - `GET /api/dokumente` - Alle Dokumente abrufen
