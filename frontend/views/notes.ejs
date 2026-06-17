@@ -18,6 +18,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+    />
   </head>
   <body>
     <div class="app-layout cols-3">
@@ -105,6 +109,8 @@
               <span class="fmt-sep"></span>
               <button class="fmt-btn" onclick="fmtCmd('insertHorizontalRule')" title="Trennlinie"><i class="fas fa-minus"></i></button>
               <button class="fmt-btn" onclick="fmtCmd('removeFormat')" title="Formatierung entfernen"><i class="fas fa-eraser"></i></button>
+              <span class="fmt-sep"></span>
+              <button class="fmt-btn" onclick="mathCmd()" title="Mathe-Formel (LaTeX)"><i class="fas fa-superscript"></i></button>
               <span class="fmt-sep"></span>
               <button class="fmt-btn fmt-btn-active" id="autoListToggle" onclick="toggleAutoList()" title="Auto-Aufzählung ( - / * / 1. )">¶</button>
             </div>
@@ -199,6 +205,7 @@
       </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
     <script src="/js/app.js?v=<%= Date.now() %>"></script>
     <script src="/js/notes.js?v=<%= Date.now() %>"></script>
   </body>

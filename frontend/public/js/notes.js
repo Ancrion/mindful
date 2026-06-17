@@ -456,7 +456,7 @@ function openNote(note) {
   document.getElementById("noteTitle").value = note.titel || "";
   document.getElementById("noteContent").innerHTML = note.inhalt || "";
   if (previewActive) {
-    document.getElementById("notePreview").innerHTML = note.inhalt || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+    document.getElementById("notePreview").innerHTML = renderPreviewWithMath(note.inhalt) || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
   }
 
   const folderName = note.ordner_id
@@ -564,7 +564,8 @@ window.togglePreview = function () {
   const btn = document.getElementById("previewToggle");
   btn.classList.toggle("active", previewActive);
   if (previewActive) {
-    preview.innerHTML = editor.innerHTML || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+    const html = editor.innerHTML || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+    preview.innerHTML = renderPreviewWithMath(html);
     editor.style.display = "none";
     preview.style.display = "";
   } else {
@@ -594,7 +595,7 @@ window.saveNote = async function () {
     if (idx !== -1) allNotes[idx] = updated;
     renderTree();
     if (previewActive) {
-      document.getElementById("notePreview").innerHTML = inhalt || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
+      document.getElementById("notePreview").innerHTML = renderPreviewWithMath(inhalt) || "<p style='color:var(--text-secondary)'>Leere Notiz</p>";
     }
   } else {
     setSaveStatus("error", "Fehler");
@@ -866,6 +867,177 @@ window.fmtCmd = function (cmd, arg) {
   document.execCommand(cmd, false, arg || null);
   onContentChange();
 };
+
+/* ── LaTeX-Mathe (wie Obsidian) ── */
+window.mathCmd = function () {
+  const editor = document.getElementById("noteContent");
+  editor.focus();
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const text = sel.toString();
+  if (!text) {
+    // Keine Auswahl → füge leere Formel ein
+    document.execCommand("insertText", false, "$\\, $");
+    sel.modify("move", "left", "character");
+    sel.modify("move", "left", "character");
+    sel.modify("move", "left", "character");
+    onContentChange();
+    return;
+  }
+  // Prüfen ob Auswahl bereits von $...$ umschlossen ist
+  const range = sel.getRangeAt(0);
+  const container = range.startContainer;
+  if (container.nodeType === Node.TEXT_NODE && container.parentNode) {
+    const parent = container.parentNode;
+    const fullText = parent.textContent;
+    const start = range.startOffset;
+    const end = range.endOffset;
+    const before = fullText.substring(0, start);
+    const after = fullText.substring(end);
+    if (before.endsWith("$") && after.startsWith("$")) {
+      // Toggle: entferne $...$ → ersetze Auswahl durch Inhalt ohne $
+      const inner = text.replace(/^\$|\$$/g, "");
+      range.deleteContents();
+      range.insertNode(document.createTextNode(inner));
+      onContentChange();
+      return;
+    }
+  }
+  // Sonst: wickle in $...$
+  document.execCommand("insertText", false, "$" + text + "$");
+  onContentChange();
+};
+
+/** Formel-Editor-Modal: ermöglicht separaten LaTeX-Editor */
+let mathModalActive = false;
+
+window.openMathEditor = function () {
+  const sel = window.getSelection();
+  let initial = "";
+  if (sel.rangeCount) {
+    const t = sel.toString();
+    if (t.startsWith("$") && t.endsWith("$")) initial = t.slice(1, -1).trim();
+    else if (t) initial = t;
+  }
+  const div = document.createElement("div");
+  div.className = "math-overlay";
+  div.innerHTML = `
+    <div class="math-modal">
+      <div class="math-modal-header">
+        <h3><i class="fas fa-superscript"></i> Formel eingeben (LaTeX)</h3>
+        <button class="modal-close-btn" onclick="closeMathEditor()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="math-modal-body">
+        <textarea id="mathInput" rows="4" placeholder="z. B. E = mc^2">${initial.replace(/</g,"&lt;")}</textarea>
+        <div class="math-preview" id="mathPreview">${initial ? renderMathInline("$" + initial + "$") : ""}</div>
+      </div>
+      <div class="math-modal-footer">
+        <span class="math-hint">Inline: <code>$...$</code> &nbsp; Block: <code>$$...$$</code></span>
+        <div>
+          <button class="secondary-btn" onclick="insertMathBlock()"><i class="fas fa-square-root-variable"></i> Block-Formel</button>
+          <button class="primary-btn" onclick="insertMathInline()"><i class="fas fa-superscript"></i> Einfügen</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(div);
+  mathModalActive = true;
+
+  const textarea = document.getElementById("mathInput");
+  textarea.focus();
+  textarea.addEventListener("input", function () {
+    const preview = document.getElementById("mathPreview");
+    const val = this.value.trim();
+    if (val) {
+      preview.innerHTML = renderMathInline("$" + val + "$");
+    } else {
+      preview.innerHTML = "";
+    }
+  });
+  textarea.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      insertMathInline();
+    }
+  });
+};
+
+window.closeMathEditor = function () {
+  const el = document.querySelector(".math-overlay");
+  if (el) el.remove();
+  mathModalActive = false;
+};
+
+window.insertMathInline = function () {
+  const val = document.getElementById("mathInput").value.trim();
+  if (!val) { closeMathEditor(); return; }
+  const editor = document.getElementById("noteContent");
+  editor.focus();
+  document.execCommand("insertText", false, "$" + val + "$");
+  closeMathEditor();
+  onContentChange();
+};
+
+window.insertMathBlock = function () {
+  const val = document.getElementById("mathInput").value.trim();
+  if (!val) { closeMathEditor(); return; }
+  const editor = document.getElementById("noteContent");
+  editor.focus();
+  document.execCommand("insertText", false, "\n$$\n" + val + "\n$$\n");
+  closeMathEditor();
+  onContentChange();
+};
+
+/* ── KaTeX-Rendering ── */
+function renderMathInline(html) {
+  if (typeof katex === "undefined") return html;
+  // Display math $$...$$
+  html = html.replace(/\$\$([\s\S]*?)\$\$/g, function (_, expr) {
+    try {
+      return katex.renderToString(expr.trim(), { displayMode: true, throwOnError: false });
+    } catch (e) {
+      return '<span class="math-error">' + _.replace(/</g,"&lt;") + '</span>';
+    }
+  });
+  // Inline math $...$
+  html = html.replace(/(?<!\$)\$(?!\$)(.+?)(?<!\$)\$(?!\$)/g, function (_, expr) {
+    try {
+      return katex.renderToString(expr.trim(), { displayMode: false, throwOnError: false });
+    } catch (e) {
+      return '<span class="math-error">$' + _.replace(/</g,"&lt;") + '$</span>';
+    }
+  });
+  return html;
+}
+
+function renderPreviewWithMath(html) {
+  // Render math in preview content
+  if (typeof katex === "undefined") return html;
+  // Display math first (so it won't be caught by inline regex)
+  html = html.replace(/\$\$([\s\S]*?)\$\$/g, function (_, expr) {
+    try {
+      return katex.renderToString(expr.trim(), { displayMode: true, throwOnError: false });
+    } catch (e) {
+      return '<div class="math-error" style="padding:8px;background:#fef2f2;border-radius:4px;color:#e53e3e;text-align:center">✗ LaTeX-Fehler: ' + esc(e.message) + '</div>';
+    }
+  });
+  // Inline math
+  html = html.replace(/(?<!\$)\$(?!\$)(.+?)(?<!\$)\$(?!\$)/g, function (_, expr) {
+    try {
+      return katex.renderToString(expr.trim(), { displayMode: false, throwOnError: false });
+    } catch (e) {
+      return '<span class="math-error">$' + esc(expr) + '$</span>';
+    }
+  });
+  return html;
+}
+
+/* ESC für Math-Modal */
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape" && mathModalActive) {
+    closeMathEditor();
+  }
+});
 
 window.toggleAutoList = function () {
   autoListEnabled = !autoListEnabled;
