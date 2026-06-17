@@ -891,10 +891,16 @@ function mdInline(text) {
 /* ── Markdown-Block-Rendering (für Vorschau im LaTeX-Modus) ── */
 function renderMarkdown(html) {
   if (!latexMode) return html;
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  // innerText respektiert Zeilenumbrüche zwischen Block-Elementen (z.B. <div>)
-  const lines = div.innerText.split("\n");
+  // HTML-Tags durch Zeilenumbrüche ersetzen, dann alle Tags entfernen
+  const text = html
+    .replace(/<\/(div|p|h[1-6]|li|blockquote|pre|tr)>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+  const lines = text.split("\n");
   let out = "";
   let inList = null;
   for (const raw of lines) {
