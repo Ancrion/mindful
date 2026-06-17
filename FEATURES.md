@@ -112,6 +112,21 @@ curl http://localhost:3000/api/todos \
 - `PUT /api/notizen/:id` - Notiz aktualisieren
 - `DELETE /api/notizen/:id` - Notiz löschen
 
+#### LaTeX / Mathe-Formeln (KaTeX)
+
+Der Notizen-Editor unterstützt mathematische Formeln mit LaTeX-Syntax, gerendert durch **KaTeX**.
+
+**Quick-Start:**
+- `$...$` für Inline-Formeln, z. B. `$E = mc^2$` → E = mc²
+- `$$...$$` für Block-Formeln, z. B. `$$\sum_{i=1}^n i^2$$`
+
+**Optionen im Editor:**
+- **Toolbar-Button ∑** → Markierten Text in `$...$` packen (toggle)
+- **Formel-Editor-Modal** → Separater Editor mit Live-Vorschau
+- **Vorschau-Modus (👁️)** → Alle Formeln werden via KaTeX gerendert
+
+**Technik:** KaTeX v0.16.11 (CDN), `contenteditable`-Editor mit `document.execCommand`
+
 ### Kalender
 
 - `GET /api/kalender` - Alle Events abrufen
