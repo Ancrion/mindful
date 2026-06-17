@@ -7,6 +7,27 @@
 
 ---
 
+## 🚀 v1.10.2 - Zeiterfassung: Eigene Aufgabe frei eingeben
+
+**Neues Feature**: 17.06.2026
+
+### ✨ Neue Funktionen
+
+- **Eigene Aufgabe in der Zeiterfassung**: Das Aufgaben-Dropdown enthält jetzt unten den Eintrag **„✏️ Eigene Aufgabe…"**. Bei Auswahl erscheint ein Texteingabefeld, um einen freien Aufgabennamen ohne Todo-Verknüpfung einzugeben. Der Name wird in `description` gespeichert, `todo_id` bleibt `null`.
+- **Anzeige in aktiver Timer & Tagesliste**: Bei benutzerdefinierten Tasks wird der eingegebene Name als Titel angezeigt (statt „Keine Aufgabe").
+
+### 🔧 Technische Änderungen
+
+- **Dropdown-Integration**: Kein separates „oder"-Feld mehr – die benutzerdefinierte Eingabe ist direkt ins Dropdown integriert über einen speziellen „Eigene Aufgabe…"-Eintrag mit `value="new"`. Ein Change-Listener blendet das Textfeld ein/aus.
+- **API-Endpunkte**: `todo_id` bleibt `null` bei benutzerdefinierten Aufgaben; alle bestehenden Endpunkte (`/zeit/start`, `/zeit/active`, `/zeit/today`) funktionieren unverändert.
+
+### 📝 Commits
+
+🔗 [`31af8a7`](https://github.com/Ancrion/mindful/commit/31af8a7) - Eigene Aufgabe ins Dropdown integriert
+🔗 [`0db05c9`](https://github.com/Ancrion/mindful/commit/0db05c9) - FEATURES.md: Zeiterfassung inkl. eigener Aufgabenname dokumentiert
+
+---
+
 ## 🚀 v1.10.1 - Kalender: Dauer-Uhrzeit-Sync & Auto-Farbe vom Workspace
 
 **Neue Features**: 17.06.2026
