@@ -893,7 +893,8 @@ function renderMarkdown(html) {
   if (!latexMode) return html;
   const div = document.createElement("div");
   div.innerHTML = html;
-  const lines = div.textContent.split("\n");
+  // innerText respektiert Zeilenumbrüche zwischen Block-Elementen (z.B. <div>)
+  const lines = div.innerText.split("\n");
   let out = "";
   let inList = null;
   for (const raw of lines) {
