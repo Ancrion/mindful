@@ -120,10 +120,18 @@ Der Notizen-Editor unterstützt mathematische Formeln mit LaTeX-Syntax, gerender
 - `$...$` für Inline-Formeln, z. B. `$E = mc^2$` → E = mc²
 - `$$...$$` für Block-Formeln, z. B. `$$\sum_{i=1}^n i^2$$`
 
+**Zwei Modi (Toolbar rechts):** `[📝 Normal] [∑ LaTeX]`
+
+| Modus | Editor | Vorschau |
+|-------|--------|----------|
+| **Normal** | WYSIWYG (HTML) | Nur LaTeX `$...$` |
+| **LaTeX** | Roh-Text, Toolbar fügt `**fett**`, `*kursiv*`, `# H1` etc. ein | Markdown + LaTeX |
+
 **Optionen im Editor:**
 - **Toolbar-Button ∑** → Markierten Text in `$...$` packen (toggle)
 - **Formel-Editor-Modal** → Separater Editor mit Live-Vorschau
 - **Vorschau-Modus (👁️)** → Alle Formeln werden via KaTeX gerendert
+- **LaTeX-Modus:** Paste entfernt HTML-Formatierung (nur Plaintext)
 
 **Technik:** KaTeX v0.16.11 (CDN), `contenteditable`-Editor mit `document.execCommand`
 
