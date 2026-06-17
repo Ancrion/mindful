@@ -52,7 +52,7 @@ function showActiveTimer(data) {
   if (!card || !timeEl) return;
   card.style.display = "flex";
   if (startCard) startCard.style.display = "none";
-  taskEl.textContent = data.todo_titel || "Keine Aufgabe";
+  taskEl.textContent = data.todo_titel || data.description || "Keine Aufgabe";
   const start = new Date(data.start_time);
 
   clearInterval(_trackingTimer);
@@ -75,9 +75,22 @@ function hideActiveTimer() {
 
 window.startTracking = async function () {
   const sel = document.getElementById("trackingTaskSelect");
+  const custom = document.getElementById("trackingCustomTask");
   const desc = document.getElementById("trackingDescription");
+  const customTask = custom.value.trim();
   const todoId = sel.value || null;
-  const description = desc.value.trim() || null;
+  const note = desc.value.trim() || null;
+
+  let description;
+  if (todoId) {
+    description = note;
+  } else if (customTask) {
+    description = customTask;
+    if (note) description += " — " + note;
+  } else {
+    showToast("Bitte wähle eine Aufgabe aus oder gib einen Namen ein.", "error");
+    return;
+  }
 
   const res = await authFetch(`${API_BASE}/zeit/start`, {
     method: "POST",
@@ -87,6 +100,7 @@ window.startTracking = async function () {
     const data = await res.json();
     _trackingEntryId = data.id;
     showActiveTimer(data);
+    custom.value = "";
     desc.value = "";
   } else if (res) {
     const err = await res.json().catch(() => ({}));
@@ -130,14 +144,16 @@ function renderEntries(entries) {
     const dur = isActive ? 0 : (e.duration_seconds || 0);
     const start = new Date(e.start_time);
     const timeStr = start.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-    const title = e.todo_titel || "Keine Aufgabe";
+    const isCustom = !e.todo_titel && e.description;
+    const title = e.todo_titel || e.description || "Keine Aufgabe";
+    const metaDesc = isCustom ? "" : e.description;
     return `<div class="tracking-entry${isActive ? " active" : ""}">
       <div class="tracking-entry-icon ${isActive ? "" : "stopped"}">
         <i class="fas ${isActive ? "fa-play" : "fa-stop"}"></i>
       </div>
       <div class="tracking-entry-body">
         <div class="tracking-entry-title${e.todo_titel ? "" : " empty"}">${escHtml(title)}</div>
-        <div class="tracking-entry-meta">${timeStr} ${e.description ? "· " + escHtml(e.description) : ""}</div>
+        <div class="tracking-entry-meta">${timeStr} ${metaDesc ? "· " + escHtml(metaDesc) : ""}</div>
       </div>
       <span class="tracking-entry-duration">${isActive ? "Läuft" : formatDurationShort(dur)}</span>
       <button class="tracking-entry-delete" onclick="deleteEntry(${e.id})" title="Löschen"><i class="fas fa-trash"></i></button>

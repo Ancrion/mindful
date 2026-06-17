@@ -102,6 +102,29 @@
   gap: 12px;
 }
 
+.tracking-task-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tracking-task-row select {
+  flex: 1;
+  min-width: 0;
+}
+
+.tracking-task-or {
+  font-size: 12px;
+  color: var(--text-secondary, #8b949e);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tracking-task-row input {
+  flex: 1;
+  min-width: 0;
+}
+
 .tracking-start-form select,
 .tracking-start-form input {
   width: 100%;
