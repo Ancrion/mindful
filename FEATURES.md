@@ -129,9 +129,25 @@ Der Notizen-Editor unterstützt mathematische Formeln mit LaTeX-Syntax, gerender
 
 **Optionen im Editor:**
 - **Toolbar-Button ∑** → Markierten Text in `$...$` packen (toggle)
-- **Formel-Editor-Modal** → Separater Editor mit Live-Vorschau
+- **Formel-Editor-Modal** → Separater Editor mit Live-Vorschau (Strg+Enter)
 - **Vorschau-Modus (👁️)** → Alle Formeln werden via KaTeX gerendert
 - **LaTeX-Modus:** Paste entfernt HTML-Formatierung (nur Plaintext)
+
+**Markdown-Syntax (nur im LaTeX-Modus):**
+
+| Eingabe | Ergebnis |
+|---------|----------|
+| `**fett**` / `__fett__` | **fett** |
+| `*kursiv*` / `_kursiv_` | *kursiv* |
+| `~~durchgestrichen~~` | ~~durchgestrichen~~ |
+| `` `code` `` | `code` |
+| `[Link](url)` | [Link](url) |
+| `# H1`, `## H2`, `### H3` | Überschriften |
+| `- Liste` / `* Liste` | Aufzählung |
+| `1. Liste` | Nummerierte Liste |
+| `> Zitat` | Zitatblock |
+| `---` | Trennlinie |
+| `$...$` / `$$...$$` | LaTeX-Mathe (KaTeX) |
 
 **Technik:** KaTeX v0.16.11 (CDN), `contenteditable`-Editor mit `document.execCommand`
 
